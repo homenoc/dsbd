@@ -1,0 +1,45 @@
+{% extends 'base2.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="container py-4 mb-auto">
+                <div class="h-900 p-2 rounded-3">
+                    <h2 class="card-title">Profile</h2>
+                    <br/>
+                    <div class="card mb-2">
+                        <div class="card-header">
+                            ID: {{ user.id }}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ user.username }} ({{ user.username_en }})</h5>
+                            <div class="container">
+                                <div class="row">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="badge bg-secondary">作成日: {{ request.user.created_at }}</span>
+                            <span class="badge bg-secondary">最終Login日: {{ request.user.last_login }}</span>
+                            {% if user.is_active %}<span class="badge bg-success">有効</span>
+                            {% else %}<span class="badge bg-danger">無効</span>{% endif %}
+                            {% if user.is_staff %}<span class="badge bg-primary">dsbd管理者</span>{% endif %}
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">2段階認証のデバイス追加</h5>
+                            <div class="container">
+                                2段階認証用のデバイスを追加したい場合はこちらを選択してください。
+                            </div>
+                            <br/>
+                            <a type="submit" class="btn btn-primary" href="{% url 'custom_auth:list_two_auth' %}">2段階認証のデバイス追加</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

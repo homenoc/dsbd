@@ -1,0 +1,41 @@
+{% extends 'base1.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block style %}
+    html,
+    body {
+    height: 100%;
+    }
+
+    body {
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #f5f5f5;
+    }
+
+    .form-signup {
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    margin: auto;
+    }
+
+    .form-signup .form-floating:focus-within {
+    z-index: 2;
+    }
+
+    .logo {
+    text-align: center;
+    }
+{% endblock %}
+{% block content %}
+    <main class="form-signup">
+        <h2>登録完了</h2>
+        <h4>メールアドレスによる本人認証後に利用できます。</h4>
+    </main>
+{% endblock content %}
+
+{% block javascript %}
+{% endblock javascript %}

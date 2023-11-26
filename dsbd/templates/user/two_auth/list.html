@@ -1,0 +1,47 @@
+{% extends 'base2.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="container py-4 mb-auto">
+                <div class="h-900 p-2 rounded-3">
+                    <h2 class="card-title">2段階認証リスト</h2>
+                    <br/>
+                    <a class="btn btn-primary btn-sm " href="{% url 'custom_auth:add_two_auth' %}" role="button"
+                       aria-expanded="false">デバイス登録</a>
+                    <br/>
+                    <br/>
+                    {% if devices %}
+                        {% for device in devices %}
+                            <div class="card">
+                                <div class="card-header">
+                                    ID: {{ device.id }} 作成日: {{ device.created_at }}
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ device.title }}</h5>
+                                    <div class="container">
+                                        <div class="row">
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <input type="text" value={{ device.id }} name="device_id" hidden>
+                                                <button type="submit" class="btn btn-warning btn-sm" name="id"
+                                                        value="delete">削除
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    {% if device.is_active %}<span class="badge bg-primary">有効</span>
+                                    {% else %}<span class="badge bg-danger">無効(再認証が必要)</span>{% endif %}
+                                </div>
+                            </div>
+                            <br/>
+                        {% endfor %}
+                    {% else %}
+                        <p>2段階認証が登録されていません</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

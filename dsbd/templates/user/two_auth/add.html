@@ -1,0 +1,38 @@
+{% extends 'base2.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="container py-4 mb-auto">
+                <div class="h-900 p-2 rounded-3"><h2 class="card-title">2段階認証デバイス登録</h2>
+                    <br/>
+                    {% if initial_check %}
+                        <img src="data:image/png;base64,{{ qr }}" width="250"/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        {% if error %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="text" value='{{ secret }}' name="secret" hidden>
+                            <label for="floatingInput">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            <label for="id_password">{{ form.code.label }}</label>
+                            {{ form.code }}
+                            <br/>
+                            <br/>
+                            <button type="submit" name="id" value="submit" class="btn btn-primary">登録</button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                            登録数が上限を超えてます。
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

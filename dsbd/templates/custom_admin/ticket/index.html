@@ -1,0 +1,146 @@
+{% extends 'base2.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="container py-4 mb-auto">
+                <div class="h-900 p-2 rounded-3">
+                    <h2 class="card-title">チケット一覧(管理者側)</h2>
+                    <a class="btn btn-primary btn-sm disabled" href="{% url 'ticket:add' %}" role="button"
+                       aria-expanded="false">チケット追加</a>
+                    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                        <a type="button"
+                           class="btn btn{% if is_solved == "false" %}-outline{% endif %}-danger btn-sm {% if is_solved == "false" %}disabled{% endif %}"
+                           href="?is_solved=false">未解決のみ</a>
+                        <a type="button"
+                           class="btn btn{% if is_solved == "true" %}-outline{% endif %}-success btn-sm {% if is_solved == "true" %}disabled{% endif %}"
+                           href="?is_solved=true">解決済のみ</a>
+                    </div>
+                    <br/>
+                    <hr/>
+                    {% if tickets %}
+                        {% for e in tickets %}
+                            <div class="card">
+                                <div class="card-header">
+                                    ID: {{ e.id }} 作成日: {{ e.created_at }} 　　{% if e.group %}
+                                    <span class="badge bg-secondary">グループチャット ({{ e.group.id }}: {{ e.group.name }})</span> {% else %}
+                                    <span class="badge bg-secondary">ユーザチャット</span>{% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ e.title }}</h5>
+                                    {% autoescape off %}
+                                        {{ e.body | linebreaks }}
+                                    {% endautoescape %}
+                                    <div class="container">
+                                        <div class="row">
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <a class="btn btn-primary btn-sm"
+                                                   href="{% url 'custom_admin:chat' e.id %}">チャット</a>
+                                                <input type="text" value={{ e.id }} name="id" hidden>
+                                                {% if e.is_solved %}
+                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                            name="no_solved">
+                                                        未解決
+                                                    </button>
+                                                {% else %}
+                                                    <button type="submit" class="btn btn-primary btn-sm" name="solved">
+                                                        解決済み
+                                                    </button>
+                                                {% endif %}
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    {% if e.is_solved %}<span class="badge bg-primary">解決済み</span>
+                                    {% else %}<span class="badge bg-danger">未解決</span>{% endif %}
+                                    {% if e.is_approve %}<span class="badge bg-success">承認済み</span>{% endif %}
+                                    {% if e.is_reject %}<span class="badge bg-warning">拒否済み</span>{% endif %}
+                                </div>
+                            </div>
+                            <br/>
+                        {% endfor %}
+                        <nav aria-label="...">
+                            <ul class="pagination">
+                                {% if tickets.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?{% url_replace request page=tickets.previous_page_number %}">前へ</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">前へ</span>
+                                    </li>
+                                {% endif %}
+                                {% if tickets.paginator.num_pages > 10 %}
+                                    {% if tickets.number < 6 %}
+                                        {#    先頭 9 ページの表示      #}
+                                        {% for pg in tickets.paginator.page_range %}
+                                            {% if forloop.counter0 < 9 %}
+                                                {% if tickets.number == pg %}
+                                                    <li class="page-item active">
+                                                        {% else %}
+                                                    <li class="page-item">
+                                                {% endif %}
+                                            <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% elif tickets.number < tickets.paginator.num_pages|add:-4 %}
+                                        {#    手前 4 ページ | 現在のページ | 続き 4 ページ      #}
+                                        {% for pg in tickets.paginator.page_range %}
+                                            {% if tickets.number|add:-5 < pg and pg < tickets.number|add:5 %}
+                                                {% if tickets.number == pg %}
+                                                    <li class="page-item active">
+                                                        {% else %}
+                                                    <li class="page-item">
+                                                {% endif %}
+                                            <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {#   最後 9 ページの表示   #}
+                                        {% for pg in tickets.paginator.page_range %}
+                                            {% if forloop.counter0 > tickets.paginator.num_pages|add:-10 %}
+                                                {% if tickets.number == pg %}
+                                                    <li class="page-item active">
+                                                        {% else %}
+                                                    <li class="page-item">
+                                                {% endif %}
+                                            <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% else %}
+                                    {% for pg in tickets.paginator.page_range %}
+                                        {% if tickets.number == pg %}
+                                            <li class="page-item active">
+                                                {% else %}
+                                            <li class="page-item">
+                                        {% endif %}
+                                    <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                                    </li>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if tickets.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?{% url_replace request page=tickets.next_page_number %}">次へ</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">次へ</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% else %}
+                        <p>チケットがありません</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

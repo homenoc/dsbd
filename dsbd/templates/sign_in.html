@@ -1,0 +1,105 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block style %}
+    html,
+    body {
+    height: 100%;
+    }
+
+    body {
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #f5f5f5;
+    }
+
+    .form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: auto;
+    }
+
+    .form-signin .checkbox {
+    font-weight: 400;
+    }
+
+    .form-signin .form-floating:focus-within {
+    z-index: 2;
+    }
+
+    .form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    }
+
+    .form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    }
+    .logo {
+    text-align: center;
+    }
+{% endblock %}
+{% block content %}
+    <main class="form-signin">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="logo">
+                <img class="mb-4" src="{% static 'icon/icon.png' %}" alt="" width="72" height="72">
+                {% if type == "auth" %}
+                    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+                {% elif type == "otp" %}
+                    <h1 class="h3 mb-3 fw-normal">二段階認証</h1>
+                {% endif %}
+            </div>
+            {% if type == "auth" %}
+                <input type="text" value='{{ type }}' name="id" hidden>
+                <div class="form-floating">
+                    {{ form.username }}
+                    <label for="floatingInput">{{ form.username.label }}</label>
+                </div>
+                <div class="form-floating">
+                    {{ form.password }}
+                    <label for="id_password">{{ form.password.label }}</label>
+                </div>
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+            {% elif type == "otp" %}
+                <input type="text" value='{{ type }}' name="id" hidden>
+                <div class="form-floating">
+                    <button type="submit" class="btn btn-primary btn-sm" name="otp_id" value="auth_otp_email">
+                        メール認証
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm" name="otp_id" value="auth_totp">
+                        TOTP認証
+                    </button>
+                </div>
+            {% elif type == "auth_otp_email" or type == "auth_totp" %}
+                {% if invalid_code %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ invalid_code }}
+                    </div>
+                {% endif %}
+                <input type="text" value='{{ type }}' name="id" hidden>
+                <div class="form-floating">
+                    {{ form.token }}
+                    <label for="id_password">{{ form.token.label }}</label>
+                </div>
+                <br/>
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+            {% endif %}
+        </form>
+        <br/>
+        {% if type == 'auth' %}
+            <a class="nav-link " href="{% url 'password_reset' %}" role="button" aria-expanded="false">Forget password
+                ?</a>
+            <a class="nav-link " href="{% url 'sign_up' %}" role="button" aria-expanded="false">sign up</a>
+        {% endif %}
+    </main>
+{% endblock content %}
+
+{% block javascript %}
+{% endblock javascript %}
