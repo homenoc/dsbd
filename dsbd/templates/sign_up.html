@@ -2,33 +2,39 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block style %}
-    html,
-    body {
-    height: 100%;
-    }
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
 
-    body {
-    display: flex;
-    align-items: center;
-    padding-top: 40px;
-    padding-bottom: 40px;
-    background-color: #f5f5f5;
-    }
+        body {
+            display: flex;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
 
-    .form-signup {
-    width: 100%;
-    max-width: 400px;
-    padding: 15px;
-    margin: auto;
-    }
+        .form-signup {
+            padding-top: 100px;
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
 
-    .form-signup .form-floating:focus-within {
-    z-index: 2;
-    }
+        .form-signup .form-floating:focus-within {
+            z-index: 2;
+        }
 
-    .logo {
-    text-align: center;
-    }
+        .logo {
+            text-align: center;
+        }
+
+        .has-error .help-block {
+            color: red;
+        }
+    </style>
 {% endblock %}
 {% block content %}
     <main class="form-signup">
@@ -38,40 +44,12 @@
                 <img class="mb-4" src="{% static 'icon/icon.png' %}" alt="" width="72" height="72">
                 <h1 class="h3 mb-3 fw-normal">Sign up</h1>
             </div>
-            {% if key_error %}
+            {% if form.error %}
                 <div class="alert alert-danger" role="alert">
-                    {{ key_error }}
-                </div>
-                <br/>
-            {% endif %}
-            {% if error %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
+                    {{ form.error }}
                 </div>
             {% endif %}
-            <label for="key" class="form-label">認証キー</label>
-            <input type="text" name="key" class="form-control" placeholder="認証キー" required id="key"
-                   value="{{ key }}" {% if key and not key_error %}readonly{% endif %}>
-            {% if key and not key_error %}
-                <label for="id_username">{{ form.username.label }}</label>
-                {{ form.username }}
-                <div class="row g-3">
-                    <div class="col">
-                        <label for="id_first_name">{{ form.first_name.label }}</label>
-                        {{ form.first_name }}
-                    </div>
-                    <div class="col">
-                        <label for="id_last_name">{{ form.last_name.label }}</label>
-                        {{ form.last_name }}
-                    </div>
-                </div>
-                <label for="id_email">{{ form.email.label }}</label>
-                {{ form.email }}
-                <label for="id_email">{{ form.password.label }}</label>
-                {{ form.password }}
-                <input type="text" value="input_user_info" name="id" hidden>
-            {% endif %}
-            <br/>
+            {{ form.as_p }}
             <button class="w-100 btn btn-lg btn-primary" type="submit">
                 {% if key and not key_error %}Sign up{% else %}Submit{% endif %}
             </button>

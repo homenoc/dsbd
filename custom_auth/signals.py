@@ -39,8 +39,8 @@ def get_update_user(before, after):
     text = '%s----更新状況----\n' % (get_create_user(True, before),)
     if before.username != after.username:
         text += 'username: %s => %s\n' % (before.username, after.username)
-    if before.username_en != after.username_en:
-        text += 'username(en): %s => %s\n' % (before.username_en, after.username_en)
+    if before.username_jp != after.username_jp:
+        text += 'username(jp): %s => %s\n' % (before.username, after.username)
     if before.email != after.email:
         text += 'E-Mail: %s => %s\n' % (before.email, after.email)
     if before.is_active != after.is_active:

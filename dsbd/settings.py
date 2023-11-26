@@ -14,6 +14,7 @@ from importlib import import_module
 from pathlib import Path
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+from django.contrib.messages import constants as messages
 
 
 def _import_ldap_group_type(group_type_name):
@@ -224,4 +225,8 @@ AUTH_LDAP_FIND_GROUP_PERMS = True
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     "is_active": os.environ.get('AUTH_LDAP_REQUIRE_GROUP_DN', ''),
     "is_staff": os.environ.get('AUTH_LDAP_IS_ADMIN_DN', ''),
+}
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
 }

@@ -8,7 +8,7 @@ import stripe
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from custom_auth.form import TwoAuthForm, GroupForm
+from custom_auth.form import TwoAuthForm, GroupForm, MyPasswordChangeForm, EmailChangeForm, ProfileEditForm
 from custom_auth.models import TOTPDevice, UserGroup
 from dsbd import settings
 
@@ -18,9 +18,44 @@ def index(request):
     context = {}
     return render(request, "user/profile.html", context)
 
-def change_password(request):
-    context = {}
+
+@login_required
+def password_change(request):
+    form = MyPasswordChangeForm(user=request.user, data=request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return render(request, "done.html", {'text': "パスワードの変更を行いました"})
+    context = {'form': form}
     return render(request, "user/change_password.html", context)
+
+
+@login_required
+def change_email(request):
+    form = EmailChangeForm(data=request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(user=request.user)
+            return render(request, "done.html", {'text': "メールアドレスの変更を行いました"})
+    return render(request, "user/change_email.html", {'form': form})
+
+
+@login_required
+def edit_profile(request):
+    form = ProfileEditForm(data=request.POST or None)
+    userdata = {
+        "username": request.user.username,
+        "username_jp": request.user.username_jp,
+        "display_name": request.user.display_name,
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(user=request.user)
+            return render(request, "done.html", {'text': "プロフィールの変更を行いました"})
+    else:
+        form = ProfileEditForm(initial=userdata)
+
+    return render(request, "user/edit_form.html", {'form': form})
 
 
 @login_required
@@ -77,9 +112,8 @@ def list_two_auth(request):
     return render(request, "user/two_auth/list.html", context)
 
 
-
 @login_required
-def get_groups(request):
+def list_groups(request):
     data = []
     for group in request.user.groups.all():
         data.append({
@@ -98,9 +132,9 @@ def get_groups(request):
             if not group.stripe_customer_id:
                 cus = stripe.Customer.create(
                     name=name,
-                    description="doornoc_service",
+                    description="doornoc_service",  # TODO: change description
                     metadata={
-                        'id': "doornoc_service",
+                        'id': "doornoc_service",  # TODO: change description
                         'user_id': request.user.id,
                         'group_id': group_id
                     }

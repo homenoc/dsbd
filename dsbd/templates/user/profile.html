@@ -11,7 +11,7 @@
                             ID: {{ user.id }}
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title">{{ user.username }} ({{ user.username_en }})</h5>
+                            <h5 class="card-title">{{ user.username }} ({{ user.username_jp }})</h5>
                             <div class="container">
                                 <div class="row">
 
@@ -26,8 +26,14 @@
                             {% if user.is_staff %}<span class="badge bg-primary">dsbd管理者</span>{% endif %}
                         </div>
                     </div>
-                    <br/>
-                    <br/>
+                    <hr/>
+                    <a class="btn btn-primary btn-sm" href="{% url 'custom_auth:password_change' %}" role="button"
+                       aria-expanded="false">パスワード変更</a>
+                    <a class="btn btn-primary btn-sm" href="{% url 'custom_auth:email_change' %}" role="button"
+                       aria-expanded="false">メールアドレス変更</a>
+                    <a class="btn btn-primary btn-sm" href="{% url 'custom_auth:edit_profile' %}" role="button"
+                       aria-expanded="false">プロフィール閲覧・変更</a>
+                    <hr/>
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">2段階認証のデバイス追加</h5>

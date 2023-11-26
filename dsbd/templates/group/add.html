@@ -1,0 +1,22 @@
+{% extends 'base2.html' %}
+{% block content %}
+    <h2 class="card-title">Group新規申請</h2>
+    <br/>
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        <br/>
+    {% endif %}
+    {% if request.user.add_group %}
+        <form method="post" class="h-adr">
+            {% csrf_token %}
+            {{ form }}
+            <br/>
+            <button type="submit" class="btn btn-primary">登録</button>
+        </form>
+    {% else %}
+        <p><b>新規にグループを登録したい又は既存の登録グループを紐づけたい方は、チケットページよりお問い合わせください</b></p>
+    {% endif %}
+
+{% endblock content %}

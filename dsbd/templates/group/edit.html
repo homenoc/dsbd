@@ -1,0 +1,48 @@
+{% extends 'base2.html' %}
+{% block content %}
+    <h2 class="card-title">Group情報閲覧・修正</h2>
+    <br/>
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        <br/>
+    {% endif %}
+    {% if group %}
+        <div class="card">
+            <div class="card-header">
+                ID: {{ group.id }} 作成日: {{ group.created_at }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ group.name }}</h5>
+                <br/>
+                <div class="container">
+                    <div>
+                        <a class="btn btn-primary btn-sm" href="{% url 'permission_group' group.id %}">権限設定</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                {% if group.is_active %}<span class="badge bg-primary">有効</span>
+                {% else %}<span class="badge bg-danger">無効</span>{% endif %}
+                {% if administrator %}<span class="badge bg-success">管理者権限</span>{% endif %}
+                <span class="badge bg-secondary">Service: {{ group.service_set.count }}</span>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <form method="post" class="h-adr">
+            {% csrf_token %}
+            {{ form }}
+            <br/>
+            {% if group.is_active and administrator %}
+                <button type="submit" class="btn btn-primary">変更</button>{% endif %}
+        </form>
+    {% else %}
+        <p><b>本グループIDは閲覧できません</b></p>
+    {% endif %}
+    <br/>
+    <br/>
+    <a class="btn btn-primary" href="{% url 'get_groups' %}" role="button"
+       aria-expanded="false">グループ一覧に戻る</a>
+{% endblock content %}

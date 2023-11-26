@@ -33,6 +33,16 @@ class GroupManager(models.Manager):
             **extra_fields
         )
 
+    def update_group(self, group_id, zipcode, address, address_en, email, phone, country):
+        group = Group.objects.get(id=group_id)
+        group.zipcode = zipcode
+        group.address = address
+        group.address_en = address_en
+        group.email = email
+        group.phone = phone
+        group.country = country
+        group.save()
+
 
 GROUP_STATUS_CHOICES = (
     (1, "有効"),
@@ -63,7 +73,7 @@ class Group(models.Model):
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     name = models.CharField("name", max_length=150, unique=True)
-    name_en = models.CharField("name_en", max_length=150, unique=True)
+    name_jp = models.CharField("name(japanese)", max_length=150, unique=True)
     comment = models.CharField("comment", max_length=250, default="", blank=True)
     status = models.IntegerField("ステータス", default=0, choices=GROUP_STATUS_CHOICES)
     add_service = models.BooleanField("サービス追加許可", default=False)
@@ -98,7 +108,7 @@ class Group(models.Model):
 
 
 class UserManager(BaseUserManager):
-    def _create_user(self, username, email, password, **extra_fields):
+    def _create_user(self, username, username_jp, email, password, **extra_fields):
         if not username:
             raise ValueError("The given username must be set")
         email = self.normalize_email(email)
@@ -106,16 +116,16 @@ class UserManager(BaseUserManager):
             self.model._meta.app_label, self.model._meta.object_name
         )
         username = GlobalUserModel.normalize_username(username)
-        user = self.model(username=username, email=email, **extra_fields)
+        user = self.model(username=username, username_jp=username_jp, email=email, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_user(self, key, username, email, password, **extra_fields):
+    def create_user(self, username, username_jp, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_active", False)
-        user = self._create_user(username, email, password, **extra_fields)
+        user = self._create_user(username, username_jp, email, password, **extra_fields)
         user_activate_token = UserActivateToken.objects.create(
             user=user
         )
@@ -136,14 +146,47 @@ class UserManager(BaseUserManager):
 
         return self._create_user(username, email, password, **extra_fields)
 
+    def change_email(self, user=None, email=''):
+        if not user:
+            raise ValueError("user_id is not found......")
+        if not email:
+            raise ValueError("email is not found......")
+        user.email = email
+        user.is_active = False
+        user_activate_token = UserActivateToken.objects.create(
+            user=user
+        )
+        subject = 'Please Activate Your Changed Email'
+        message = f'メールアドレスが変更されたので、URLにアクセスしてアカウントを有効化してください。\n {settings.DOMAIN_URL}/activate/{user_activate_token.token}/'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [email, ]
+        send_mail(subject, message, from_email, recipient_list)
+
+        user.save()
+
+    def update_user(self, user=None, name='', name_jp='', display_name=''):
+        if not user:
+            raise ValueError("user_id is not found......")
+        if not name:
+            raise ValueError("name is not found......")
+        if not name_jp:
+            raise ValueError("name_jp is not found......")
+        if not display_name:
+            raise ValueError("display_name is not found......")
+        user.name = name
+        user.name_jp = name_jp
+        user.display_name = display_name
+        user.save()
+
 
 class User(AbstractBaseUser):
     username_validator = UnicodeUsernameValidator()
 
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
+    display_name = models.CharField("display_name", max_length=150, default="", blank=True)
     username = models.CharField("username", max_length=150, validators=[username_validator], unique=True)
-    username_en = models.CharField("username(english)", max_length=150, validators=[username_validator], unique=True)
+    username_jp = models.CharField("username(japanese)", max_length=150, validators=[username_validator], unique=True)
     email = models.EmailField("email", unique=True)
     is_staff = models.BooleanField("管理者ステータス", default=False)
     is_active = models.BooleanField("有効", default=False)
@@ -179,11 +222,16 @@ class User(AbstractBaseUser):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def get_display_name(self):
+        if self.display_name == "":
+            return self.username
+        return self.display_name
+
     def get_full_name(self):
-        return self.name
+        return self.username
 
     def get_short_name(self):
-        return self.name
+        return self.username
 
     def has_perm(self, perm, obj=None):
         if self.is_active and self.is_staff:

@@ -10,14 +10,14 @@ class TermInlineUserAdmin(admin.TabularInline):
 @admin.register(User)
 class User(admin.ModelAdmin):
     fieldsets = (
-        (None, {"fields": ('username', 'username_en', 'password')}),
+        (None, {"fields": ('username', 'username_jp', 'password')}),
         ('Personal info', {'fields': ('email',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff',)}),
         ('Important dates', {'fields': ('last_login', 'created_at', 'updated_at')}),
     )
-    list_display = ('username', 'username_en',)
+    list_display = ('username', 'username_jp',)
     list_filter = ('is_staff', 'is_active',)
-    search_fields = ('username', 'username_en', 'email')
+    search_fields = ('username', 'username_jp', 'email')
     filter_horizontal = ('groups',)
     readonly_fields = ('last_login', 'created_at', 'updated_at',)
 
@@ -30,15 +30,15 @@ class User(admin.ModelAdmin):
 @admin.register(Group)
 class Group(admin.ModelAdmin):
     fieldsets = (
-        (None, {"fields": ('name', 'name_en', 'add_service', 'is_pass', 'comment')}),
+        (None, {"fields": ('name', 'name_jp', 'add_service', 'is_pass', 'comment')}),
         ('Membership', {'fields': ('membership_type', 'membership_expired_at')}),
         ('Question', {'fields': ('agree', 'question')}),
         ('Stripe', {'fields': ('stripe_customer_id', 'stripe_subscription_id')}),
         ('Personal info', {'fields': ('postcode', 'address', 'address_en', 'phone', 'country', 'contract_type',)}),
     )
-    list_display = ('name', 'name_en', 'membership_type', 'membership_expired_at',)
+    list_display = ('name', 'name_jp', 'membership_type', 'membership_expired_at',)
     list_filter = ('membership_type',)
-    search_fields = ('name', 'name_en',)
+    search_fields = ('name', 'name_jp',)
     readonly_fields = ('created_at', 'updated_at',)
 
 

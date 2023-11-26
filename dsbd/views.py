@@ -89,18 +89,19 @@ def sign_out(request):
 
 
 def sign_up(request):
-    key = ''
-    key_error = ''
-    error = ''
     form = SignUpForm()
     if request.method == 'POST':
-        id = request.POST.get("id", "input_key")
-        key = request.POST.get("key", "")
         form = SignUpForm(request.POST)
-    context = {'form': form, 'key': key, 'key_error': key_error, 'error': error}
-    print(context)
+        if form.is_valid():
+            form.create_user()
+            return redirect("sign_up_done")
+    context = {'form': form, }
 
     return render(request, "sign_up.html", context)
+
+
+def sign_up_done(request):
+    return render(request, "sign_up_success.html", {})
 
 
 class PasswordReset(PasswordResetView):
