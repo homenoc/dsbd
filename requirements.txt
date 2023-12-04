@@ -31,7 +31,7 @@ qrcode==7.4.2
 requests==2.31.0
 service-identity==23.1.0
 six==1.16.0
-slack-sdk==3.24.0
+slack-sdk==3.26.1
 sqlparse==0.4.4
 stripe==7.5.0
 Twisted==23.10.0
