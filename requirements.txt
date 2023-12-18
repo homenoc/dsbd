@@ -33,7 +33,7 @@ service-identity==23.1.0
 six==1.16.0
 slack-sdk==3.24.0
 sqlparse==0.4.4
-stripe==7.5.0
+stripe==7.9.0
 Twisted==23.10.0
 txaio==23.1.1
 typing_extensions==4.8.0
