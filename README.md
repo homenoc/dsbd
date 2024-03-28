@@ -1,6 +1,8 @@
 # dsbd
 Home NOC Dashboard
 
+[![Publish Docker image(dev)](https://github.com/homenoc/dsbd/actions/workflows/build-dev.yaml/badge.svg)](https://github.com/homenoc/dsbd/actions/workflows/build-dev.yaml)
+[![Publish Docker image(prod)](https://github.com/homenoc/dsbd/actions/workflows/build-prod.yaml/badge.svg)](https://github.com/homenoc/dsbd/actions/workflows/build-prod.yaml)
 ### develop environment
 
 ```
