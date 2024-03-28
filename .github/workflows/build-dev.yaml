@@ -5,7 +5,7 @@ on:
     paths:
     - '.github/**'
     - 'files/**'
-    - 'mgmt/**'
+    - 'dsbd/**'
     - 'Dockerfile'
     - 'requirements.txt'
 
