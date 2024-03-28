@@ -30,6 +30,7 @@ ADD ticket/ /opt/app/ticket/
 RUN python manage.py collectstatic --noinput
 RUN ln -s /opt/app/static /var/www/html/static
 ADD files/default.conf /etc/nginx/sites-enabled/default
+ADD version.txt /opt/app/version.txt
 
 #EXPOSE 80
 EXPOSE 8010
