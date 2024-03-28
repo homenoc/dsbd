@@ -101,6 +101,13 @@ class Group(models.Model):
     phone = models.CharField("phone", max_length=30, default="")
     country = models.CharField("居住国", max_length=100, default="Japan")
     contract_type = models.CharField("契約種別", max_length=100, default="E-Mail", choices=CONTRACT_TYPE_CHOICES)
+    users = models.ManyToManyField(
+        "User",
+        blank=True,
+        through='UserGroup',
+        through_fields=('group', 'user'),
+        related_name="group_users_set",
+    )
 
     objects = GroupManager()
 
@@ -198,13 +205,10 @@ class User(AbstractBaseUser):
     allow_group_add = models.BooleanField("グループ追加許可", default=True)
     groups = models.ManyToManyField(
         "Group",
-        verbose_name='groups',
         blank=True,
         through='UserGroup',
         through_fields=('user', 'group'),
-        help_text='Specific Groups for this user.',
         related_name="user_set",
-        related_query_name="user",
     )
 
     objects = UserManager()

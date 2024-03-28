@@ -7,6 +7,11 @@ class TermInlineUserAdmin(admin.TabularInline):
     extra = 1
 
 
+class TermInlineGroupAdmin(admin.TabularInline):
+    model = Group.users.through
+    extra = 1
+
+
 @admin.register(User)
 class User(admin.ModelAdmin):
     fieldsets = (
@@ -39,6 +44,8 @@ class Group(admin.ModelAdmin):
     list_filter = ('membership_type',)
     search_fields = ('name', 'name_jp',)
     readonly_fields = ('created_at', 'updated_at',)
+
+    inlines = (TermInlineGroupAdmin,)
 
 
 @admin.register(UserActivateToken)
