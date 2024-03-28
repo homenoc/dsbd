@@ -19,7 +19,11 @@ ADD requirements.txt /opt/app/requirements.txt
 RUN pip install -r requirements.txt
 
 ADD manage.py /opt/app/
-ADD mgmt/ /opt/app/mgmt/
+ADD dsbd/ /opt/app/dsbd/
+ADD custom_admin/ /opt/app/custom_admin/
+ADD custom_auth/ /opt/app/custom_auth/
+ADD notice/ /opt/app/notice/
+ADD ticket/ /opt/app/ticket/
 
 
 # NGINX
