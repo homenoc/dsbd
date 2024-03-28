@@ -47,14 +47,17 @@ SITE_HEADER = os.environ.get('SITE_HEADER', 'HomeNOC User Dashboard')
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'dsbd',
+    'daphne',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'django_countries',
+    'debug_toolbar',
     'custom_auth',
     'custom_admin',
     'notice',
@@ -173,13 +176,10 @@ AUTH_USER_MODEL = 'custom_auth.User'
 
 # Debug
 if DEBUG:
-    import os
     import socket
 
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[:-1] + "1" for ip in ips] + ["127.0.0.1"]
-
-    INSTALLED_APPS.append('debug_toolbar')
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1",]
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
 LOGIN_URL = "sign_in"
@@ -190,6 +190,11 @@ DOMAIN_URL = os.environ.get('DOMAIN_URL', 'http://localhost:8000')
 USER_LOGIN_VERIFY_EMAIL_EXPIRED_HOURS = os.environ.get('USER_LOGIN_VERIFY_EMAIL_EXPIRED_HOURS', 1)
 USER_LOGIN_VERIFY_EMAIL_EXPIRED_MINUTES = os.environ.get('USER_LOGIN_VERIFY_EMAIL_EXPIRED_MINUTES', 10)
 USER_ACTIVATE_EXPIRED_DAYS = os.environ.get('USER_ACTIVATE_EXPIRED_DAYS', 7)
+
+# Custom URL
+USAGE_URL = "https://www.homenoc.ad.jp/usage/"
+PRIVACY_POLICY_URL = "https://www.homenoc.ad.jp/about/privacy/"
+FEE_URL = "https://www.homenoc.ad.jp/about/membership/"
 
 # Stripe
 STRIPE_PRIVATE_KEY = os.environ.get('STRIPE_PRIVATE_KEY', '')

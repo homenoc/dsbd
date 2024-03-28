@@ -8,7 +8,8 @@ import stripe
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from custom_auth.form import TwoAuthForm, GroupForm, MyPasswordChangeForm, EmailChangeForm, ProfileEditForm
+from custom_auth.form import TwoAuthForm, GroupForm, MyPasswordChangeForm, EmailChangeForm, ProfileEditForm, \
+    GroupAddForm
 from custom_auth.models import TOTPDevice, UserGroup
 from dsbd import settings
 
@@ -55,7 +56,7 @@ def edit_profile(request):
     else:
         form = ProfileEditForm(initial=userdata)
 
-    return render(request, "user/edit_form.html", {'form': form})
+    return render(request, "user/edit_profile.html", {'form': form})
 
 
 @login_required
@@ -158,20 +159,18 @@ def list_groups(request):
 
 
 @login_required
-def group_add(request):
+def add_group(request):
     error = None
-    if request.method == 'POST':
-        form = GroupForm(data=request.POST)
-        if not request.user.add_group:
-            error = "グループの新規登録が申請不可能です"
-        elif form.is_valid():
+    form = GroupAddForm(data=request.POST or None)
+    if not request.user.allow_group_add:
+        error = "グループの新規登録が申請不可能です"
+    elif request.method == 'POST':
+        if form.is_valid():
             try:
                 form.create_group(user_id=request.user.id)
-                return render(request, "group/success.html", {})
+                return render(request, "done.html", {'text': "登録・変更が完了しました"})
             except ValueError as err:
                 error = err
-    else:
-        form = GroupForm()
     context = {
         "form": form,
         "error": error
@@ -180,7 +179,7 @@ def group_add(request):
 
 
 @login_required
-def group_edit(request, group_id):
+def edit_group(request, group_id):
     error = None
     administrator = False
     try:
@@ -200,7 +199,7 @@ def group_edit(request, group_id):
             if form.is_valid():
                 try:
                     form.update_group(group_id=group.id)
-                    return render(request, "group/success.html", {})
+                    return render(request, "done.html", {'text': "登録・変更が完了しました"})
                 except ValueError as err:
                     error = err
         else:

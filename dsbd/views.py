@@ -19,7 +19,6 @@ from django.http import HttpResponse
 
 from dsbd.notify import notice_payment
 from notice.models import Notice
-from ticket.models import Ticket
 
 
 def sign_in(request):

@@ -1,22 +1,131 @@
 {% extends 'base2.html' %}
 {% block content %}
-    <h2 class="card-title">Group新規申請</h2>
-    <br/>
-    {% if error %}
-        <div class="alert alert-danger" role="alert">
-            {{ error }}
-        </div>
-        <br/>
-    {% endif %}
-    {% if request.user.add_group %}
-        <form method="post" class="h-adr">
-            {% csrf_token %}
-            {{ form }}
-            <br/>
-            <button type="submit" class="btn btn-primary">登録</button>
-        </form>
-    {% else %}
-        <p><b>新規にグループを登録したい又は既存の登録グループを紐づけたい方は、チケットページよりお問い合わせください</b></p>
-    {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="container py-4 mb-auto">
+                <div class="h-900 p-2 rounded-3">
+                    <h2 class="card-title">Group新規申請</h2>
+                    <br/>
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        <br/>
+                    {% endif %}
+                    {% if request.user.allow_group_add %}
+                        <form method="post" class="h-adr">
+                            {% csrf_token %}
+                            <a href="{% url 'custom_auth_group:index' %}" class="nav-link text-white"
+                               aria-current="page">
+                            </a>
+                            <h4>1. 申請内容</h4>
+                            <h5>{{ form.agree.label }}</h5>
+                            <a class="btn btn-primary btn-sm" onclick href="{% get_fee_url %}"
+                               target="_self">会費について</a>
+                            <a class="btn btn-primary btn-sm" onclick href="{% get_usage_url %}" target="_self">実験ネットワーク利用規約</a>
+                            <a class="btn btn-primary btn-sm" onclick ref="{% get_privacy_policy_url %}"
+                               target="_self">プライバシーポリシー</a>
+                            <br/>
+                            <br/>
+                            {{ form.agree }}
+                            {% if form.agree.error_messages %}
+                                <p class="link-danger">{{ form.agree.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.question1.label }}</h5>
+                            <p>当団体の運営委員より紹介を受けた方は紹介者の名前を記入してください</p>
+                            {{ form.question1 }}
+                            {% if form.question1.error_messages %}
+                                <p class="link-danger">{{ form.question1.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.question2.label }}</h5>
+                            <p>例) 研究目的、勉強、自宅サーバ用途（商用利用は不可）[10文字以上]</p>
+                            {{ form.question2 }}
+                            {% if form.question2.error_messages %}
+                                <p class="link-danger">{{ form.question2.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.question3.label }}</h5>
+                            <p>PIアドレスやAS番号をお持ちの方は、それらをご利用いただくことも可能です</p>
+                            {{ form.question3 }}
+                            {% if form.question3.error_messages %}
+                                <p class="link-danger">{{ form.question3.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.question4.label }}</h5>
+                            <p>GitHub、成果物などがありましたら教えてください<br/>(発信しているコンテンツなどがなければ、「なし」とお答えください)
+                            </p>
+                            {{ form.question4 }}
+                            {% if form.question4.error_messages %}
+                                <p class="link-danger">{{ form.question4.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <br/>
+                            <h4>2. 組織情報</h4>
+                            <h5>{{ form.name.label }}</h5>
+                            {{ form.name }}
+                            {% if form.name.error_messages %}
+                                <p class="link-danger">{{ form.name.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.name_jp.label }}</h5>
+                            {{ form.name_jp }}
+                            {% if form.name_jp.error_messages %}
+                                <p class="link-danger">{{ form.name_jp.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.postcode.label }}</h5>
+                            {{ form.postcode }}
+                            {% if form.postcode.error_messages %}
+                                <p class="link-danger">{{ form.postcode.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.address.label }}</h5>
+                            {{ form.address }}
+                            {% if form.address.error_messages %}
+                                <p class="link-danger">{{ form.address.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.address_jp.label }}</h5>
+                            {{ form.address_jp }}
+                            {% if form.address_jp.error_messages %}
+                                <p class="link-danger">{{ form.address_jp.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.phone.label }}</h5>
+                            {{ form.phone }}
+                            {% if form.phone.error_messages %}
+                                <p class="link-danger">{{ form.phone.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h5>{{ form.country.label }}</h5>
+                            {{ form.country }}
+                            {% if form.country.error_messages %}
+                                <p class="link-danger">{{ form.country.error_messages | striptags }}</p>
+                            {% endif %}
+                            <br/>
+                            <h4>{{ form.contract.label }}</h4>
+                            <p> 当団体は電気通信事業者として届出を行っておりますため、利用開始時に電気通信事業法<br/>
+                                第26条2（書面の交付義務）に基づき、<br/>
+                                ご利用内容をお知らせいたしますので、ご希望の交付方法をお知らせください。
+                            </p>
+                            {{ form.contract }}
+                            {% if form.contract.error_messages %}
+                                <p class="link-danger">{{ form.contract.error_messages | striptags }}</p>
+                            {% endif %}
 
+
+                            <br/>
+                            <button type="submit" class="btn btn-primary">登録</button>
+                        </form>
+                    {% else %}
+                        <p>
+                            <b>新規にグループを登録したい又は既存の登録グループを紐づけたい方は、チケットページよりお問い合わせください</b>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

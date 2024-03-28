@@ -12,13 +12,12 @@ class User(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ('username', 'username_jp', 'password')}),
         ('Personal info', {'fields': ('email',)}),
-        ('Permissions', {'fields': ('is_active', 'is_staff',)}),
+        ('Flags', {'fields': ('is_active', 'is_staff', 'allow_group_add')}),
         ('Important dates', {'fields': ('last_login', 'created_at', 'updated_at')}),
     )
     list_display = ('username', 'username_jp',)
     list_filter = ('is_staff', 'is_active',)
     search_fields = ('username', 'username_jp', 'email')
-    filter_horizontal = ('groups',)
     readonly_fields = ('last_login', 'created_at', 'updated_at',)
 
     inlines = (TermInlineUserAdmin,)
@@ -30,11 +29,11 @@ class User(admin.ModelAdmin):
 @admin.register(Group)
 class Group(admin.ModelAdmin):
     fieldsets = (
-        (None, {"fields": ('name', 'name_jp', 'add_service', 'is_pass', 'comment')}),
+        (None, {"fields": ('name', 'name_jp', 'allow_service_add', 'is_pass', 'comment')}),
         ('Membership', {'fields': ('membership_type', 'membership_expired_at')}),
         ('Question', {'fields': ('agree', 'question')}),
         ('Stripe', {'fields': ('stripe_customer_id', 'stripe_subscription_id')}),
-        ('Personal info', {'fields': ('postcode', 'address', 'address_en', 'phone', 'country', 'contract_type',)}),
+        ('Personal info', {'fields': ('postcode', 'address', 'address_jp', 'phone', 'country', 'contract_type',)}),
     )
     list_display = ('name', 'name_jp', 'membership_type', 'membership_expired_at',)
     list_filter = ('membership_type',)

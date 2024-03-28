@@ -53,3 +53,18 @@ def array_to_str(data):
 def get_version():
     version = "develop"
     return version
+
+
+@register.simple_tag
+def get_usage_url():
+    return settings.USAGE_URL
+
+
+@register.simple_tag
+def get_privacy_policy_url():
+    return settings.PRIVACY_POLICY_URL
+
+
+@register.simple_tag
+def get_fee_url():
+    return settings.FEE_URL

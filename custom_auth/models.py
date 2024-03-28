@@ -21,21 +21,26 @@ class GroupManager(models.Manager):
     def active_filter(self):
         return self.filter(is_active=True)
 
-    def create_group(self, name, zipcode, address, address_en, email, phone, **extra_fields):
-        extra_fields.setdefault("is_active", False)
+    def create_group(self, question, name, name_jp, postcode, address, address_jp, phone, country, contract_type,
+                     **extra_fields):
+        extra_fields.setdefault("is_pass", False)
         return self.create(
+            agree=True,
+            question=question,
             name=name,
-            zipcode=zipcode,
+            name_jp=name_jp,
+            postcode=postcode,
             address=address,
-            address_en=address_en,
-            email=email,
+            address_jp=address_jp,
             phone=phone,
+            country=country,
+            contract_type=contract_type,
             **extra_fields
         )
 
-    def update_group(self, group_id, zipcode, address, address_en, email, phone, country):
+    def update_group(self, group_id, postcode, address, address_en, email, phone, country):
         group = Group.objects.get(id=group_id)
-        group.zipcode = zipcode
+        group.postcode = postcode
         group.address = address
         group.address_en = address_en
         group.email = email
@@ -76,7 +81,7 @@ class Group(models.Model):
     name_jp = models.CharField("name(japanese)", max_length=150, unique=True)
     comment = models.CharField("comment", max_length=250, default="", blank=True)
     status = models.IntegerField("ステータス", default=0, choices=GROUP_STATUS_CHOICES)
-    add_service = models.BooleanField("サービス追加許可", default=False)
+    allow_service_add = models.BooleanField("サービス追加許可", default=False)
     membership_type = models.IntegerField("会員種別", default=1, choices=MEMBERSHIP_TYPE_CHOICES)
     membership_expired_at = models.DateTimeField("有効期限", blank=True, null=True)
 
@@ -92,7 +97,7 @@ class Group(models.Model):
     # group personal info
     postcode = models.CharField("郵便番号", max_length=20, default="")
     address = models.CharField("住所", max_length=250, default="")
-    address_en = models.CharField("住所(English)", max_length=250, default="")
+    address_jp = models.CharField("住所(Japanese)", max_length=250, default="")
     phone = models.CharField("phone", max_length=30, default="")
     country = models.CharField("居住国", max_length=100, default="Japan")
     contract_type = models.CharField("契約種別", max_length=100, default="E-Mail", choices=CONTRACT_TYPE_CHOICES)
@@ -190,6 +195,7 @@ class User(AbstractBaseUser):
     email = models.EmailField("email", unique=True)
     is_staff = models.BooleanField("管理者ステータス", default=False)
     is_active = models.BooleanField("有効", default=False)
+    allow_group_add = models.BooleanField("グループ追加許可", default=True)
     groups = models.ManyToManyField(
         "Group",
         verbose_name='groups',
@@ -305,7 +311,7 @@ class UserGroup(models.Model):
         unique_together = ('user', 'group')
 
     def __str__(self):
-        return "%s-%s" % (self.user.name, self.group.name)
+        return "%s-%s" % (self.user.username, self.group.name)
 
 
 class UserEmailVerifyManager(models.Manager):
