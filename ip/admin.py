@@ -33,12 +33,12 @@ class JPNICUser(admin.ModelAdmin):
         (None, {'fields': ('group', 'is_active',)}),
         ('Common', {'fields': ('hidden', 'handle_type', 'jpnic_handle')}),
         ('Personal info', {'fields': (
-            'name', 'name_jp', 'email', 'org', 'org_en', 'postcode', 'address', 'address_jp',
-            'dept', 'dept_en', 'title', 'title_en', 'tel', 'fax', 'country')}),
+            'name', 'name_jp', 'email', 'org', 'org_jp', 'postcode', 'address', 'address_jp',
+            'dept', 'dept_jp', 'title', 'title_jp', 'tel', 'fax', 'country')}),
         ('Important dates', {'fields': ('created_at', 'updated_at',)}),
     )
     list_display = ('id', 'is_active', 'group', 'jpnic_handle', 'name', 'org')
     list_filter = ('is_active', 'group')
-    search_fields = ('name', 'group', 'org')
+    search_fields = ('name', 'name_jp', 'group', 'org', 'org_jp')
 
     inlines = (TermInlineJPNICUserAdmin,)
