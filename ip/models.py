@@ -25,6 +25,13 @@ SERVICE_CHOICES = (
     (SERVICE_ETC, "その他"),
 )
 
+OWNER_TYPE_FROM_OUR = "form_our"
+OWNER_TYPE_FROM_YOUR = "form_your"
+OWNER_TYPE_CHOICES = (
+    (OWNER_TYPE_FROM_OUR, "当団体から割当"),
+    (OWNER_TYPE_FROM_YOUR, "貴団体から割当"),
+)
+
 
 class IP(models.Model):
     class Meta:
@@ -38,6 +45,7 @@ class IP(models.Model):
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, related_name="IPService", null=True, blank=True)
     ip_address = models.GenericIPAddressField("IP Address", unique=True, null=True, blank=True)
     subnet = models.IntegerField("サブネット", default=32)
+    owner = models.CharField("アドレス所持オーナ", default=OWNER_TYPE_FROM_OUR, choices=OWNER_TYPE_CHOICES, max_length=255)
     start_at = models.DateTimeField("開通日", null=True, blank=True)
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     plan = models.JSONField("プラン", null=True, blank=True)

@@ -200,6 +200,11 @@ def index(request):
 
 
 @login_required
+def menu(request):
+    return render(request, "menu.html", {})
+
+
+@login_required
 def payment(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
 

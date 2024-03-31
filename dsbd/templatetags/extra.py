@@ -68,3 +68,8 @@ def get_privacy_policy_url():
 @register.simple_tag
 def get_fee_url():
     return settings.FEE_URL
+
+
+@register.simple_tag
+def is_admin_mode():
+    return settings.ADMIN_MODE

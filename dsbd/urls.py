@@ -14,7 +14,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
 
 from dsbd import views
@@ -22,6 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("menu", views.menu, name="menu"),
     path("sign_in/", views.sign_in, name="sign_in"),
     path("sign_out/", views.sign_out, name="sign_out"),
     path("sign_up/", views.sign_up, name="sign_up"),
@@ -34,11 +34,18 @@ urlpatterns = [
     path("group/", include("custom_auth.group_urls")),
     path("profile/", include("custom_auth.urls")),
     path("ticket/", include("ticket.urls")),
+    path("service/", include("service.urls")),
     path("feedback/", views.feedback, name="feedback"),
-    path('admin/custom/', include("custom_admin.urls")),
-    path('admin/login/', views.admin_sign_in, name='admin_sign_in'),
-    path('admin/', admin.site.urls),
 ]
+
+if settings.ADMIN_MODE:
+    from django.contrib import admin
+
+    urlpatterns += [
+        path('admin/custom/', include("custom_admin.urls")),
+        path('admin/login/', views.admin_sign_in, name='admin_sign_in'),
+        path("admin/", admin.site.urls),
+    ]
 
 if settings.DEBUG:
     import debug_toolbar

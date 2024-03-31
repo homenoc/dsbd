@@ -24,7 +24,7 @@ class Connection(admin.ModelAdmin):
         (None,
          {'fields': ('is_active', 'is_open', 'service', 'connection_type', 'connection_number', 'connection_comment')}),
         ('入力情報',
-         {'fields': ('ntt_type', 'ntt_comment', 'ipv4_route', 'ipv4_comment', 'ipv6_route', 'ipv6_comment',
+         {'fields': ('ntt_type', 'ntt_comment', 'ipv4_route', 'ipv4_route_comment', 'ipv6_route', 'ipv6_route_comment',
                      'start_at', 'end_at', 'is_monitor', 'term_location', 'hope_location')}),
         ('Info', {'fields': (
             'tunnel_ip', 'term_ip', 'link_v4_our', 'link_v4_your', 'link_v6_our', 'link_v6_your')}),
