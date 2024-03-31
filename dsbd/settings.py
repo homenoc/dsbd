@@ -62,6 +62,10 @@ INSTALLED_APPS = [
     'custom_admin',
     'notice',
     'ticket',
+    'noc',
+    'router',
+    'ip',
+    'service',
 ]
 
 MIDDLEWARE = [
@@ -179,7 +183,7 @@ if DEBUG:
     import socket
 
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1",]
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", ]
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
 LOGIN_URL = "sign_in"
