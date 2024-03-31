@@ -47,9 +47,9 @@ class Service(models.Model):
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, related_name="ServiceGroup", null=True, blank=True)
-    service_type = models.IntegerField("サービスタイプ", choices=SERVICE_CHOICES, default=SERVICE_COLO_L3_BGP)
-    service_number = models.IntegerField("サービス番号", default=0)
-    service_comment = models.IntegerField("サービス情報コメント", default=0, blank=True)
+    service_type = models.CharField("サービスタイプ", choices=SERVICE_CHOICES, default=SERVICE_COLO_L3_BGP, max_length=255)
+    service_number = models.IntegerField("サービス番号", default=1)
+    service_comment = models.CharField("サービス情報コメント", default="", blank=True, max_length=255)
     is_active = models.BooleanField("有効", default=True)
     is_pass = models.BooleanField("審査OK", default=False)
     allow_connection_add = models.BooleanField("接続追加許可", default=True)
@@ -65,6 +65,10 @@ class Service(models.Model):
     admin_comment = MediumTextField("管理者コメント", default="", blank=True)
 
     objects = ServiceManager()
+
+    @property
+    def service_code(self):
+        return "%s-%s%s" % (self.group.id, self.service_type, str(self.service_number).zfill(3),)
 
     def __str__(self):
         return "%s-%s%s" % (self.group.id, self.service_type, str(self.service_number).zfill(3),)
@@ -100,11 +104,13 @@ NTT_CHOICES = (
     (NTT_TYPE6, "etc"),
 )
 
+ROUTE_NONE = "none"
 ROUTE_FULL_ROUTE = "full_route"
 ROUTE_DEFAULT_ROUTE = "default_route"
 ROUTE_ETC = "full_route"
 
 ROUTE_CHOICES = (
+    (ROUTE_NONE, "None"),
     (ROUTE_FULL_ROUTE, "Full Route"),
     (ROUTE_DEFAULT_ROUTE, "Default Route"),
     (ROUTE_ETC, "Etc"),
@@ -129,12 +135,12 @@ class Connection(models.Model):
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, related_name="ConnectionService", null=True, blank=True)
-    connection_type = models.IntegerField("サービスタイプ", default=CONNECTION_EIP, choices=CONNECTION_TYPE_CHOICES)
-    connection_number = models.IntegerField("接続番号", default=0)
-    connection_comment = models.IntegerField("接続情報コメント", default=0, blank=True)
+    connection_type = models.CharField("接続タイプ", default=CONNECTION_EIP, choices=CONNECTION_TYPE_CHOICES, max_length=255)
+    connection_number = models.IntegerField("接続番号", default=1)
+    connection_comment = models.CharField("接続情報コメント", default="", blank=True, max_length=255)
     is_active = models.BooleanField("有効", default=True)
     is_open = models.BooleanField("開通", default=False)
-    tunnel_ip = models.ForeignKey(TunnelIP, on_delete=models.CASCADE, related_name="ConnectionTunnelIP", max_length=255)
+    tunnel_ip = models.ForeignKey(TunnelIP, on_delete=models.CASCADE, related_name="ConnectionTunnelIP", max_length=255, null=True, blank=True)
     hope_location = models.CharField("接続希望場所", default=HOPE_LOCATION_ANYWHERE, choices=HOPE_LOCATION_CHOICES, max_length=255)
     term_location = models.CharField("接続終端場所", default="", blank=True, max_length=255)
     ntt_type = models.CharField("NTT接続タイプ", default=NTT_TYPE1, choices=NTT_CHOICES, max_length=255)
@@ -153,6 +159,16 @@ class Connection(models.Model):
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     user_comment = MediumTextField("ユーザコメント", default="", blank=True)
     admin_comment = MediumTextField("管理者コメント", default="", blank=True)
+
+    @property
+    def service_code(self):
+        return "%s-%s%s-%s%s" % (
+            self.service.group.id,
+            self.service.service_type,
+            str(self.service.service_number).zfill(3),
+            self.connection_type,
+            str(self.connection_number).zfill(3),
+        )
 
     def __str__(self):
         return "%s-%s%s-%s%s" % (

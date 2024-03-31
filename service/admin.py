@@ -6,16 +6,16 @@ from .models import Service, Connection
 @admin.register(Service)
 class Service(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('is_active', 'is_pass', 'allow_connection_add')}),
+        (None, {'fields': ('is_active', 'is_pass', 'allow_connection_add', 'group')}),
         ('service', {'fields': ('service_type', 'service_number', 'start_at', 'end_at', 'asn')}),
         ('bandwidth',
          {'fields': ('ave_upstream', 'max_upstream', 'ave_downstream', 'max_downstream', 'max_bandwidth_as')}),
         ('comment', {'fields': ('user_comment', 'admin_comment')}),
         ('Important dates', {'fields': ('created_at', 'updated_at',)}),
     )
-    list_display = ('id', 'is_active', 'is_pass', 'group', 'start_at', 'end_at')
+    list_display = ('service_code', 'is_active', 'is_pass', 'group', 'start_at', 'end_at')
     list_filter = ('end_at',)
-    search_fields = ('end_at', 'is_active', 'service_type')
+    search_fields = ('service_code', 'is_active', 'service_type')
 
 
 @admin.register(Connection)
@@ -31,6 +31,6 @@ class Connection(admin.ModelAdmin):
         ('comment', {'fields': ('user_comment', 'admin_comment')}),
         ('Important dates', {'fields': ('created_at', 'updated_at',)}),
     )
-    list_display = ('id', 'is_active', 'is_open', 'service', 'start_at', 'end_at')
+    list_display = ('service_code', 'is_active', 'is_open', 'service', 'start_at', 'end_at')
     list_filter = ('is_active', 'is_open', 'start_at', 'end_at',)
-    search_fields = ('is_active', 'service_type')
+    search_fields = ('service_code', 'is_active', 'service_type')

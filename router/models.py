@@ -18,6 +18,9 @@ class TunnelRouter(models.Model):
     hostname = models.CharField("ホスト名", unique=True, max_length=255)
     comment = MediumTextField("コメント", default="", blank=True)
 
+    def __str__(self):
+        return "%d: %s" % (self.id, self.hostname)
+
 
 class TunnelIP(models.Model):
     class Meta:
@@ -31,3 +34,6 @@ class TunnelIP(models.Model):
     tunnel_router = models.ForeignKey(TunnelRouter, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField("IPアドレス", unique=True)
     comment = MediumTextField("コメント", default="", blank=True)
+
+    def __str__(self):
+        return "%d: (%s)%s" % (self.id, self.tunnel_router.hostname,self.ip_address)

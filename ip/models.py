@@ -27,16 +27,21 @@ SERVICE_CHOICES = (
 
 
 class IP(models.Model):
+    class Meta:
+        ordering = ("id",)
+        verbose_name = "IP"
+        verbose_name_plural = "IPs"
+
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     is_active = models.BooleanField("有効", default=True)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, related_name="IPService", null=True, blank=True)
-    ip_address = models.GenericIPAddressField("IP Address", unique=True)
+    ip_address = models.GenericIPAddressField("IP Address", unique=True, null=True, blank=True)
     subnet = models.IntegerField("サブネット", default=32)
     start_at = models.DateTimeField("開通日", null=True, blank=True)
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     plan = models.JSONField("プラン", null=True, blank=True)
-    use_case = MediumTextField("使用用途", default="")
+    use_case = MediumTextField("使用用途", default="", blank=True)
     jpnic_user = models.ManyToManyField(
         "JPNICUser",
         blank=True,
@@ -45,10 +50,8 @@ class IP(models.Model):
         related_name="jpnic_user_set",
     )
 
-    class Meta:
-        ordering = ("id",)
-        verbose_name = "IP"
-        verbose_name_plural = "IPs"
+    def __str__(self):
+        return "%d: %s/%s" % (self.id, self.ip_address, self.subnet)
 
 
 HANDLE_TYPE_GROUP = "group_handle"
@@ -61,6 +64,11 @@ HANDLE_TYPE_CHOICES = (
 
 
 class JPNICUser(models.Model):
+    class Meta:
+        ordering = ("id",)
+        verbose_name = "JPNIC User"
+        verbose_name_plural = "JPNIC Users"
+
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
@@ -81,7 +89,7 @@ class JPNICUser(models.Model):
     title = models.CharField("役職", max_length=250, default="", blank=True)
     title_jp = models.CharField("役職(Japanese)", max_length=250, default="", blank=True)
     tel = models.CharField("tel", max_length=30, default="")
-    fax = models.CharField("fax", max_length=30, default="")
+    fax = models.CharField("fax", max_length=30, default="", blank=True)
     country = models.CharField("居住国", max_length=100, default="Japan")
     ip = models.ManyToManyField(
         "IP",
@@ -91,10 +99,8 @@ class JPNICUser(models.Model):
         related_name="jpnic_set",
     )
 
-    class Meta:
-        ordering = ("id",)
-        verbose_name = "JPNIC User"
-        verbose_name_plural = "JPNIC Users"
+    def __str__(self):
+        return "%d: %s(%s)" % (self.id, self.name, self.name_jp)
 
 
 JPNIC_USER_TYPE_ADMIN = "admin"
