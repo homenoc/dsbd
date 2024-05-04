@@ -186,15 +186,14 @@ def edit_group(request, group_id):
         group = request.user.groups.get(id=group_id)
         group_data = {
             "name": group.name,
-            "zipcode": group.zipcode,
-            "address": group.address,
-            "address_en": group.address_en,
-            "email": group.email,
+            "postcode": group.postcode,
+            "address": group.address_jp,
+            "address_en": group.address,
             "phone": group.phone,
             "country": group.country,
         }
         administrator = group.usergroup_set.filter(user=request.user, is_admin=True).exists()
-        if request.method == 'POST' and administrator and group.is_active:
+        if request.method == 'POST' and administrator and group.is_pass:
             form = GroupForm(data=request.POST)
             if form.is_valid():
                 try:
@@ -203,7 +202,7 @@ def edit_group(request, group_id):
                 except ValueError as err:
                     error = err
         else:
-            form = GroupForm(initial=group_data, edit=True, disable=not group.is_active)
+            form = GroupForm(initial=group_data, edit=True, disable=not group.is_pass)
     except:
         group = None
         form = None

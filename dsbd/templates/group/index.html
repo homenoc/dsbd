@@ -66,8 +66,8 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    {% if e.group.is_active %}<span class="badge bg-primary">有効</span>
-                                    {% else %}<span class="badge bg-danger">無効</span>{% endif %}
+                                    {% if e.group.is_pass %}<span class="badge bg-primary">審査済</span>
+                                    {% else %}<span class="badge bg-danger">未審査</span>{% endif %}
                                     {% if e.administrator %}<span class="badge bg-success">管理者権限</span>{% endif %}
                                     <span class="badge bg-secondary">Service: {{ e.group.service_set.count }}</span>
                                 </div>

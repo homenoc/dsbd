@@ -122,7 +122,6 @@ class GroupForm(forms.Form):
     postcode = forms.CharField(label="郵便番号", max_length=10, required=True)
     address = forms.CharField(label="住所", max_length=250, required=True)
     address_en = forms.CharField(label="住所(English)", max_length=250, required=True)
-    email = forms.EmailField(label="email", max_length=250, required=True)
     phone = forms.CharField(label="phone", max_length=30, required=True)
     country = forms.CharField(label="居住国", max_length=30, initial="Japan", required=True)
 
@@ -134,7 +133,6 @@ class GroupForm(forms.Form):
                 self.fields['postcode'].widget.attrs['disabled'] = True
                 self.fields['address'].widget.attrs['disabled'] = True
                 self.fields['address_en'].widget.attrs['disabled'] = True
-                self.fields['email'].widget.attrs['disabled'] = True
                 self.fields['phone'].widget.attrs['disabled'] = True
                 self.fields['country'].widget.attrs['disabled'] = True
         self.fields['name'].widget.attrs['class'] = 'form-control'
@@ -142,7 +140,6 @@ class GroupForm(forms.Form):
         self.fields['address'].widget.attrs[
             'class'] = 'form-control p-region p-locality p-street-address p-extended-address'
         self.fields['address_en'].widget.attrs['class'] = 'form-control'
-        self.fields['email'].widget.attrs['class'] = 'form-control'
         self.fields['phone'].widget.attrs['class'] = 'form-control'
         self.fields['country'].widget.attrs['class'] = 'form-control p-country-name'
 
