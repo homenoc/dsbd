@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from custom_auth.form import TwoAuthForm, GroupForm, MyPasswordChangeForm, EmailChangeForm, ProfileEditForm, \
     GroupAddForm
 from custom_auth.models import TOTPDevice, UserGroup
-from dsbd import settings
+from django.conf import settings
 
 
 @login_required

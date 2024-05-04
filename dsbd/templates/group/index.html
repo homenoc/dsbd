@@ -42,23 +42,18 @@
                                             <br/>
                                             <br/>
                                             {% if e.administrator %}
-
                                                 <form method="post">
                                                     {% csrf_token %}
                                                     <input type="text" value={{ e.group.id }} name="group_id" hidden>
                                                     {% if e.group.is_charge and e.group.stripe_customer_id and not e.group.stripe_subscription_id %}
-                                                        <a class="btn btn-primary btn-sm"
-                                                           href="{% url 'group_payment' e.group.id %}">会費のお支払いはこちらから</a>
+                                                        <a class="btn btn-primary btn-sm" href="{% url 'group_payment' e.group.id %}">会費のお支払いはこちらから</a>
                                                     {% endif %}
                                                     {% if not e.group.stripe_customer_id %}
-                                                        <button type="submit" name="id" value="create_stripe_customer"
-                                                                class="btn btn-primary btn-sm">会費のお支払いはこちらから
+                                                        <button type="submit" name="id" value="create_stripe_customer" class="btn btn-primary btn-sm">会費のお支払いはこちらから
                                                         </button>
                                                     {% endif %}
                                                     {% if e.group.is_charge and e.group.stripe_customer_id %}
-                                                        <button type="submit" name="id" value="getting_portal"
-                                                                class="btn btn-primary btn-sm">プランの変更・キャンセル
-                                                        </button>
+                                                        <button type="submit" name="id" value="getting_portal" class="btn btn-primary btn-sm">プランの変更・キャンセル</button>
                                                     {% endif %}
                                                 </form>
                                             {% endif %}
