@@ -1,0 +1,34 @@
+name: "💡 (Feature)機能追加/修正/削除など"
+description: "NREにおける機能開発タスクについて登録"
+labels: ["feature"]
+projects: ["nre/2"]
+body:
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景
+      value: |
+        <!-- 背景を記載してください。 --> 
+        #### 補足内容など
+        hogeについて: <Slack URLなど> 
+      description: 背景をこちらに書いてくださいませー
+      placeholder: "なし"
+    validations:
+      required: true
+  - type: textarea
+    id: action
+    attributes:
+      label: やること
+      value: |
+        - [ ] hoge(親)
+        - [ ] hogehoge1(子)
+        - [ ] hogehoge2(子)
+      description: このIssueでやることをココに書いてねぇ
+    validations:
+      required: true
+  - type: textarea
+    id: etc
+    attributes:
+      label: その他
+      value: なし
+      description: その他事項があれば記載してやー
