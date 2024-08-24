@@ -1,0 +1,114 @@
+name: PR Open Process
+
+on:
+  pull_request:
+    types:
+      - opened
+
+env:
+  ORGANIZATION: homenoc
+  PR_BODY: ${{ github.event.pull_request.body }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  PR_ID: ${{ github.event.pull_request.node_id }}
+  PROJECT_NUMBER: ${{ vars.TAT_PR_BOARD }}
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check if actor is dependabot or title contains [AUTO]
+        id: check_actor
+        run: |
+          if [[ "${{ github.actor }}" == "dependabot[bot]" ]] || [[ "${{ github.event.pull_request.title }}" == *"[AUTO]"* ]]; then
+            echo "Skipping job for dependabot or [AUTO] in title"
+            echo "skip=true" >> $GITHUB_ENV
+          fi
+
+      - name: Skip job if conditions are met
+        if: env.skip == 'true'
+        run: echo "Job skipped."
+
+      - name: Generate token
+        id: generate-token
+        if: env.skip != 'true'
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.TAT_APP_ID }}
+          private-key: ${{ secrets.TAT_PRIVATE_KEY }}
+
+      - name: Authenticate GH CLI
+        if: env.skip != 'true'
+        run: echo "${{ steps.generate-token.outputs.token }}" | gh auth login --with-token
+
+      - name: Get Project ID
+        if: env.skip != 'true'
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          gh api graphql -f query='
+            query($org: String!, $number: Int!) {
+              organization(login: $org){
+                projectV2(number: $number) {
+                  id
+                  fields(first:20) {
+                    nodes {
+                      ... on ProjectV2Field {
+                        id
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER > project_data.json
+          echo 'PROJECT_ID='$(jq '.data.organization.projectV2.id' project_data.json) >> $GITHUB_ENV
+
+      - name: Add PR to project
+        if: env.skip != 'true'
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          item_id="$( gh api graphql -f query='
+            mutation($project:ID!, $pr:ID!) {
+              addProjectV2ItemById(input: {projectId: $project, contentId: $pr}) {
+                item {
+                  id
+                }
+              }
+            }' -f project=$PROJECT_ID -f pr=$PR_ID --jq '.data.addProjectV2ItemById.item.id')"
+
+      - name: Update PR title
+        if: env.skip != 'true'
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          SOURCE_BRANCH_NAME=$(gh pr view $PR_NUMBER --json headRefName --jq '.headRefName')
+          ISSUE_NUMBER=$(echo $SOURCE_BRANCH_NAME | grep -oE '#[0-9]+' | grep -oE '[0-9]+')
+          ISSUE_TITLE=$(gh issue view $ISSUE_NUMBER --json title --jq '.title')
+          PR_TITLE="$ISSUE_TITLE [$SOURCE_BRANCH_NAME]"
+          PR_BODY="## 対象のIssue番号\nfixes #$ISSUE_NUMBER\n\n${PR_BODY}"
+          echo "REVIEW_REQUESTS=$(gh pr view $PR_NUMBER --json reviewRequests --jq '.reviewRequests[].login')" >> $GITHUB_ENV
+          echo -e "$PR_BODY" > pr_body.md
+          gh pr edit $PR_NUMBER --title "${PR_TITLE}" --body-file pr_body.md
+
+      - name: Slack Notification
+        if: env.skip != 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.TAT_SLACK_WEBHOOK_URL }}
+        run: |
+          if echo "$REVIEW_REQUESTS"; then
+            REVIEW_REQUESTS=$(echo -e "$REVIEW_REQUESTS" | sed 's/^/<@/;s/$/>/')
+            JSON_PAYLOAD=$(jq -n --arg reviewers "$REVIEW_REQUESTS" --arg pr_url "${{ github.event.pull_request.html_url }}" --arg pr_number "$PR_NUMBER" \
+            '{
+              "text": "[PR] PR Open\n\($reviewers)\n\nPR URL: \($pr_url)\nPR #: \($pr_number)"
+            }')
+          else
+            JSON_PAYLOAD=$(jq -n --arg --arg pr_url "${{ github.event.pull_request.html_url }}" --arg pr_number "$PR_NUMBER" \
+            '{
+              "text": "[PR] PR Open\n誰かレビューよろぴく\n\nPR URL: \($pr_url)\nPR #: \($pr_number)"
+            }')
+          fi
+          curl -X POST -H 'Content-type: application/json' --data "$JSON_PAYLOAD" $SLACK_WEBHOOK_URL

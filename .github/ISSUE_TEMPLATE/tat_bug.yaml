@@ -1,7 +1,6 @@
 name: "😵‍💫 バグ報告"
 description: "バグの詳細も記載してください"
 labels: ["bug"]
-projects: ["nre/2"]
 title: "😵‍💫 [bug] タイトルをここに入力してください"
 labels: [
   "bug"

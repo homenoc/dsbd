@@ -1,0 +1,52 @@
+name: PR Change Request Process
+
+on:
+  pull_request_review:
+    types:
+      - submitted
+
+env:
+  ORGANIZATION: homenoc
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'changes_requested'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.TAT_APP_ID }}
+          private-key: ${{ secrets.TAT_PRIVATE_KEY }}
+
+      - name: Authenticate GH CLI
+        run: echo "${{ steps.generate-token.outputs.token }}" | gh auth login --with-token
+
+      - name: Get Reviewers
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          echo "PR_AUTHOR=$(gh pr view $PR_NUMBER --json author --jq '.author.login')" >> $GITHUB_ENV
+
+      - name: Slack Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.TAT_SLACK_WEBHOOK_URL }}
+        run: |
+          if echo "$PR_AUTHOR"; then
+            PR_AUTHOR=$(echo -e "$PR_AUTHOR" | sed 's/^/<@/;s/$/>/')
+            JSON_PAYLOAD=$(jq -n --arg reviewers "$PR_AUTHOR" --arg pr_url "${{ github.event.pull_request.html_url }}" --arg pr_number "$PR_NUMBER" \
+            '{
+              "text": "[PR] Changed Request\n\($reviewers)\n\nPR URL: \($pr_url)\nPR #: \($pr_number)"
+            }')
+          else
+            JSON_PAYLOAD=$(jq -n --arg --arg pr_url "${{ github.event.pull_request.html_url }}" --arg pr_number "$PR_NUMBER" \
+            '{
+              "text": "[PR] Changed Request\n\nPR URL: \($pr_url)\nPR #: \($pr_number)"
+            }')
+          fi
+          curl -X POST -H 'Content-type: application/json' --data "$JSON_PAYLOAD" $SLACK_WEBHOOK_URL
