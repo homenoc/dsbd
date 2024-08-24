@@ -1,4 +1,8 @@
-.idea/
+# idea
+.idea/*
+!.idea/gradle.xml
+!.idea/misc.xml
+
 venv/
 __pycache__/
 *.py[cod]
