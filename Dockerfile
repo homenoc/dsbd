@@ -15,14 +15,19 @@ WORKDIR /opt/app
 RUN pip install gunicorn daphne
 
 ENV PYTHONPATH=/opt/app/
-ADD requirements.txt /opt/app/requirements.txt
-RUN pip install -r requirements.txt
+ADD Pipfile /opt/app/Pipfile
+ADD Pipfile.lock /opt/app/Pipfile.lock
+RUN pipenv install --system
 
 ADD manage.py /opt/app/
 ADD dsbd/ /opt/app/dsbd/
 ADD custom_admin/ /opt/app/custom_admin/
 ADD custom_auth/ /opt/app/custom_auth/
+ADD ip/ /opt/app/ip/
+ADD noc/ /opt/app/noc/
 ADD notice/ /opt/app/notice/
+ADD router/ /opt/app/router/
+ADD service/ /opt/app/service/
 ADD ticket/ /opt/app/ticket/
 
 

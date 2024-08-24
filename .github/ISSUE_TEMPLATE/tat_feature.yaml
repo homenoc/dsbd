@@ -1,5 +1,5 @@
 name: "💡 (Feature)機能追加/修正/削除など"
-description: "NREにおける機能開発タスクについて登録"
+description: "機能開発タスクについて登録"
 labels: ["feature"]
 body:
   - type: textarea
