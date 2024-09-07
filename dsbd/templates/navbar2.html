@@ -87,15 +87,14 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="{% url 'custom_auth_group:index' %}"
-           class="nav-link text-white" aria-current="page">
+        <a href="{% url 'custom_auth_group:index' %}" class="nav-link text-white">
           <svg class="bi me-2" width="16" height="16">
             <use xlink:href="#group"></use>
           </svg>
           Groups
         </a>
       </li>
-      <li>
+      <li class="nav-item">
         <a href="{% url 'service:index' %}" class="nav-link text-white">
           <svg class="bi me-2" width="16" height="16">
             <use xlink:href="#grid"></use>
@@ -111,7 +110,7 @@
       {#                    Customers#}
       {#                </a>#}
       {#            </li>#}
-      <li>
+      <li class="nav-item">
         <a href="{% url 'ticket:index' %}" class="nav-link text-white"
            aria-current="page">
           <svg class="bi me-2" width="16" height="16">
@@ -120,8 +119,8 @@
           Ticket
         </a>
       </li>
-      <li class="mb-1">
-        <button class="btn text-white align-items-center rounded collapsed"
+      <li class="nav-item">
+        <button class="btn text-white nav-link rounded collapsed"
                 data-bs-toggle="collapse"
                 data-bs-target="#dashboard1-collapse" aria-expanded="false">
           <svg class="bi me-2" width="16" height="16">
@@ -135,7 +134,7 @@
               <a href="#" class="nav-link text-white">
                 <svg class="bi me-2 submenu-logo" width="14"
                      height="14">
-                  <use xlink:href="#email"/>
+                  <use xlink:href="#email"></use>
                 </svg>
                 Overview
               </a>
@@ -144,7 +143,7 @@
               <a href="#" class="nav-link text-white">
                 <svg class="bi me-2 submenu-logo" width="14"
                      height="14">
-                  <use xlink:href="#people-circle"/>
+                  <use xlink:href="#people-circle"></use>
                 </svg>
                 Overview2
               </a>
@@ -153,7 +152,7 @@
               <a href="#" class="nav-link text-white">
                 <svg class="bi me-2 submenu-logo" width="14"
                      height="14">
-                  <use xlink:href="#people-circle"/>
+                  <use xlink:href="#people-circle"></use>
                 </svg>
                 Overview3
               </a>
@@ -162,7 +161,7 @@
               <a href="#" class="nav-link text-white">
                 <svg class="bi me-2 submenu-logo" width="14"
                      height="14">
-                  <use xlink:href="#people-circle"/>
+                  <use xlink:href="#people-circle"></use>
                 </svg>
                 Overview4
               </a>
@@ -177,7 +176,7 @@
                   data-bs-toggle="collapse"
                   data-bs-target="#admin-collapse" aria-expanded="false">
             <svg class="bi me-2" width="16" height="16">
-              <use xlink:href="#administrator"/>
+              <use xlink:href="#administrator"></use>
             </svg>
             Admin Page
           </button>
@@ -187,7 +186,7 @@
                 <a href="{% url 'custom_admin:index' %}"
                    class="nav-link text-white">
                   <svg class="bi me-2" width="16" height="16">
-                    <use xlink:href="#setting"/>
+                    <use xlink:href="#setting"></use>
                   </svg>
                   CustomPage
                 </a>
@@ -196,7 +195,7 @@
                 <a href="{% url 'admin:index' %}"
                    class="nav-link text-white">
                   <svg class="bi me-2" width="16" height="16">
-                    <use xlink:href="#database"/>
+                    <use xlink:href="#database"></use>
                   </svg>
                   Admin(DB)
                 </a>
@@ -209,7 +208,7 @@
         <a href="{% url 'feedback' %}" class="btn text-white"
            aria-expanded="false">
           <svg class="bi me-2" width="16" height="16">
-            <use xlink:href="#bug"/>
+            <use xlink:href="#bug"></use>
           </svg>
           Feedback
         </a>
