@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Q
 
-from custom_auth.models import User, Group
+from custom_auth.models import Group, User
 from dsbd.models import MediumTextField
 
 
@@ -15,7 +15,7 @@ class TicketManager(models.Manager):
                 q_group_user.add(Q(group=group), Q.OR)
         q &= Q(q_group_user)
         print(q)
-        return self.filter(q).order_by('is_solved', 'id')
+        return self.filter(q).order_by("is_solved", "id")
 
     def get_one_ticket(self, ticket_id, user):
         q = Q()
@@ -46,19 +46,14 @@ class Ticket(models.Model):
     objects = TicketManager()
 
     class Meta:
-        verbose_name = 'チケット'
+        verbose_name = "チケット"
         verbose_name_plural = "チケット"
 
     def __str__(self):
         group_name = "none"
         if self.group:
             group_name = self.group.name
-        return "%d[%s:%s]: %s" % (
-            self.id,
-            self.user.username,
-            group_name,
-            self.title
-        )
+        return "%d[%s:%s]: %s" % (self.id, self.user.username, group_name, self.title)
 
 
 class Chat(models.Model):
@@ -70,7 +65,7 @@ class Chat(models.Model):
     is_admin = models.BooleanField("運営委員がコメント", default=False)
 
     class Meta:
-        verbose_name = 'チャット'
+        verbose_name = "チャット"
         verbose_name_plural = "チャット"
 
     def __str__(self):

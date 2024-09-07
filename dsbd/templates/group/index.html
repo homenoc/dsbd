@@ -1,155 +1,179 @@
 {% extends 'base2.html' %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="container py-4 mb-auto">
-                <div class="h-900 p-2 rounded-3">
-                    <h2 class="card-title">Group</h2>
-                    <br/>
-                    {% if request.user.allow_group_add %}
-                        <p><b>下記のより、新規申請してください。</b></p>
-                        <a class="btn btn-primary" href="{% url 'custom_auth_group:add' %}" role="button"
-                           aria-expanded="false">新規申請</a>
-                    {% else %}
-                        <p>
-                            <b>グループの追加申請は原則1つまでです</b>
-                        </p>
-                    {% endif %}
-                    <br/>
-                    <br/>
-                    {% if data %}
-                        {% for e in data %}
-                            <div class="card">
-                                <div class="card-header">
-                                    ID: {{ e.group.id }} 作成日: {{ e.group.created_at }}
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ e.group.name }}</h5>
-                                    {% if e.group.is_charge %}
-                                        {% if e.group.expired_at %}
-                                            <p class="card-text">課金情報: {{ e.group.expired_at }}まで</p>
-                                        {% else %}
-                                            <p class="card-text">課金情報: 会費未徴収</p>
-                                        {% endif %}
-                                    {% else %}
-                                        <p class="card-text">課金情報: 課金ステータス無効</p>
-                                    {% endif %}
-                                    <div class="container">
-                                        <div>
-                                            <a class="btn btn-primary btn-sm" href="{% url 'custom_auth_group:edit' e.group.id %}">情報閲覧・修正</a>
-                                            <a class="btn btn-primary btn-sm"
-                                               href="{% url 'custom_auth_group:permission' e.group.id %}">権限設定</a>
-                                            <br/>
-                                            <br/>
-                                            {% if e.administrator %}
-                                                <form method="post">
-                                                    {% csrf_token %}
-                                                    <input type="text" value={{ e.group.id }} name="group_id" hidden>
-                                                    {% if e.group.is_charge and e.group.stripe_customer_id and not e.group.stripe_subscription_id %}
-                                                        <a class="btn btn-primary btn-sm" href="{% url 'group_payment' e.group.id %}">会費のお支払いはこちらから</a>
-                                                    {% endif %}
-                                                    {% if not e.group.stripe_customer_id %}
-                                                        <button type="submit" name="id" value="create_stripe_customer" class="btn btn-primary btn-sm">会費のお支払いはこちらから
-                                                        </button>
-                                                    {% endif %}
-                                                    {% if e.group.is_charge and e.group.stripe_customer_id %}
-                                                        <button type="submit" name="id" value="getting_portal" class="btn btn-primary btn-sm">プランの変更・キャンセル</button>
-                                                    {% endif %}
-                                                </form>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    {% if e.group.is_pass %}<span class="badge bg-primary">審査済</span>
-                                    {% else %}<span class="badge bg-danger">未審査</span>{% endif %}
-                                    {% if e.administrator %}<span class="badge bg-success">管理者権限</span>{% endif %}
-                                    <span class="badge bg-secondary">Service: {{ e.group.service_set.count }}</span>
-                                </div>
-                            </div>
-                            <br/>
-                        {% endfor %}
-                        <nav aria-label="...">
-                            <ul class="pagination">
-                                {% if tickets.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link"
-                                           href="?{% url_replace request page=tickets.previous_page_number %}">前へ</a>
-                                    </li>
-                                {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">前へ</span>
-                                    </li>
-                                {% endif %}
-                                {% if tickets.paginator.num_pages > 10 %}
-                                    {% if tickets.number < 6 %}
-                                        {#    先頭 9 ページの表示      #}
-                                        {% for pg in tickets.paginator.page_range %}
-                                            {% if forloop.counter0 < 9 %}
-                                                {% if tickets.number == pg %}
-                                                    <li class="page-item active">
-                                                        {% else %}
-                                                    <li class="page-item">
-                                                {% endif %}
-                                            <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
-                                            </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% elif tickets.number < tickets.paginator.num_pages|add:-4 %}
-                                        {#    手前 4 ページ | 現在のページ | 続き 4 ページ      #}
-                                        {% for pg in tickets.paginator.page_range %}
-                                            {% if tickets.number|add:-5 < pg and pg < tickets.number|add:5 %}
-                                                {% if tickets.number == pg %}
-                                                    <li class="page-item active">
-                                                        {% else %}
-                                                    <li class="page-item">
-                                                {% endif %}
-                                            <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
-                                            </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        {#   最後 9 ページの表示   #}
-                                        {% for pg in tickets.paginator.page_range %}
-                                            {% if forloop.counter0 > tickets.paginator.num_pages|add:-10 %}
-                                                {% if tickets.number == pg %}
-                                                    <li class="page-item active">
-                                                        {% else %}
-                                                    <li class="page-item">
-                                                {% endif %}
-                                            <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
-                                            </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                {% else %}
-                                    {% for pg in tickets.paginator.page_range %}
-                                        {% if tickets.number == pg %}
-                                            <li class="page-item active">
-                                                {% else %}
-                                            <li class="page-item">
-                                        {% endif %}
-                                    <a class="page-link" href="?{% url_replace request page=pg %}">{{ pg }}</a>
-                                    </li>
-                                    {% endfor %}
-                                {% endif %}
-                                {% if tickets.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link"
-                                           href="?{% url_replace request page=tickets.next_page_number %}">次へ</a>
-                                    </li>
-                                {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">次へ</span>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    {% else %}
-                        <p>グループがありません</p>
-                    {% endif %}
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">Group</h2>
+          <br/>
+          {% if request.user.allow_group_add %}
+            <p><b>下記のより、新規申請してください。</b></p>
+            <a class="btn btn-primary"
+               href="{% url 'custom_auth_group:add' %}" role="button"
+               aria-expanded="false">新規申請</a>
+          {% else %}
+            <p>
+              <b>グループの追加申請は原則1つまでです</b>
+            </p>
+          {% endif %}
+          <br/>
+          <br/>
+          {% if data %}
+            {% for e in data %}
+              <div class="card">
+                <div class="card-header">
+                  ID: {{ e.group.id }}
+                  作成日: {{ e.group.created_at }}
                 </div>
-            </div>
+                <div class="card-body">
+                  <h5 class="card-title">{{ e.group.name }}</h5>
+                  {% if e.group.is_charge %}
+                    {% if e.group.expired_at %}
+                      <p class="card-text">
+                        課金情報: {{ e.group.expired_at }}まで</p>
+                    {% else %}
+                      <p class="card-text">課金情報:
+                        会費未徴収</p>
+                    {% endif %}
+                  {% else %}
+                    <p class="card-text">課金情報:
+                      課金ステータス無効</p>
+                  {% endif %}
+                  <div class="container">
+                    <div>
+                      <a class="btn btn-primary btn-sm"
+                         href="{% url 'custom_auth_group:edit' e.group.id %}">情報閲覧・修正</a>
+                      <a class="btn btn-primary btn-sm"
+                         href="{% url 'custom_auth_group:permission' e.group.id %}">権限設定</a>
+                      <br/>
+                      <br/>
+                      {% if e.administrator %}
+                        <form method="post">
+                          {% csrf_token %}
+                          <input type="text"
+                                 value={{ e.group.id }} name="group_id"
+                                 hidden>
+                          {% if e.group.is_charge and e.group.stripe_customer_id and not e.group.stripe_subscription_id %}
+                            <a class="btn btn-primary btn-sm"
+                               href="{% url 'group_payment' e.group.id %}">会費のお支払いはこちらから</a>
+                          {% endif %}
+                          {% if not e.group.stripe_customer_id %}
+                            <button type="submit" name="id"
+                                    value="create_stripe_customer"
+                                    class="btn btn-primary btn-sm">
+                              会費のお支払いはこちらから
+                            </button>
+                          {% endif %}
+                          {% if e.group.is_charge and e.group.stripe_customer_id %}
+                            <button type="submit" name="id"
+                                    value="getting_portal"
+                                    class="btn btn-primary btn-sm">
+                              プランの変更・キャンセル
+                            </button>
+                          {% endif %}
+                        </form>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  {% if e.group.is_pass %}
+                    <span class="badge bg-primary">審査済</span>
+                  {% else %}
+                    <span class="badge bg-danger">未審査</span>{% endif %}
+                  {% if e.administrator %}
+                    <span class="badge bg-success">管理者権限</span>{% endif %}
+                  <span
+                      class="badge bg-secondary">Service: {{ e.group.service_set.count }}</span>
+                </div>
+              </div>
+              <br/>
+            {% endfor %}
+            <nav aria-label="...">
+              <ul class="pagination">
+                {% if tickets.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link"
+                       href="?{% url_replace request page=tickets.previous_page_number %}">前へ</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link">前へ</span>
+                  </li>
+                {% endif %}
+                {% if tickets.paginator.num_pages > 10 %}
+                  {% if tickets.number < 6 %}
+                    {#    先頭 9 ページの表示      #}
+                    {% for pg in tickets.paginator.page_range %}
+                      {% if forloop.counter0 < 9 %}
+                        {% if tickets.number == pg %}
+                          <li class="page-item active">
+                            {% else %}
+                          <li class="page-item">
+                        {% endif %}
+                      <a class="page-link"
+                         href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                      </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% elif tickets.number < tickets.paginator.num_pages|add:-4 %}
+                    {#    手前 4 ページ | 現在のページ | 続き 4 ページ      #}
+                    {% for pg in tickets.paginator.page_range %}
+                      {% if tickets.number|add:-5 < pg and pg < tickets.number|add:5 %}
+                        {% if tickets.number == pg %}
+                          <li class="page-item active">
+                            {% else %}
+                          <li class="page-item">
+                        {% endif %}
+                      <a class="page-link"
+                         href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                      </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    {#   最後 9 ページの表示   #}
+                    {% for pg in tickets.paginator.page_range %}
+                      {% if forloop.counter0 > tickets.paginator.num_pages|add:-10 %}
+                        {% if tickets.number == pg %}
+                          <li class="page-item active">
+                            {% else %}
+                          <li class="page-item">
+                        {% endif %}
+                      <a class="page-link"
+                         href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                      </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% else %}
+                  {% for pg in tickets.paginator.page_range %}
+                    {% if tickets.number == pg %}
+                      <li class="page-item active">
+                        {% else %}
+                      <li class="page-item">
+                    {% endif %}
+                  <a class="page-link"
+                     href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                  </li>
+                  {% endfor %}
+                {% endif %}
+                {% if tickets.has_next %}
+                  <li class="page-item">
+                    <a class="page-link"
+                       href="?{% url_replace request page=tickets.next_page_number %}">次へ</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link">次へ</span>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          {% else %}
+            <p>グループがありません</p>
+          {% endif %}
         </div>
+      </div>
     </div>
+  </div>
 {% endblock content %}

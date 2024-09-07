@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, EmptyPage, InvalidPage
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.db.models import Q
 from django.shortcuts import render
 
@@ -22,7 +22,5 @@ def index(request):
     except (EmptyPage, InvalidPage):
         services = paginator.page(paginator.num_pages)
 
-    context = {
-        "services": services
-    }
+    context = {"services": services}
     return render(request, "service/index.html", context)

@@ -45,7 +45,9 @@ class IP(models.Model):
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, related_name="IPService", null=True, blank=True)
     ip_address = models.GenericIPAddressField("IP Address", unique=True, null=True, blank=True)
     subnet = models.IntegerField("サブネット", default=32)
-    owner = models.CharField("アドレス所持オーナ", default=OWNER_TYPE_FROM_OUR, choices=OWNER_TYPE_CHOICES, max_length=255)
+    owner = models.CharField(
+        "アドレス所持オーナ", default=OWNER_TYPE_FROM_OUR, choices=OWNER_TYPE_CHOICES, max_length=255
+    )
     start_at = models.DateTimeField("開通日", null=True, blank=True)
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     plan = models.JSONField("プラン", null=True, blank=True)
@@ -53,8 +55,8 @@ class IP(models.Model):
     jpnic_user = models.ManyToManyField(
         "JPNICUser",
         blank=True,
-        through='IPJPNICUser',
-        through_fields=('ip', 'jpnic_user'),
+        through="IPJPNICUser",
+        through_fields=("ip", "jpnic_user"),
         related_name="jpnic_user_set",
     )
 
@@ -82,7 +84,9 @@ class JPNICUser(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     is_active = models.BooleanField("有効", default=True)
     hidden = models.BooleanField("隠蔽", default=False)
-    handle_type = models.CharField("ハンドルタイプ", max_length=255, choices=HANDLE_TYPE_CHOICES, default=HANDLE_TYPE_JPNIC)
+    handle_type = models.CharField(
+        "ハンドルタイプ", max_length=255, choices=HANDLE_TYPE_CHOICES, default=HANDLE_TYPE_JPNIC
+    )
     jpnic_handle = models.CharField("JPNIC Handle", max_length=100, blank=True)
     name = models.CharField("name", max_length=150)
     name_jp = models.CharField("name(japanese)", max_length=150)
@@ -102,8 +106,8 @@ class JPNICUser(models.Model):
     ip = models.ManyToManyField(
         "IP",
         blank=True,
-        through='IPJPNICUser',
-        through_fields=('jpnic_user', 'ip'),
+        through="IPJPNICUser",
+        through_fields=("jpnic_user", "ip"),
         related_name="jpnic_set",
     )
 
@@ -133,12 +137,14 @@ class IPJPNICUser(models.Model):
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     jpnic_user = models.ForeignKey(JPNICUser, on_delete=models.CASCADE)
     ip = models.ForeignKey(IP, on_delete=models.CASCADE)
-    user_type = models.CharField("タイプ", max_length=255, choices=JPNIC_USER_TYPE_CHOICES, default=JPNIC_USER_TYPE_ADMIN)
+    user_type = models.CharField(
+        "タイプ", max_length=255, choices=JPNIC_USER_TYPE_CHOICES, default=JPNIC_USER_TYPE_ADMIN
+    )
 
     class Meta:
-        verbose_name = 'IP・JPNIC User'
+        verbose_name = "IP・JPNIC User"
         verbose_name_plural = "IP・JPNIC Users"
-        unique_together = ('jpnic_user', 'ip')
+        unique_together = ("jpnic_user", "ip")
 
     def __str__(self):
         return "%s" % (self.id,)

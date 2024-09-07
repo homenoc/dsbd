@@ -2,13 +2,11 @@ import datetime
 import json
 
 from asgiref.sync import sync_to_async
-from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 from django.utils import timezone
-from pytz import timezone
 
 from ticket.consumers import ChatConsumer
-from ticket.models import Ticket, Chat
+from ticket.models import Chat, Ticket
 
 
 @sync_to_async()
@@ -44,18 +42,24 @@ class AdminChatConsumer(ChatConsumer):
         await self.add_chat(message)
 
         time_format = "%Y/%m/%d %H:%M:%S"
-        time = datetime.datetime.now(tz=datetime.timezone.utc if settings.USE_TZ else None).astimezone(
-            timezone(settings.TIME_ZONE)).strftime(time_format)
+        time = (
+            datetime.datetime.now(tz=datetime.timezone.utc if settings.USE_TZ else None)
+            .astimezone(timezone(settings.TIME_ZONE))
+            .strftime(time_format)
+        )
 
-        await self.channel_layer.group_send(self.chat_group_name, {
-            "type": "broadcast_message",
-            "time": time,
-            "user_id": self.user.id,
-            "username": self.user.username,
-            "group": 0,
-            "message": message,
-            "is_admin": True
-        })
+        await self.channel_layer.group_send(
+            self.chat_group_name,
+            {
+                "type": "broadcast_message",
+                "time": time,
+                "user_id": self.user.id,
+                "username": self.user.username,
+                "group": 0,
+                "message": message,
+                "is_admin": True,
+            },
+        )
 
     async def broadcast_message(self, event):
         time = event["time"]
@@ -65,11 +69,15 @@ class AdminChatConsumer(ChatConsumer):
         message = event["message"]
         is_admin = event["is_admin"]
 
-        await self.send(text_data=json.dumps({
-            "time": time,
-            "user_id": user_id,
-            "username": username,
-            "group": group,
-            "message": message,
-            "is_admin": is_admin
-        }))
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "time": time,
+                    "user_id": user_id,
+                    "username": username,
+                    "group": group,
+                    "message": message,
+                    "is_admin": is_admin,
+                }
+            )
+        )

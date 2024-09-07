@@ -1,5 +1,4 @@
-"""
-ASGI config for dsbd project.
+"""ASGI config for dsbd project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -24,20 +23,15 @@ class ASGIHandlerTmp(ASGIHandler):
 
 django_asgi_app = get_asgi_application()
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dsbd.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dsbd.settings")
 
-from ticket import routing
 from custom_admin import routing as custom_admin_routing
+from ticket import routing
 
 url = []
 url += routing.urlpatterns
 url += custom_admin_routing.urlpatterns
 
-application = ProtocolTypeRouter({
-    'http': django_asgi_app,
-    'websocket': AllowedHostsOriginValidator(
-        AuthMiddlewareStack(
-            URLRouter(url)
-        )
-    )
-})
+application = ProtocolTypeRouter(
+    {"http": django_asgi_app, "websocket": AllowedHostsOriginValidator(AuthMiddlewareStack(URLRouter(url)))}
+)

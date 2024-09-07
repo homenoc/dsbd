@@ -1,0 +1,15 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+extend-select = [
+    #    "D", # pydocstyle
+    "E", # pycodestyle(Error)
+    "I", # isort
+    "N", # pep8-naming
+    "W", # pycodestyle(Warnig)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

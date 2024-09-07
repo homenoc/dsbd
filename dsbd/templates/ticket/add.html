@@ -1,29 +1,32 @@
 {% extends 'base2.html' %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="container py-4 mb-auto">
-                <div class="h-900 p-2 rounded-3">
-                    <h2 class="card-title">チケット追加</h2>
-                    <br/>
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            {{ form.ticket_type }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="id_title_label" class="form-label">タイトル</label>
-                            {{ form.title }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="id_body_label" class="form-label">内容</label>
-                            {{ form.body }}
-                        </div>
-                        <br/>
-                        <button type="submit" name="add" class="btn btn-primary">登録確認</button>
-                    </form>
-                </div>
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">チケット追加</h2>
+          <br/>
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              {{ form.ticket_type }}
             </div>
+            <div class="mb-3">
+              <label for="id_title_label"
+                     class="form-label">タイトル</label>
+              {{ form.title }}
+            </div>
+            <div class="mb-3">
+              <label for="id_body_label" class="form-label">内容</label>
+              {{ form.body }}
+            </div>
+            <br/>
+            <button type="submit" name="add" class="btn btn-primary">
+              登録確認
+            </button>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 {% endblock content %}

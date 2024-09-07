@@ -1,5 +1,5 @@
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
 
 from custom_auth.models import User
 
@@ -11,8 +11,8 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['placeholder'] = field.label
+            field.widget.attrs["class"] = "form-control"
+            field.widget.attrs["placeholder"] = field.label
 
 
 class OTPForm(forms.Form):
@@ -22,8 +22,8 @@ class OTPForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['placeholder'] = field.label
+            field.widget.attrs["class"] = "form-control"
+            field.widget.attrs["placeholder"] = field.label
 
 
 class AuthTOTP(forms.Form):
@@ -33,8 +33,8 @@ class AuthTOTP(forms.Form):
         super().__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['placeholder'] = field.label
+            field.widget.attrs["class"] = "form-control"
+            field.widget.attrs["placeholder"] = field.label
 
 
 class ForgetForm(PasswordResetForm):
@@ -42,8 +42,8 @@ class ForgetForm(PasswordResetForm):
         super().__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['placeholder'] = field.label
+            field.widget.attrs["class"] = "form-control"
+            field.widget.attrs["placeholder"] = field.label
 
 
 class NewSetPasswordForm(SetPasswordForm):
@@ -51,8 +51,8 @@ class NewSetPasswordForm(SetPasswordForm):
         super().__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['placeholder'] = field.label
+            field.widget.attrs["class"] = "form-control"
+            field.widget.attrs["placeholder"] = field.label
 
 
 class SignUpForm(forms.Form):
@@ -67,12 +67,12 @@ class SignUpForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['placeholder'] = field.label
+            field.widget.attrs["class"] = "form-control"
+            field.widget.attrs["placeholder"] = field.label
 
     def clean(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
         if password1 != password2:
             raise forms.ValidationError("パスワードが一致しません")
 

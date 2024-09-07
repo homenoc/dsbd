@@ -6,4 +6,4 @@ class Ticket(AppConfig):
     verbose_name = "チケット"
 
     def ready(self):
-        from . import signals
+        pass

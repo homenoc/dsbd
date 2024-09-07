@@ -1,141 +1,176 @@
 {% extends 'base2.html' %}
 {% block content %}
-    <section class="py-5 text-center container">
-        <div class="row py-lg-5">
-            <div class="col-lg-6 col-md-8 mx-auto">
-                <h1 class="fw-light">Welcome</h1>
-                <p class="lead text-body-secondary">AS59105 Service Online</p>
-            </div>
-        </div>
-    </section>
-
-    <div class="album py-5 bg-body-tertiary">
-        <div class="container">
-
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4 class="card-text">サービス情報一覧</h4>
-                            <p class="card-text">サービス情報一覧はこちらから</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" href="/service">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4 class="card-text">チケットシステム</h4>
-                            <p class="card-text">チケット作成・返事などはこちらから</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" href="/ticket">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                </div>
-                                <small class="text-body-secondary">9 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                </div>
-                                <small class="text-body-secondary">9 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4 class="card-text">グループ情報・関連設定</h4>
-                            <p class="card-text">グループ情報変更や権限変更などの各種グループ設定はこちらから</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" href="/group">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4 class="card-text">ユーザ情報・関連設定</h4>
-                            <p class="card-text">ユーザ関連設定や二段階認証・パスワード変更などはこちらから</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" href="/profile">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                </div>
-                                <small class="text-body-secondary">9 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4 class="card-text">Feedback</h4>
-                            <p class="card-text">本ダッシュボードシステムのフィードバックはこちらから</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" href="/feedback">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4 class="card-text">GitHub</h4>
-                            <p class="card-text">本ダッシュボードシステムのGitHub Repoはこちらから</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" href="https://github.com/homenoc/dsbd" target="_blank">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-            </div>
-        </div>
+  <section class="py-5 text-center container">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light">Welcome</h1>
+        <p class="lead text-body-secondary">AS59105 Service Online</p>
+      </div>
     </div>
+  </section>
+
+  <div class="album py-5 bg-body-tertiary">
+  <div class="container">
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-text">サービス情報一覧</h4>
+            <p class="card-text">サービス情報一覧はこちらから</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button"
+                   class="btn btn-sm btn-outline-secondary"
+                   href="/service">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-text">チケットシステム</h4>
+            <p class="card-text">チケット作成・返事などはこちらから</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button"
+                   class="btn btn-sm btn-outline-secondary"
+                   href="/ticket">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <p class="card-text">This is a wider card with supporting text
+              below as a natural lead-in to additional content. This
+              content is a little bit longer.</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary">View
+                </button>
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary">Edit
+                </button>
+              </div>
+              <small class="text-body-secondary">9 mins</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <p class="card-text">This is a wider card with supporting text
+              below as a natural lead-in to additional content. This
+              content is a little bit longer.</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary">View
+                </button>
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary">Edit
+                </button>
+              </div>
+              <small class="text-body-secondary">9 mins</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-text">グループ情報・関連設定</h4>
+            <p class="card-text">
+              グループ情報変更や権限変更などの各種グループ設定はこちらから</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button"
+                   class="btn btn-sm btn-outline-secondary"
+                   href="/group">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-text">ユーザ情報・関連設定</h4>
+            <p class="card-text">
+              ユーザ関連設定や二段階認証・パスワード変更などはこちらから</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button"
+                   class="btn btn-sm btn-outline-secondary"
+                   href="/profile">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <p class="card-text">This is a wider card with supporting text
+              below as a natural lead-in to additional content. This
+              content is a little bit longer.</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary">View
+                </button>
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary">Edit
+                </button>
+              </div>
+              <small class="text-body-secondary">9 mins</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-text">Feedback</h4>
+            <p class="card-text">
+              本ダッシュボードシステムのフィードバックはこちらから</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button"
+                   class="btn btn-sm btn-outline-secondary"
+                   href="/feedback">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-text">GitHub</h4>
+            <p class="card-text">本ダッシュボードシステムのGitHub
+              Repoはこちらから</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button"
+                   class="btn btn-sm btn-outline-secondary"
+                   href="https://github.com/homenoc/dsbd"
+                   target="_blank">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock content %}

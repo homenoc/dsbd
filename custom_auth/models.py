@@ -1,19 +1,18 @@
 import uuid
 
 import pyotp
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.mail import send_mail
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.contrib.auth.models import Group, GroupManager
 
 from custom_auth.tool import random_string
-from django.apps import apps
-
 from dsbd.models import MediumTextField
 
 
@@ -21,8 +20,9 @@ class GroupManager(models.Manager):
     def active_filter(self):
         return self.filter(is_active=True)
 
-    def create_group(self, question, name, name_jp, postcode, address, address_jp, phone, country, contract_type,
-                     **extra_fields):
+    def create_group(
+        self, question, name, name_jp, postcode, address, address_jp, phone, country, contract_type, **extra_fields
+    ):
         extra_fields.setdefault("is_pass", False)
         return self.create(
             agree=True,
@@ -35,7 +35,7 @@ class GroupManager(models.Manager):
             phone=phone,
             country=country,
             contract_type=contract_type,
-            **extra_fields
+            **extra_fields,
         )
 
     def update_group(self, group_id, postcode, address, address_en, email, phone, country):
@@ -74,7 +74,7 @@ CONTRACT_TYPE_CHOICES = (
 )
 
 
-class Group(models.Model):
+class Group(models.Model):  # noqa: F811
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     name = models.CharField("name", max_length=150, unique=True)
@@ -104,8 +104,8 @@ class Group(models.Model):
     users = models.ManyToManyField(
         "User",
         blank=True,
-        through='UserGroup',
-        through_fields=('group', 'user'),
+        through="UserGroup",
+        through_fields=("group", "user"),
         related_name="group_users_set",
     )
 
@@ -124,9 +124,7 @@ class UserManager(BaseUserManager):
         if not username:
             raise ValueError("The given username must be set")
         email = self.normalize_email(email)
-        GlobalUserModel = apps.get_model(
-            self.model._meta.app_label, self.model._meta.object_name
-        )
+        GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)
         username = GlobalUserModel.normalize_username(username)
         user = self.model(username=username, username_jp=username_jp, email=email, **extra_fields)
         user.password = make_password(password)
@@ -138,13 +136,16 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_active", False)
         user = self._create_user(username, username_jp, email, password, **extra_fields)
-        user_activate_token = UserActivateToken.objects.create(
-            user=user
+        user_activate_token = UserActivateToken.objects.create(user=user)
+        subject = "Please Activate Your Account"
+        message = (
+            f"URLにアクセスしてアカウントを有効化してください。\n "
+            f"{settings.DOMAIN_URL}/activate/{user_activate_token.token}/"
         )
-        subject = 'Please Activate Your Account'
-        message = f'URLにアクセスしてアカウントを有効化してください。\n {settings.DOMAIN_URL}/activate/{user_activate_token.token}/'
         from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [user.email, ]
+        recipient_list = [
+            user.email,
+        ]
         send_mail(subject, message, from_email, recipient_list)
 
         return user
@@ -158,25 +159,28 @@ class UserManager(BaseUserManager):
 
         return self._create_user(username, email, password, **extra_fields)
 
-    def change_email(self, user=None, email=''):
+    def change_email(self, user=None, email=""):
         if not user:
             raise ValueError("user_id is not found......")
         if not email:
             raise ValueError("email is not found......")
         user.email = email
         user.is_active = False
-        user_activate_token = UserActivateToken.objects.create(
-            user=user
+        user_activate_token = UserActivateToken.objects.create(user=user)
+        subject = "Please Activate Your Changed Email"
+        message = (
+            f"メールアドレスが変更されたので、URLにアクセスしてアカウントを有効化してください。\n"
+            f" {settings.DOMAIN_URL}/activate/{user_activate_token.token}/"
         )
-        subject = 'Please Activate Your Changed Email'
-        message = f'メールアドレスが変更されたので、URLにアクセスしてアカウントを有効化してください。\n {settings.DOMAIN_URL}/activate/{user_activate_token.token}/'
         from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [email, ]
+        recipient_list = [
+            email,
+        ]
         send_mail(subject, message, from_email, recipient_list)
 
         user.save()
 
-    def update_user(self, user=None, name='', name_jp='', display_name=''):
+    def update_user(self, user=None, name="", name_jp="", display_name=""):
         if not user:
             raise ValueError("user_id is not found......")
         if not name:
@@ -206,16 +210,16 @@ class User(AbstractBaseUser):
     groups = models.ManyToManyField(
         "Group",
         blank=True,
-        through='UserGroup',
-        through_fields=('user', 'group'),
+        through="UserGroup",
+        through_fields=("user", "group"),
         related_name="user_set",
     )
 
     objects = UserManager()
 
-    EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
 
     class Meta:
         verbose_name = "ユーザ"
@@ -272,8 +276,8 @@ class UserActivateTokensManager(models.Manager):
         if user_activate_token.is_used:
             raise ValueError("this token was used...")
         if user_activate_token.user.is_active:
-            raise ValueError('アカウントはすでに有効済みです')
-        if hasattr(user_activate_token, 'user'):
+            raise ValueError("アカウントはすでに有効済みです")
+        if hasattr(user_activate_token, "user"):
             user = user_activate_token.user
             user.is_active = True
             user.save()
@@ -291,7 +295,7 @@ class UserActivateToken(models.Model):
     objects = UserActivateTokensManager()
 
     class Meta:
-        verbose_name = 'Activate用のToken'
+        verbose_name = "Activate用のToken"
         verbose_name_plural = "Activate用のToken"
 
     def __str__(self):
@@ -310,9 +314,9 @@ class UserGroup(models.Model):
     is_admin = models.BooleanField("管理者", default=False)
 
     class Meta:
-        verbose_name = 'ユーザ・グループ'
+        verbose_name = "ユーザ・グループ"
         verbose_name_plural = "ユーザ・グループ"
-        unique_together = ('user', 'group')
+        unique_together = ("user", "group")
 
     def __str__(self):
         return "%s-%s" % (self.user.username, self.group.name)
@@ -325,18 +329,18 @@ class UserEmailVerifyManager(models.Manager):
         code = random_string(10)
         self.create(user_id=user.id, token=code)
         subject = "認証コード"
-        message = render_to_string("mail/account/two_auth.txt", {
-            "code": code,
-            "expired_time": settings.USER_LOGIN_VERIFY_EMAIL_EXPIRED_MINUTES
-        })
+        message = render_to_string(
+            "mail/account/two_auth.txt",
+            {"code": code, "expired_time": settings.USER_LOGIN_VERIFY_EMAIL_EXPIRED_MINUTES},
+        )
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
 
-    def check_token(self, user_id=None, token=''):
+    def check_token(self, user_id=None, token=""):
         if not user_id:
             raise ValueError("user_id is not found......")
         try:
             sign_up_key = self.filter(token=token, expired_at__gt=timezone.now(), is_used=False).first()
-        except:
+        except Exception:
             return False
         # keyがない時
         if not sign_up_key:
@@ -355,11 +359,14 @@ class UserEmailVerify(models.Model):
     objects = UserEmailVerifyManager()
 
     class Meta:
-        verbose_name = 'E-Mail用のVerify'
+        verbose_name = "E-Mail用のVerify"
         verbose_name_plural = "E-Mail用のVerify"
 
     def __str__(self):
-        return "%d[%s]" % (self.id, self.user.username,)
+        return "%d[%s]" % (
+            self.id,
+            self.user.username,
+        )
 
 
 class TOTPDeviceManager(models.Manager):
@@ -372,15 +379,15 @@ class TOTPDeviceManager(models.Manager):
         otp_secret = pyotp.random_base32()
         return {
             "secret": otp_secret,
-            "url": pyotp.totp.TOTP(otp_secret).provisioning_uri(name=email, issuer_name=settings.APP_NAME)
+            "url": pyotp.totp.TOTP(otp_secret).provisioning_uri(name=email, issuer_name=settings.APP_NAME),
         }
 
-    def create_secret(self, user=None, title='', otp_secret=''):
+    def create_secret(self, user=None, title="", otp_secret=""):
         if not user:
             raise ValueError("user_id is not found......")
         self.create(title=title, user=user, secret=otp_secret, is_active=True)
 
-    def check_totp(self, user=None, code=''):
+    def check_totp(self, user=None, code=""):
         if not user:
             raise ValueError("user_id is not found......")
         totp_array = self.filter(user=user)
@@ -413,7 +420,7 @@ class TOTPDevice(models.Model):
     objects = TOTPDeviceManager()
 
     class Meta:
-        verbose_name = 'TOTP Device'
+        verbose_name = "TOTP Device"
         verbose_name_plural = "TOTP Device"
 
     def __str__(self):

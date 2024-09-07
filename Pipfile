@@ -48,7 +48,8 @@ urllib3 = "==2.*"
 "zope.interface" = "==7.*"
 
 [dev-packages]
-black = "*"
+ruff = "*"
+ruff-lsp = "*"
 
 [requires]
 python_version = "3.12"

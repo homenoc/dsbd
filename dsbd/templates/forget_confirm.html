@@ -1,20 +1,20 @@
 {% extends 'base1.html' %}
 {% load static %}
 {% block content %}
-    <h2>パスワード再設定フォーム</h2>
-    <form action="" method="POST">
-        {{ form.non_field_errors }}
-        {% for field in form %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
-                {{ field }}
-                {{ field.errors }}
-            </div>
-        {% endfor %}
-        {% csrf_token %}
-        <br/>
-        <button type="submit" class="btn btn-primary btn-lg">送信</button>
-    </form>
+  <h2>パスワード再設定フォーム</h2>
+  <form action="" method="POST">
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    {% csrf_token %}
+    <br/>
+    <button type="submit" class="btn btn-primary btn-lg">送信</button>
+  </form>
 {% endblock content %}
 
 {% block javascript %}

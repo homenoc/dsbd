@@ -50,185 +50,205 @@
 {% include 'svg.html' %}
 
 <main>
-    <div class="overflow-auto d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px;">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <image src="{% static 'icon/icon.png' %}" height="50px"></image>
-            &emsp;
-            <span class="fs-4">Dashboard{% if get_version != "develop" %}<br/>(しらんけど){% endif %}</span>
+  <div class="overflow-auto d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
+       style="width: 280px;">
+    <a href="/"
+       class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <image src="{% static 'icon/icon.png' %}" height="50px"></image>
+      &emsp;
+      <span class="fs-4">Dashboard{% if get_version != "develop" %}<br/>
+        (しらんけど){% endif %}</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item">
+        <a href="{% url 'index' %}" class="nav-link text-white"
+           aria-current="page">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#home"></use>
+          </svg>
+          Home
         </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="{% url 'index' %}" class="nav-link text-white" aria-current="page">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#home"></use>
-                    </svg>
-                    Home
-                </a>
-            </li>
-{#            <li>#}
-{#                <a href="#" class="nav-link text-white">#}
-{#                    <svg class="bi me-2" width="16" height="16">#}
-{#                        <use xlink:href="#speedometer2"></use>#}
-{#                    </svg>#}
-{#                    Dashboard#}
-{#                </a>#}
-{#            </li>#}
-            <li class="nav-item">
-                <a href="{% url 'menu' %}" class="nav-link text-white">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#menu"></use>
-                    </svg>
-                    Menu
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'custom_auth_group:index' %}" class="nav-link text-white" aria-current="page">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#group"></use>
-                    </svg>
-                    Groups
-                </a>
+      </li>
+      {#            <li>#}
+      {#                <a href="#" class="nav-link text-white">#}
+      {#                    <svg class="bi me-2" width="16" height="16">#}
+      {#                        <use xlink:href="#speedometer2"></use>#}
+      {#                    </svg>#}
+      {#                    Dashboard#}
+      {#                </a>#}
+      {#            </li>#}
+      <li class="nav-item">
+        <a href="{% url 'menu' %}" class="nav-link text-white">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#menu"></use>
+          </svg>
+          Menu
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'custom_auth_group:index' %}"
+           class="nav-link text-white" aria-current="page">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#group"></use>
+          </svg>
+          Groups
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'service:index' %}" class="nav-link text-white">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#grid"></use>
+          </svg>
+          Services
+        </a>
+      </li>
+      {#            <li>#}
+      {#                <a href="#" class="nav-link text-white">#}
+      {#                    <svg class="bi me-2" width="16" height="16">#}
+      {#                        <use xlink:href="#people-circle"></use>#}
+      {#                    </svg>#}
+      {#                    Customers#}
+      {#                </a>#}
+      {#            </li>#}
+      <li>
+        <a href="{% url 'ticket:index' %}" class="nav-link text-white"
+           aria-current="page">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#messages"></use>
+          </svg>
+          Ticket
+        </a>
+      </li>
+      <li class="mb-1">
+        <button class="btn text-white align-items-center rounded collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#dashboard1-collapse" aria-expanded="false">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#grid"></use>
+          </svg>
+          Settings
+        </button>
+        <div class="collapse" id="dashboard1-collapse">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+            <li>
+              <a href="#" class="nav-link text-white">
+                <svg class="bi me-2 submenu-logo" width="14"
+                     height="14">
+                  <use xlink:href="#email"/>
+                </svg>
+                Overview
+              </a>
             </li>
             <li>
-                <a href="{% url 'service:index' %}" class="nav-link text-white">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#grid"></use>
-                    </svg>
-                    Services
-                </a>
+              <a href="#" class="nav-link text-white">
+                <svg class="bi me-2 submenu-logo" width="14"
+                     height="14">
+                  <use xlink:href="#people-circle"/>
+                </svg>
+                Overview2
+              </a>
             </li>
-            {#            <li>#}
-            {#                <a href="#" class="nav-link text-white">#}
-            {#                    <svg class="bi me-2" width="16" height="16">#}
-            {#                        <use xlink:href="#people-circle"></use>#}
-            {#                    </svg>#}
-            {#                    Customers#}
-            {#                </a>#}
-            {#            </li>#}
             <li>
-                <a href="{% url 'ticket:index' %}" class="nav-link text-white" aria-current="page">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#messages"></use>
-                    </svg>
-                    Ticket
-                </a>
+              <a href="#" class="nav-link text-white">
+                <svg class="bi me-2 submenu-logo" width="14"
+                     height="14">
+                  <use xlink:href="#people-circle"/>
+                </svg>
+                Overview3
+              </a>
             </li>
-            <li class="mb-1">
-                <button class="btn text-white align-items-center rounded collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#dashboard1-collapse" aria-expanded="false">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#grid"></use>
-                    </svg>
-                    Settings
-                </button>
-                <div class="collapse" id="dashboard1-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li>
-                            <a href="#" class="nav-link text-white">
-                                <svg class="bi me-2 submenu-logo" width="14" height="14">
-                                    <use xlink:href="#email"/>
-                                </svg>
-                                Overview
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link text-white">
-                                <svg class="bi me-2 submenu-logo" width="14" height="14">
-                                    <use xlink:href="#people-circle"/>
-                                </svg>
-                                Overview2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link text-white">
-                                <svg class="bi me-2 submenu-logo" width="14" height="14">
-                                    <use xlink:href="#people-circle"/>
-                                </svg>
-                                Overview3
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link text-white">
-                                <svg class="bi me-2 submenu-logo" width="14" height="14">
-                                    <use xlink:href="#people-circle"/>
-                                </svg>
-                                Overview4
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            {% is_admin_mode as is_admin_mode %}
-            {% if request.user.is_staff and is_admin_mode %}
-                <li>
-                    <button class="btn text-white align-items-center rounded collapsed" data-bs-toggle="collapse"
-                            data-bs-target="#admin-collapse" aria-expanded="false">
-                        <svg class="bi me-2" width="16" height="16">
-                            <use xlink:href="#administrator"/>
-                        </svg>
-                        Admin Page
-                    </button>
-                    <div class="collapse" id="admin-collapse">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li>
-                                <a href="{% url 'custom_admin:index' %}" class="nav-link text-white">
-                                    <svg class="bi me-2" width="16" height="16">
-                                        <use xlink:href="#setting"/>
-                                    </svg>
-                                    CustomPage
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'admin:index' %}" class="nav-link text-white">
-                                    <svg class="bi me-2" width="16" height="16">
-                                        <use xlink:href="#database"/>
-                                    </svg>
-                                    Admin(DB)
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            {% endif %}
             <li>
-                <a href="{% url 'feedback' %}" class="btn text-white" aria-expanded="false">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#bug"/>
-                    </svg>
-                    Feedback
-                </a>
+              <a href="#" class="nav-link text-white">
+                <svg class="bi me-2 submenu-logo" width="14"
+                     height="14">
+                  <use xlink:href="#people-circle"/>
+                </svg>
+                Overview4
+              </a>
             </li>
-        </ul>
-        <h6><span class="badge bg-secondary">Version: {% get_version %}</span></h6>
-        <hr>
-        <div class="dropdown">
-            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-               id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                {#                <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">#}
-                <strong>{{ user.get_display_name }}</strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                <li><a class="dropdown-item" href="{% url 'custom_auth:index' %}">Settings</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="{% url 'sign_out' %}" role="button">Sign out</a></li>
-            </ul>
+          </ul>
         </div>
+      </li>
+      {% is_admin_mode as is_admin_mode %}
+      {% if request.user.is_staff and is_admin_mode %}
+        <li>
+          <button class="btn text-white align-items-center rounded collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#admin-collapse" aria-expanded="false">
+            <svg class="bi me-2" width="16" height="16">
+              <use xlink:href="#administrator"/>
+            </svg>
+            Admin Page
+          </button>
+          <div class="collapse" id="admin-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <li>
+                <a href="{% url 'custom_admin:index' %}"
+                   class="nav-link text-white">
+                  <svg class="bi me-2" width="16" height="16">
+                    <use xlink:href="#setting"/>
+                  </svg>
+                  CustomPage
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'admin:index' %}"
+                   class="nav-link text-white">
+                  <svg class="bi me-2" width="16" height="16">
+                    <use xlink:href="#database"/>
+                  </svg>
+                  Admin(DB)
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      {% endif %}
+      <li>
+        <a href="{% url 'feedback' %}" class="btn text-white"
+           aria-expanded="false">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#bug"/>
+          </svg>
+          Feedback
+        </a>
+      </li>
+    </ul>
+    <h6><span class="badge bg-secondary">Version: {% get_version %}</span></h6>
+    <hr>
+    <div class="dropdown">
+      <a href="#"
+         class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+        {#                <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">#}
+        <strong>{{ user.get_display_name }}</strong>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-dark text-small shadow"
+          aria-labelledby="dropdownUser1">
+        <li><a class="dropdown-item" href="{% url 'custom_auth:index' %}">Settings</a>
+        </li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="{% url 'sign_out' %}" role="button">Sign
+          out</a></li>
+      </ul>
     </div>
+  </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-        crossorigin="anonymous"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
 
 <script>
-    (function () {
-        'use strict'
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-            new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    })()
+  (function () {
+    'use strict'
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  })()
 </script>

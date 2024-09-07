@@ -9,9 +9,7 @@ class NoticeManager(models.Manager):
     def get_notice(self):
         now = timezone.now()
         notices = self.filter(
-            Q(start_at__lte=now),
-            Q(is_active=True),
-            Q(end_at__gt=timezone.now()) | Q(end_at__isnull=True)
+            Q(start_at__lte=now), Q(is_active=True), Q(end_at__gt=timezone.now()) | Q(end_at__isnull=True)
         )
         return notices
 

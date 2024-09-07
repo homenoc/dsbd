@@ -36,4 +36,4 @@ class TunnelIP(models.Model):
     comment = MediumTextField("コメント", default="", blank=True)
 
     def __str__(self):
-        return "%d: (%s)%s" % (self.id, self.tunnel_router.hostname,self.ip_address)
+        return "%d: (%s)%s" % (self.id, self.tunnel_router.hostname, self.ip_address)

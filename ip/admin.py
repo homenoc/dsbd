@@ -16,13 +16,32 @@ class TermInlineJPNICUserAdmin(admin.TabularInline):
 @admin.register(IP)
 class IP(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('is_active', 'service',)}),
-        ('ip', {'fields': ('ip_address', 'subnet', 'start_at', 'end_at', 'plan', 'use_case')}),
-        ('Important dates', {'fields': ('created_at', 'updated_at',)}),
+        (
+            None,
+            {
+                "fields": (
+                    "is_active",
+                    "service",
+                )
+            },
+        ),
+        ("ip", {"fields": ("ip_address", "subnet", "start_at", "end_at", "plan", "use_case")}),
+        (
+            "Important dates",
+            {
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                )
+            },
+        ),
     )
-    list_display = ('id', 'is_active', 'service', 'ip_address', 'subnet', 'start_at', 'end_at')
-    list_filter = ('is_active', 'end_at',)
-    search_fields = ('ip_address',)
+    list_display = ("id", "is_active", "service", "ip_address", "subnet", "start_at", "end_at")
+    list_filter = (
+        "is_active",
+        "end_at",
+    )
+    search_fields = ("ip_address",)
 
     inlines = (TermInlineIPAdmin,)
 
@@ -30,15 +49,50 @@ class IP(admin.ModelAdmin):
 @admin.register(JPNICUser)
 class JPNICUser(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('group', 'is_active',)}),
-        ('Common', {'fields': ('hidden', 'handle_type', 'jpnic_handle')}),
-        ('Personal info', {'fields': (
-            'name', 'name_jp', 'email', 'org', 'org_jp', 'postcode', 'address', 'address_jp',
-            'dept', 'dept_jp', 'title', 'title_jp', 'tel', 'fax', 'country')}),
-        ('Important dates', {'fields': ('created_at', 'updated_at',)}),
+        (
+            None,
+            {
+                "fields": (
+                    "group",
+                    "is_active",
+                )
+            },
+        ),
+        ("Common", {"fields": ("hidden", "handle_type", "jpnic_handle")}),
+        (
+            "Personal info",
+            {
+                "fields": (
+                    "name",
+                    "name_jp",
+                    "email",
+                    "org",
+                    "org_jp",
+                    "postcode",
+                    "address",
+                    "address_jp",
+                    "dept",
+                    "dept_jp",
+                    "title",
+                    "title_jp",
+                    "tel",
+                    "fax",
+                    "country",
+                )
+            },
+        ),
+        (
+            "Important dates",
+            {
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                )
+            },
+        ),
     )
-    list_display = ('id', 'is_active', 'group', 'jpnic_handle', 'name', 'org')
-    list_filter = ('is_active', 'group')
-    search_fields = ('name', 'name_jp', 'group', 'org', 'org_jp')
+    list_display = ("id", "is_active", "group", "jpnic_handle", "name", "org")
+    list_filter = ("is_active", "group")
+    search_fields = ("name", "name_jp", "group", "org", "org_jp")
 
     inlines = (TermInlineJPNICUserAdmin,)
