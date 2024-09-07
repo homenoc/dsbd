@@ -28,9 +28,8 @@
                             <div class="card mb-2">
                                 <div class="card-body">
                                     <h6 class="card-subtitle mb-2 text-body-secondary">
-                                        <span class="badge bg-secondary">{{ notice.start_at }}
-                                            {% if notice.end_at != None %}
-                                                <span class="badge bg-secondary">公開終了日: {{ notice.end_at }}</span>{% endif %}
+                                        <span class="badge bg-secondary">{{ notice.start_at }}~{% if notice.end_at != None %}
+                                            {{ notice.end_at }}{% else %}無期限{% endif %}
                                           </span>
                                         {% if notice.is_info %}
                                             <span class="badge text-bg-primary">情報</span>
