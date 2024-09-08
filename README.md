@@ -8,6 +8,7 @@ HomeNOC Dashboard
 ### develop environment install
 
 ```
+pre-commit install # pre-commitを入れる必要あり
 pipenv install --dev
 ```
 
