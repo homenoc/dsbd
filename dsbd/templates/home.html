@@ -17,24 +17,32 @@
         <div class="container py-4 mb-auto">
           <div class="h-900 p-2 rounded-3">
             <h2>お知らせ</h2>
-            <div class="card text-bg-warning mb-3">
-              <div class="card-body">
-                <h5 class="card-title">Warning card title</h5>
-                <p class="card-text">Some quick example text to build on
-                  the card title and make up the
-                  bulk of the card's content.</p>
+            {% if request.user.groups.count == 0 %}
+              <div class="card text-bg-light mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">グループの新規申請手続き</h5>
+                  <p class="card-text">グループの新規申請手続きを行ってください</p>
+                  <a href="{% url 'custom_auth_group:add' %}"
+                     class="btn btn-sm btn-primary">申請はこちらから</a>
+                </div>
               </div>
-            </div>
+            {% endif %}
+            {% if is_new_group_request %}
+              <div class="card text-bg-warning mb-3">
+                <div class="card-body">
+                  <h5 class="card-title"><b>グループの申請処理中</b></h5>
+                  <p class="card-text">現在、グループの申請処理中です。<br/>この作業には時間が掛かる可能性があります。</p>
+                </div>
+              </div>
+            {% endif %}
             {% for notice in notices %}
               <div class="card mb-2">
                 <div class="card-body">
                   <h6 class="card-subtitle mb-2 text-body-secondary">
-                                        <span
-                                            class="badge bg-secondary">{{ notice.start_at }}~
-                                          {% if notice.end_at != None %}
-                                            {{ notice.end_at }}{% else %}
-                                            無期限{% endif %}
-                                          </span>
+                     <span class="badge bg-secondary">{{ notice.start_at }} ~
+                       {% if notice.end_at != None %}{{ notice.end_at }}{% else %}
+                         無期限{% endif %}
+                     </span>
                     {% if notice.is_info %}
                       <span class="badge text-bg-primary">情報</span>
                     {% endif %}
@@ -60,10 +68,8 @@
                         <div class="modal-header">
                           <h1 class="modal-title fs-5"
                               id="detailLabel">{{ notice.title }}</h1>
-                          <button type="button"
-                                  class="btn-close"
-                                  data-bs-dismiss="modal"
-                                  aria-label="Close"></button>
+                          <button type="button" class="btn-close"
+                                  data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                           {{ notice.body | linebreaksbr }}

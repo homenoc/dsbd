@@ -147,6 +147,8 @@ def activate_user(request, activate_token):
 
 @login_required
 def index(request):
+    # 申請中のグループが存在するかしないか識別
+    is_new_group_request = request.user.groups.filter(is_pass=False, status=1).exists()
     notice_objects = Notice.objects.get_notice()
     # ticket_objects = Ticket.objects.get_ticket(user=request.user).filter(is_solved=False)
 
@@ -204,6 +206,7 @@ def index(request):
         "notices": notices,
         # "tickets": tickets,
         "services": services,
+        "is_new_group_request": is_new_group_request,
     }
     return render(request, "home.html", context)
 
