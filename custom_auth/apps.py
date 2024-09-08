@@ -7,4 +7,4 @@ class CustomAuth(AppConfig):
     verbose_name = "カスタムユーザ"
 
     def ready(self):
-        pass
+        from . import signals  # noqa
