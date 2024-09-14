@@ -1,9 +1,12 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 
 from dsbd.notify import notify_db_save
 from ticket.models import Chat, Ticket
-from ticket.tool import SignalTool
+from ticket.tool import SignalTool, get_user_lists
 
 
 @receiver(pre_save, sender=Ticket)
@@ -43,6 +46,18 @@ def post_chat(sender, instance, created, **kwargs):
     if created:
         text = SignalTool().get_create_chat(True, instance)
         notify_db_save(table_name="Chat", type=0, data=text)
+        subject = "[HomeNOC Dashboard System]新着のメッセージがあります"
+        for user_list in get_user_lists(instance.ticket):
+            message = render_to_string(
+                "mail/ticket/message.txt",
+                {
+                    "username": user_list.username,
+                    "ticket_id": instance.ticket.id,
+                    "ticket_title": instance.ticket.title,
+                    "message": instance.body,
+                },
+            )
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user_list.email], fail_silently=False)
     else:
         text = SignalTool().get_update_chat(instance._pre_save_instance, instance)
         notify_db_save(table_name="Chat", type=1, data=text)

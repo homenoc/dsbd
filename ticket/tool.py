@@ -83,3 +83,10 @@ class SignalTool:
 
     def active_to_str(self, is_admin):
         return "有効" if is_admin else "無効"
+
+
+def get_user_lists(ticket):
+    if ticket.group:
+        return ticket.group.users.all()
+    else:
+        return [ticket.user]

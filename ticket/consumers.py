@@ -1,17 +1,10 @@
-import datetime
 import json
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.conf import settings
 from django.utils import timezone
 
 from ticket.models import Chat, Ticket
-
-
-@sync_to_async()
-def get_ticket(id):
-    return Ticket.objects.filter(id=id).first()
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -32,7 +25,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def check(self):
         ticket = Ticket.objects.filter(id=self.ticket_id).first()
-        if ticket.group is None:
+        if not ticket.group:
             if self.user.id != ticket.user.id:
                 return False
         else:
@@ -60,7 +53,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         await self.get_ticket()
-
         await self.accept()
 
         # JOIN CHAT Group
@@ -72,7 +64,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print("ERROR")
         # LEAVE CHAT Group
         await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
-        pass
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
@@ -80,18 +71,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.add_chat(message)
 
-        time_format = "%Y/%m/%d %H:%M:%S"
-        time = (
-            datetime.datetime.now(tz=datetime.timezone.utc if settings.USE_TZ else None)
-            .astimezone(timezone(settings.TIME_ZONE))
-            .strftime(time_format)
-        )
+        current_time = timezone.localtime(timezone.now())
+        formatted_time = current_time.strftime("%Y/%m/%d %H:%M:%S")
 
         await self.channel_layer.group_send(
             self.chat_group_name,
             {
                 "type": "broadcast_message",
-                "time": time,
+                "time": formatted_time,
                 "user_id": self.user.id,
                 "username": self.user.username,
                 "group": self.group,
@@ -100,13 +87,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
 
-    async def broadcast_message(self, event):
-        time = event["time"]
-        user_id = int(event["user_id"])
+    async def broadcast_message(self, event: dict):
         username = event["username"]
-        group = int(event["group"])
-        message = event["message"]
         is_admin = event["is_admin"]
+        group = event["group"]
         if is_admin:
             username = ""
             group = 0
@@ -114,12 +98,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(
             text_data=json.dumps(
                 {
-                    "time": time,
-                    "user_id": user_id,
+                    "time": event["time"],
+                    "user_id": event["user_id"],
                     "username": username,
                     "group": group,
-                    "message": message,
-                    "is_admin": is_admin,
+                    "message": event["message"],
+                    "is_admin": event["is_admin"],
                 }
             )
         )
