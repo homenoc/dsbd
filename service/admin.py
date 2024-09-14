@@ -57,7 +57,7 @@ class Service(admin.ModelAdmin):
     )
     list_display = ("service_code", "is_active", "is_pass", "group", "start_at", "end_at")
     list_filter = ("end_at",)
-    search_fields = ("service_code", "is_active", "service_type")
+    search_fields = ("service_code", "is_active", "is_pass", "service_type")
     inlines = [
         TermInlineServiceIPAdmin,
         TermInlineServiceConnectionAdmin,

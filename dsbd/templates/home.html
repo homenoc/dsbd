@@ -57,6 +57,19 @@
                 </div>
               </div>
             {% endif %}
+            {% for active_service in active_services %}
+              {% if active_service.allow_connection_add %}
+                <div class="card text-bg-light mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">接続情報の新規申請手続き</h5>
+                    <p class="card-text">
+                      接続情報の新規申請手続きを行ってください<br/>
+                    </p>
+                    <a href="{% url 'service:connection_add' active_service.group.id active_service.id %}" class="btn btn-sm btn-primary">申請はこちらから</a>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
             {% for notice in notices %}
               <div class="card mb-2">
                 <div class="card-body">
