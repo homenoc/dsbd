@@ -149,7 +149,7 @@
                             <tr>
                               <th>開通状況</th>
                               <td colspan="2">
-                                {% if connection.is_pass %}
+                                {% if connection.is_open %}
                                   <span class="badge bg-success">開通済み</span>
                                 {% else %}
                                   <span class="badge bg-danger">未開通</span>{% endif %}
