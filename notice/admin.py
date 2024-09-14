@@ -1,10 +1,11 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 
 from notice.models import Notice
 
 
 @admin.register(Notice)
-class Notice(admin.ModelAdmin):
+class Notice(SimpleHistoryAdmin):
     fieldsets = (
         (None, {"fields": ("created_at", "start_at", "end_at", "is_active")}),
         ("info", {"fields": ("type1", "title", "body")}),

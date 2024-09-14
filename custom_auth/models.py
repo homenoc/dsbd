@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from custom_auth.tool import random_string
 from dsbd.models import MediumTextField
@@ -109,6 +110,7 @@ class Group(models.Model):  # noqa: F811
         through_fields=("group", "user"),
         related_name="group_users_set",
     )
+    history = HistoricalRecords()
 
     objects = GroupManager()
 
@@ -215,6 +217,7 @@ class User(AbstractBaseUser):
         through_fields=("user", "group"),
         related_name="user_set",
     )
+    history = HistoricalRecords()
 
     objects = UserManager()
 
@@ -313,6 +316,7 @@ class UserGroup(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     is_admin = models.BooleanField("管理者", default=False)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "ユーザ・グループ"

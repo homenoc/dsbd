@@ -1,10 +1,11 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 
 from ticket.models import Chat, Ticket
 
 
 @admin.register(Ticket)
-class Ticket(admin.ModelAdmin):
+class Ticket(SimpleHistoryAdmin):
     readonly_fields = ["created_at", "updated_at"]
     fieldsets = (
         (None, {"fields": ("created_at", "updated_at", "user", "group")}),
@@ -25,7 +26,7 @@ class Ticket(admin.ModelAdmin):
 
 
 @admin.register(Chat)
-class Chat(admin.ModelAdmin):
+class Chat(SimpleHistoryAdmin):
     readonly_fields = ["created_at"]
     fieldsets = (
         (None, {"fields": ("created_at", "user", "group", "ticket")}),

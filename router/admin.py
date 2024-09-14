@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from simple_history.admin import SimpleHistoryAdmin
 
 from .models import TunnelIP, TunnelRouter
 
@@ -20,7 +21,7 @@ class TermInlineRouterTunnelIPAdmin(admin.TabularInline):
 
 
 @admin.register(TunnelRouter)
-class Router(admin.ModelAdmin):
+class Router(SimpleHistoryAdmin):
     fieldsets = (
         (None, {"fields": ("is_active", "noc", "hostname")}),
         ("comment", {"fields": ("comment",)}),
@@ -43,7 +44,7 @@ class Router(admin.ModelAdmin):
 
 
 @admin.register(TunnelIP)
-class TunnelIP(admin.ModelAdmin):
+class TunnelIP(SimpleHistoryAdmin):
     fieldsets = (
         (None, {"fields": ("is_active", "name", "tunnel_router", "ip_address")}),
         ("comment", {"fields": ("comment",)}),

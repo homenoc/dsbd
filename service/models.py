@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from custom_auth.models import Group
 from dsbd.models import MediumTextField
@@ -80,6 +81,7 @@ class Service(models.Model):
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     user_comment = MediumTextField("ユーザコメント", default="", blank=True)
     admin_comment = MediumTextField("管理者コメント", default="", blank=True)
+    history = HistoricalRecords()
 
     objects = ServiceManager()
 
@@ -192,6 +194,7 @@ class Connection(models.Model):
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     user_comment = MediumTextField("ユーザコメント", default="", blank=True)
     admin_comment = MediumTextField("管理者コメント", default="", blank=True)
+    history = HistoricalRecords()
 
     objects = ConnectionManager()
 

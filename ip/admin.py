@@ -1,4 +1,5 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 
 from .models import IP, JPNICUser
 
@@ -15,7 +16,7 @@ class TermInlineJPNICUserAdmin(admin.TabularInline):
 
 
 @admin.register(IP)
-class IP(admin.ModelAdmin):
+class IP(SimpleHistoryAdmin):
     fieldsets = (
         (
             None,
@@ -49,7 +50,7 @@ class IP(admin.ModelAdmin):
 
 
 @admin.register(JPNICUser)
-class JPNICUser(admin.ModelAdmin):
+class JPNICUser(SimpleHistoryAdmin):
     fieldsets = (
         (
             None,

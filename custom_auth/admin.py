@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from simple_history.admin import SimpleHistoryAdmin
 
 from custom_auth.models import Group, TOTPDevice, User, UserActivateToken
 from ip.models import JPNICUser
@@ -46,7 +47,7 @@ class TermInlineGroupJPNICAdmin(admin.TabularInline):
 
 
 @admin.register(User)
-class User(admin.ModelAdmin):
+class User(SimpleHistoryAdmin):
     fieldsets = (
         (None, {"fields": ("username", "username_jp", "password")}),
         ("Personal info", {"fields": ("email",)}),
@@ -77,7 +78,7 @@ class User(admin.ModelAdmin):
 
 
 @admin.register(Group)
-class Group(admin.ModelAdmin):
+class Group(SimpleHistoryAdmin):
     fieldsets = (
         (None, {"fields": ("name", "name_jp", "allow_service_add", "allow_jpnic_add", "is_pass", "comment")}),
         ("Membership", {"fields": ("membership_type", "membership_expired_at")}),

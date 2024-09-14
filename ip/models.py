@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from custom_auth.models import Group
 from dsbd.models import MediumTextField
@@ -48,6 +49,7 @@ class IP(models.Model):
         through_fields=("ip", "jpnic_user"),
         related_name="jpnic_user_set",
     )
+    history = HistoricalRecords()
 
     def __str__(self):
         return "%d: %s/%s" % (self.id, self.ip_address, self.subnet)
@@ -101,6 +103,7 @@ class JPNICUser(models.Model):
         through_fields=("jpnic_user", "ip"),
         related_name="jpnic_set",
     )
+    history = HistoricalRecords()
 
     def __str__(self):
         return "%d: %s(%s)" % (self.id, self.name, self.name_jp)
@@ -131,6 +134,7 @@ class IPJPNICUser(models.Model):
     user_type = models.CharField(
         "タイプ", max_length=255, choices=JPNIC_USER_TYPE_CHOICES, default=JPNIC_USER_TYPE_ADMIN
     )
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "IP・JPNIC User"

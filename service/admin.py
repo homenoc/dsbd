@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from simple_history.admin import SimpleHistoryAdmin
 
 from ip.models import IP
 
@@ -36,7 +37,7 @@ class TermInlineServiceConnectionAdmin(admin.TabularInline):
 
 
 @admin.register(Service)
-class Service(admin.ModelAdmin):
+class Service(SimpleHistoryAdmin):
     fieldsets = (
         (None, {"fields": ("is_active", "is_pass", "allow_connection_add", "group")}),
         ("service", {"fields": ("service_type", "service_number", "start_at", "end_at", "asn")}),
@@ -65,7 +66,7 @@ class Service(admin.ModelAdmin):
 
 
 @admin.register(Connection)
-class Connection(admin.ModelAdmin):
+class Connection(SimpleHistoryAdmin):
     fieldsets = (
         (
             None,

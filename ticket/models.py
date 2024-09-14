@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+from simple_history.models import HistoricalRecords
 
 from custom_auth.models import Group, User
 from dsbd.models import MediumTextField
@@ -42,6 +43,7 @@ class Ticket(models.Model):
     is_approve = models.BooleanField("承認済み", default=False)
     is_reject = models.BooleanField("拒否済み", default=False)
     from_admin = models.BooleanField("運営委員から起票", default=False)
+    history = HistoricalRecords()
 
     objects = TicketManager()
 
@@ -63,6 +65,7 @@ class Chat(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     body = MediumTextField(verbose_name="内容", default="", blank=True)
     is_admin = models.BooleanField("運営委員がコメント", default=False)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "チャット"

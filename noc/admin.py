@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from simple_history.admin import SimpleHistoryAdmin
 
 from router.models import TunnelRouter
 
@@ -22,7 +23,7 @@ class TermInlineNOCRouterAdmin(admin.TabularInline):
 
 
 @admin.register(NOC)
-class NOC(admin.ModelAdmin):
+class NOC(SimpleHistoryAdmin):
     fieldsets = (
         (
             None,
