@@ -13,6 +13,7 @@ from django.contrib.auth.views import (
     PasswordResetView,
 )
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -166,17 +167,16 @@ def index(request):
     # except (EmptyPage, InvalidPage):
     #     tickets = ticket_paginator.page(ticket_paginator.num_pages)
 
-    services = None
-
-    # group_filter = request.user.groups.filter(is_active=True)
-    # if group_filter.exists():
-    #     service_objects = Service.objects.get_service(groups=group_filter.all()).filter(is_active=True)
-    #     service_paginator = Paginator(service_objects, int(request.GET.get("ticket_per_page", "3")))
-    #     service_page = int(request.GET.get("ticket_page", "1"))
-    #     try:
-    #         services = service_paginator.page(service_page)
-    #     except (EmptyPage, InvalidPage):
-    #         services = service_paginator.page(service_paginator.num_pages)
+    # Service一覧を取得
+    groups = request.user.groups.prefetch_related(Prefetch("ServiceGroup"))
+    services = []
+    active_services = []
+    is_not_pass_services = []
+    for group in groups:
+        group_services = group.ServiceGroup.prefetch_related(Prefetch("ConnectionService")).all()
+        services.extend(group_services)
+        active_services.extend([service for service in group_services if service.is_pass and service.is_active])
+        is_not_pass_services.extend([service for service in group_services if not service.is_pass])
 
     if request.method == "POST":
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -201,11 +201,12 @@ def index(request):
                     customer=request.user.stripe_customer_id, return_url=settings.DOMAIN_URL
                 )
                 return redirect(session.url, code=303)
-
     context = {
         "notices": notices,
         # "tickets": tickets,
         "services": services,
+        "active_services": active_services,
+        "is_not_pass_services": is_not_pass_services,
         "is_new_group_request": is_new_group_request,
     }
     return render(request, "home.html", context)

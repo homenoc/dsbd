@@ -17,7 +17,7 @@
         <div class="container py-4 mb-auto">
           <div class="h-900 p-2 rounded-3">
             <h2>お知らせ</h2>
-            {% if request.user.groups.count == 0 %}
+            {% if not request.user.groups %}
               <div class="card text-bg-light mb-3">
                 <div class="card-body">
                   <h5 class="card-title">グループの新規申請手続き</h5>
@@ -31,7 +31,29 @@
               <div class="card text-bg-warning mb-3">
                 <div class="card-body">
                   <h5 class="card-title"><b>グループの申請処理中</b></h5>
-                  <p class="card-text">現在、グループの申請処理中です。<br/>この作業には時間が掛かる可能性があります。</p>
+                  <p class="card-text">現在、グループの申請処理中です。<br/>この作業には時間が掛かる可能性があります。
+                  </p>
+                </div>
+              </div>
+            {% endif %}
+            {% if not active_services and not is_not_pass_services %}
+              <div class="card text-bg-light mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">サービスの新規申請手続き</h5>
+                  <p class="card-text">
+                    サービスの新規申請手続きを行ってください<br/>
+                    グループページからサービス情報ページの「サービス登録」ボタンから申請可能です。
+                  </p>
+                  <a href="{% url 'custom_auth_group:index' %}" class="btn btn-sm btn-primary">申請はこちらから</a>
+                </div>
+              </div>
+            {% endif %}
+            {% if is_not_pass_services %}
+              <div class="card text-bg-warning mb-3">
+                <div class="card-body">
+                  <h5 class="card-title"><b>サービスの申請処理中</b></h5>
+                  <p class="card-text">現在、グループの申請処理中です。<br/>この作業には時間が掛かる可能性があります。
+                  </p>
                 </div>
               </div>
             {% endif %}

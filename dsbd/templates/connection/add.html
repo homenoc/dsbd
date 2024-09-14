@@ -1,0 +1,218 @@
+{% extends 'base2.html' %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">接続情報新規申請</h2>
+          <br/>
+          <form method="post" class="h-adr">
+            {% csrf_token %}
+            <h4>0. サービス情報</h4>
+            <input type="text" class="form-control" value="{{ service_code }}" disabled>
+            <br/>
+            <h4>{{ form.connection_type.label }}</h4>
+            {{ form.connection_type }}
+            {% if form.connection_type.errors %}
+              <p class="link-danger">{{ form.connection_type.errors | striptags }}</p>
+            {% endif %}
+            <div id="connectionCommentField" style="display: none;">
+              <h5>{{ form.connection_comment.label }}</h5>
+              {{ form.connection_comment }}
+              {% if form.connection_comment.errors %}
+                <p class="link-danger">{{ form.connection_comment.errors | striptags }}</p>
+              {% endif %}
+            </div>
+            <br/>
+            {% if  is_ipv4_bgp or is_ipv6_bgp %}
+              <h5>1.2.広報する経路</h5>
+              <div class="container">
+                <div class="row align-items-start">
+                  {% if is_ipv4_bgp %}
+                    <div class="col">
+                      <h5>{{ form.ipv4_route.label }}</h5>
+                      {{ form.ipv4_route }}
+                      {% if form.ipv4_route.errors %}
+                        <p class="link-danger">{{ form.ipv4_route.errors | striptags }}</p>
+                      {% endif %}
+                      <br/>
+                      <h5>{{ form.ipv4_route_comment.label }}</h5>
+                      {{ form.ipv4_route_comment }}
+                      {% if form.ipv4_route_comment.errors %}
+                        <p class="link-danger">{{ form.ipv4_route_comment.errors | striptags }}</p>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                  {% if is_ipv6_bgp %}
+                    <div class="col">
+                      <h5>{{ form.ipv6_route.label }}</h5>
+                      {{ form.ipv6_route }}
+                      {% if form.ipv6_route.errors %}
+                        <p class="link-danger">{{ form.ipv6_route.errors | striptags }}</p>
+                      {% endif %}
+                      <br/>
+                      <h5>{{ form.ipv6_route_comment.label }}</h5>
+                      {{ form.ipv6_route_comment }}
+                      {% if form.ipv6_route_comment.errors %}
+                        <p class="link-danger">{{ form.ipv6_route_comment.errors | striptags }}</p>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              <br/>
+            {% endif %}
+            <h4>2. 接続情報や場所など</h4>
+            <h5>{{ form.hope_location.label }}</h5>
+            {{ form.hope_location }}
+            {% if form.hope_location.errors %}
+              <p class="link-danger">{{ form.hope_location.errors | striptags }}</p>
+            {% endif %}
+            <br/>
+            <h5>{{ form.term_location.label }}</h5>
+            {{ form.term_location }}
+            {% if form.term_location.errors %}
+              <p class="link-danger">{{ form.term_location.errors | striptags }}</p>
+            {% endif %}
+            <br/>
+            <div id="termField" style="display: none;">
+              <h5>{{ form.term_ip.label }}</h5>
+              {{ form.term_ip }}
+              {% if form.term_ip.errors %}
+                <p class="link-danger">{{ form.term_ip.errors | striptags }}</p>
+              {% endif %}
+              <br/>
+              <h5>{{ form.ntt_type.label }}</h5>
+              {{ form.ntt_type }}
+              {% if form.ntt_type.errors %}
+                <p class="link-danger">{{ form.ntt_type.errors | striptags }}</p>
+              {% endif %}
+              <br/>
+              <div id="nttCommentField" style="display: none;">
+                <h5>{{ form.ntt_comment.label }}</h5>
+                {{ form.ntt_comment }}
+                {% if form.ntt_comment.errors %}
+                  <p class="link-danger">{{ form.ntt_comment.errors | striptags }}</p>
+                {% endif %}
+                <br/>
+              </div>
+              <br/>
+            </div>
+            <h4>3. 利用開始・終了日</h4>
+            <p>(最短で1週間後から選択できます)</p>
+            <div class="container">
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.start_date.label }}</h5>
+                  {{ form.start_date }}
+                  {% if form.start_date.errors %}
+                    <p class="link-danger">{{ form.start_date.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.end_date.label }}</h5>
+                  <div id="endDateField" style="display: none;">
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                      <p class="link-danger">{{ form.end_date.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="form-check">
+                    {{ form.no_end_date }}
+                    <label class="form-check-label">
+                      {{ form.no_end_date.label }}
+                    </label>
+                    {% if form.no_end_date.errors %}
+                      <p class="link-danger">{{ form.no_end_date.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br/>
+            <h4>{{ form.is_monitor.label }}</h4>
+            <div class="form-check">
+              {{ form.is_monitor }}
+              <label class="form-check-label">監視あり</label>
+              {% if form.is_monitor.errors %}
+                <p class="link-danger">{{ form.is_monitor.errors | striptags }}</p>
+              {% endif %}
+            </div>
+            <br/>
+            <h4>{{ form.comment.label }}</h4>
+            {{ form.comment }}
+            {% if form.comment.errors %}
+              <p class="link-danger">{{ form.comment.errors | striptags }}</p>
+            {% endif %}
+            <br/>
+            <br/>
+            <button type="submit" class="btn btn-primary">登録</button>
+          </form>
+          {% if request.user.allow_group_add %}
+          {% else %}
+            <p>
+              <b>新規にグループを登録したい又は既存の登録グループを紐づけたい方は、チケットページよりお問い合わせください</b>
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script>
+    $(document).ready(function () {
+      checkConnectionTypeForm();
+      checkNoEndDateForm();
+      checkNTTCommentForm();
+
+      // サービス種別フォーム変化時
+      $('#id_connection_type').change(function () {
+        checkConnectionTypeForm();
+      });
+      // 終了未定種別フォーム変化時
+      $('#id_no_end_date').change(function () {
+        checkNoEndDateForm();
+      });
+      // 終了未定種別フォーム変化時
+      $('#id_ntt_type').change(function () {
+        checkNTTCommentForm();
+      });
+
+
+      // サービス種別からIP3B,ET00かどうかを判別する
+      function checkConnectionTypeForm() {
+        const selectedValue = $('#id_connection_type').val();
+        if (selectedValue === 'ETC') {
+          $('#connectionCommentField').show();
+        } else {
+          $('#connectionCommentField').hide();
+        }
+
+        if (selectedValue !== 'CC0') {
+          $('#termField').show();
+        } else {
+          $('#termField').hide();
+        }
+      }
+
+      // 終了未定種別がFalseの場合に利用終了日のフォームを出す
+      function checkNoEndDateForm() {
+        if ($('#id_no_end_date').is(':checked')) {
+          $('#endDateField').hide();
+        } else {
+          $('#endDateField').show();
+        }
+      }
+
+      function checkNTTCommentForm() {
+        const selectedValue = $('#id_ntt_type').val();
+        if (selectedValue === 'etc') {
+          $('#nttCommentField').show();
+        } else {
+          $('#nttCommentField').hide();
+        }
+      }
+    });
+  </script>
+{% endblock javascript %}

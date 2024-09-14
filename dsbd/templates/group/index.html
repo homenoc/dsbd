@@ -45,6 +45,10 @@
                          href="{% url 'custom_auth_group:edit' e.group.id %}">情報閲覧・修正</a>
                       <a class="btn btn-primary btn-sm"
                          href="{% url 'custom_auth_group:permission' e.group.id %}">権限設定</a>
+                      <a class="btn btn-primary btn-sm"
+                         href="{{ e.group.id }}/service">サービス情報</a>
+                      <a class="btn btn-primary btn-sm"
+                         href="{{ e.group.id }}/jpnic">JPNIC情報</a>
                       <br/>
                       <br/>
                       {% if e.administrator %}

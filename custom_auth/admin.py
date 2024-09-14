@@ -1,16 +1,48 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
 
 from custom_auth.models import Group, TOTPDevice, User, UserActivateToken
+from ip.models import JPNICUser
+from service.models import Service
 
 
 class TermInlineUserAdmin(admin.TabularInline):
     model = User.groups.through
-    extra = 1
+    extra = 0
 
 
 class TermInlineGroupAdmin(admin.TabularInline):
     model = Group.users.through
-    extra = 1
+    extra = 0
+
+
+class TermInlineGroupServiceAdmin(admin.TabularInline):
+    model = Service
+    extra = 0
+    fields = ("service_code", "service_type", "service_number", "is_active", "is_pass")
+    readonly_fields = ("service_code", "service_type", "service_number", "is_active", "is_pass")
+
+    def service_code(self, obj):
+        # 管理ページの編集ページへのリンクを生成
+        url = reverse("admin:service_service_change", args=[obj.id])
+        return format_html('<a href="{}" target="__blank__">{}</a>', url, obj.service_code)
+
+    service_code.short_description = "ServiceCode"
+
+
+class TermInlineGroupJPNICAdmin(admin.TabularInline):
+    model = JPNICUser
+    extra = 0
+    fields = ("id_link", "jpnic_handle", "name", "org", "is_pass")
+    readonly_fields = ("id_link", "jpnic_handle", "name", "org", "is_pass")
+
+    def id_link(self, obj):
+        # 管理ページの編集ページへのリンクを生成
+        url = reverse("admin:ip_jpnicuser_change", args=[obj.id])
+        return format_html('<a href="{}" target="__blank__">{}</a>', url, obj.id)
+
+    id_link.short_description = "ID"
 
 
 @admin.register(User)
@@ -47,7 +79,7 @@ class User(admin.ModelAdmin):
 @admin.register(Group)
 class Group(admin.ModelAdmin):
     fieldsets = (
-        (None, {"fields": ("name", "name_jp", "allow_service_add", "is_pass", "comment")}),
+        (None, {"fields": ("name", "name_jp", "allow_service_add", "allow_jpnic_add", "is_pass", "comment")}),
         ("Membership", {"fields": ("membership_type", "membership_expired_at")}),
         ("Question", {"fields": ("agree", "question")}),
         ("Stripe", {"fields": ("stripe_customer_id", "stripe_subscription_id")}),
@@ -85,7 +117,11 @@ class Group(admin.ModelAdmin):
         "updated_at",
     )
 
-    inlines = (TermInlineGroupAdmin,)
+    inlines = (
+        TermInlineGroupAdmin,
+        TermInlineGroupServiceAdmin,
+        TermInlineGroupJPNICAdmin,
+    )
 
 
 @admin.register(UserActivateToken)

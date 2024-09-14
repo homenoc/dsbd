@@ -5,31 +5,18 @@ from custom_auth.models import Group
 from dsbd.models import MediumTextField
 from service.models import Service
 
-SERVICE_L2 = "2000"
-SERVICE_L3_STATIC = "3S00"
-SERVICE_L3_BGP = "3B00"
-SERVICE_TRANSIT = "IP3B"
-SERVICE_COLO_L2 = "CL20"
-SERVICE_COLO_L3_STATIC = "CL3S"
-SERVICE_COLO_L3_BGP = "CL3B"
-SERVICE_ETC = "ET00"
-
-SERVICE_CHOICES = (
-    (SERVICE_L2, "L2"),
-    (SERVICE_L3_STATIC, "L3 Static"),
-    (SERVICE_L3_BGP, "L3 BGP"),
-    (SERVICE_TRANSIT, "トランジット提供"),
-    (SERVICE_COLO_L2, "コロケーションサービス(L2)"),
-    (SERVICE_COLO_L3_STATIC, "コロケーションサービス(L3 Static)"),
-    (SERVICE_COLO_L3_BGP, "コロケーションサービス(L3 BGP)"),
-    (SERVICE_ETC, "その他"),
-)
-
 OWNER_TYPE_FROM_OUR = "form_our"
 OWNER_TYPE_FROM_YOUR = "form_your"
 OWNER_TYPE_CHOICES = (
     (OWNER_TYPE_FROM_OUR, "当団体から割当"),
     (OWNER_TYPE_FROM_YOUR, "貴団体から割当"),
+)
+
+IP_VERSION_4 = 4
+IP_VERSION_6 = 6
+IP_VERSION_CHOICES = (
+    (IP_VERSION_4, "IPv4"),
+    (IP_VERSION_6, "IPv6"),
 )
 
 
@@ -42,15 +29,17 @@ class IP(models.Model):
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     is_active = models.BooleanField("有効", default=True)
+    is_pass = models.BooleanField("審査OK", default=False)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, related_name="IPService", null=True, blank=True)
-    ip_address = models.GenericIPAddressField("IP Address", unique=True, null=True, blank=True)
+    version = models.IntegerField("IPバージョン", choices=IP_VERSION_CHOICES, default=IP_VERSION_4)
+    ip_address = models.GenericIPAddressField("IP Address", null=True, blank=True)
     subnet = models.IntegerField("サブネット", default=32)
     owner = models.CharField(
         "アドレス所持オーナ", default=OWNER_TYPE_FROM_OUR, choices=OWNER_TYPE_CHOICES, max_length=255
     )
     start_at = models.DateTimeField("開通日", null=True, blank=True)
     end_at = models.DateTimeField("解約日", null=True, blank=True)
-    plan = models.JSONField("プラン", null=True, blank=True)
+    ipv4_plan = models.JSONField("IPv4プラン", null=True, blank=True)
     use_case = MediumTextField("使用用途", default="", blank=True)
     jpnic_user = models.ManyToManyField(
         "JPNICUser",
@@ -78,20 +67,22 @@ class JPNICUser(models.Model):
         ordering = ("id",)
         verbose_name = "JPNIC User"
         verbose_name_plural = "JPNIC Users"
+        unique_together = ("group", "jpnic_handle", "version", "name", "name_jp")
 
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    is_active = models.BooleanField("有効", default=True)
+    group = models.ForeignKey(Group, related_name="JPNICUserGroup", on_delete=models.CASCADE)
+    is_pass = models.BooleanField("審査OK", default=False)
     hidden = models.BooleanField("隠蔽", default=False)
     handle_type = models.CharField(
         "ハンドルタイプ", max_length=255, choices=HANDLE_TYPE_CHOICES, default=HANDLE_TYPE_JPNIC
     )
+    version = models.IntegerField("IPバージョン", choices=IP_VERSION_CHOICES, default=IP_VERSION_4)
     jpnic_handle = models.CharField("JPNIC Handle", max_length=100, blank=True)
     name = models.CharField("name", max_length=150)
     name_jp = models.CharField("name(japanese)", max_length=150)
     email = models.EmailField("E-Mail", max_length=150)
-    org = models.CharField("Org", max_length=150, unique=True)
+    org = models.CharField("Org", max_length=150)
     org_jp = models.CharField("Org(japanese)", max_length=150)
     postcode = models.CharField("郵便番号", max_length=20, default="")
     address = models.CharField("住所", max_length=250, default="")
@@ -144,7 +135,7 @@ class IPJPNICUser(models.Model):
     class Meta:
         verbose_name = "IP・JPNIC User"
         verbose_name_plural = "IP・JPNIC Users"
-        unique_together = ("jpnic_user", "ip")
+        unique_together = ("jpnic_user", "ip", "user_type")
 
     def __str__(self):
         return "%s" % (self.id,)

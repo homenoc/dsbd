@@ -1,0 +1,114 @@
+{% extends 'base2.html' %}
+{% block content %}
+
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">JPNIC情報の修正</h2>
+          <br/>
+          {% if error %}
+            <div class="alert alert-danger" role="alert">
+              {{ error }}
+            </div>
+            <br/>
+          {% endif %}
+          <form method="post" class="h-adr">
+            {% csrf_token %}
+            <h4>JPNIC管理者情報</h4>
+            <div class="container">
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.handle_type.label }}</h5>
+                  {{ form.handle_type }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.jpnic_handle.label }}</h5>
+                  {{ form.jpnic_handle }}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.name_jp.label }}</h5>
+                  {{ form.name_jp }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.name.label }}</h5>
+                  {{ form.name }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.email.label }}</h5>
+                  {{ form.email }}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.org_jp.label }}</h5>
+                  {{ form.org_jp }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.org.label }}</h5>
+                  {{ form.org }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.postcode.label }}</h5>
+                  {{ form.postcode }}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.address_jp.label }}</h5>
+                  {{ form.address_jp }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.address.label }}</h5>
+                  {{ form.address }}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.dept_jp.label }}</h5>
+                  {{ form.dept_jp }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.dept.label }}</h5>
+                  {{ form.dept }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.title_jp.label }}</h5>
+                  {{ form.title_jp }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.title.label }}</h5>
+                  {{ form.title }}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.tel.label }}</h5>
+                  {{ form.tel }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.fax.label }}</h5>
+                  {{ form.fax }}
+                </div>
+                <div class="col">
+                  <h5>{{ form.country.label }}</h5>
+                  {{ form.country }}
+                </div>
+              </div>
+            </div>
+            <br/>
+            <br/>
+            <button type="submit" class="btn btn-primary">登録</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

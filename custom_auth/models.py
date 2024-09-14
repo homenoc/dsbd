@@ -82,6 +82,7 @@ class Group(models.Model):  # noqa: F811
     comment = models.CharField("comment", max_length=250, default="", blank=True)
     status = models.IntegerField("ステータス", default=1, choices=GROUP_STATUS_CHOICES)
     allow_service_add = models.BooleanField("サービス追加許可", default=False)
+    allow_jpnic_add = models.BooleanField("JPNIC情報追加許可", default=False)
     membership_type = models.IntegerField("会員種別", default=1, choices=MEMBERSHIP_TYPE_CHOICES)
     membership_expired_at = models.DateTimeField("有効期限", blank=True, null=True)
 

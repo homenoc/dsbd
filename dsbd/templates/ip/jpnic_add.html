@@ -1,0 +1,174 @@
+{% extends 'base2.html' %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">JPNIC情報の追加</h2>
+          <br/>
+          {% if error %}
+            <div class="alert alert-danger" role="alert">
+              {{ error }}
+            </div>
+            <br/>
+          {% endif %}
+          <form method="post" class="h-adr">
+            {% csrf_token %}
+            <h4>JPNIC管理者情報</h4>
+            <div class="alert alert-warning" role="alert">
+              IPv4とIPv6は別でJPNICハンドルが必要になるため、別々に登録する必要があります<br/>
+            </div>
+            <div class="container">
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.version.label }}</h5>
+                  {{ form.version }}
+                  {% if form.version.errors %}
+                    <p class="link-danger">{{ form.version.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.handle_type.label }}</h5>
+                  {{ form.handle_type }}
+                  {% if form.handle_type.errors %}
+                    <p class="link-danger">{{ form.handle_type.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.jpnic_handle.label }}</h5>
+                  {{ form.jpnic_handle }}
+                  {% if form.jpnic_handle.errors %}
+                    <p class="link-danger">{{ form.jpnic_handle.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.name_jp.label }}</h5>
+                  {{ form.name_jp }}
+                  {% if form.name_jp.errors %}
+                    <p class="link-danger">{{ form.name_jp.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.name.label }}</h5>
+                  {{ form.name }}
+                  {% if form.name.errors %}
+                    <p class="link-danger">{{ form.name.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.email.label }}</h5>
+                  {{ form.email }}
+                  {% if form.email.errors %}
+                    <p class="link-danger">{{ form.email.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.org_jp.label }}</h5>
+                  {{ form.org_jp }}
+                  {% if form.org_jp.errors %}
+                    <p class="link-danger">{{ form.org_jp.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.org.label }}</h5>
+                  {{ form.org }}
+                  {% if form.org.errors %}
+                    <p class="link-danger">{{ form.org.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.postcode.label }}</h5>
+                  {{ form.postcode }}
+                  {% if form.postcode.errors %}
+                    <p class="link-danger">{{ form.postcode.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.address_jp.label }}</h5>
+                  {{ form.address_jp }}
+                  {% if form.address_jp.errors %}
+                    <p class="link-danger">{{ form.address_jp.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.address.label }}</h5>
+                  {{ form.address }}
+                  {% if form.address.errors %}
+                    <p class="link-danger">{{ form.address.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.dept_jp.label }}</h5>
+                  {{ form.dept_jp }}
+                  {% if form.dept_jp.errors %}
+                    <p class="link-danger">{{ form.dept_jp.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.dept.label }}</h5>
+                  {{ form.dept }}
+                  {% if form.dept.errors %}
+                    <p class="link-danger">{{ form.dept.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.title_jp.label }}</h5>
+                  {{ form.title_jp }}
+                  {% if form.title_jp.errors %}
+                    <p class="link-danger">{{ form.title_jp.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.title.label }}</h5>
+                  {{ form.title }}
+                  {% if form.title.errors %}
+                    <p class="link-danger">{{ form.title.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <br/>
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.tel.label }}</h5>
+                  {{ form.tel }}
+                  {% if form.tel.errors %}
+                    <p class="link-danger">{{ form.tel.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.fax.label }}</h5>
+                  {{ form.fax }}
+                  {% if form.fax.errors %}
+                    <p class="link-danger">{{ form.fax.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.country.label }}</h5>
+                  {{ form.country }}
+                  {% if form.country.errors %}
+                    <p class="link-danger">{{ form.country.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <br/>
+            <br/>
+            <button type="submit" class="btn btn-primary">更新</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

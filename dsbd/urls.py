@@ -33,9 +33,11 @@ urlpatterns = [
     path("forget/complete/", views.PasswordResetComplete.as_view(), name="password_reset_complete"),
     path("activate/<uuid:activate_token>/", views.activate_user, name="activate_user"),
     path("group/", include("custom_auth.group_urls")),
+    path("group/<int:group_id>/jpnic/", include("ip.jpnic_urls")),
+    path("group/<int:group_id>/service/", include("service.group_urls")),
+    path("services/", include("service.urls")),
     path("profile/", include("custom_auth.urls")),
     path("ticket/", include("ticket.urls")),
-    path("service/", include("service.urls")),
     path("feedback/", views.feedback, name="feedback"),
 ]
 

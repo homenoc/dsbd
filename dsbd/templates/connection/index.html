@@ -50,9 +50,6 @@
           {% if services %}
             {% for service in services %}
               <div class="card">
-                <div class="card-header">
-                  <b>[Service] {{ service.service_code }}</b>
-                </div>
                 <div class="card-body">
                   {% if not service.is_pass %}
                     <div class="alert alert-warning" role="alert">
@@ -114,12 +111,7 @@
 
                             {% for ip in service.IPService.all %}
                               <tr>
-                                <td>{{ ip.ip_address }}/{{ ip.subnet }}
-                                  {% if ip.is_pass %}
-                                    <span class="badge bg-success">審査OK</span>
-                                  {% else %}
-                                    <span class="badge bg-danger">未審査</span>
-                                  {% endif %}</td>
+                                <td>{{ ip.ip_address }}/{{ ip.subnet }}</td>
                                 <td>{{ ip.get_owner_display }}</td>
                               </tr>
                             {% endfor %}

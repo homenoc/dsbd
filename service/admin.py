@@ -1,6 +1,38 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
+
+from ip.models import IP
 
 from .models import Connection, Service
+
+
+class TermInlineServiceIPAdmin(admin.TabularInline):
+    model = IP
+    extra = 0
+    fields = ("id_link", "ip_address", "subnet", "is_active", "is_pass")
+    readonly_fields = ("id_link",)
+
+    def id_link(self, obj):
+        # 管理ページの編集ページへのリンクを生成
+        url = reverse("admin:ip_ip_change", args=[obj.id])
+        return format_html('<a href="{}" target="__blank__">{}</a>', url, obj.id)
+
+    id_link.short_description = "ID"
+
+
+class TermInlineServiceConnectionAdmin(admin.TabularInline):
+    model = Connection
+    extra = 0
+    fields = ("id_link", "is_active", "is_open")
+    readonly_fields = ("id_link",)
+
+    def id_link(self, obj):
+        # 管理ページの編集ページへのリンクを生成
+        url = reverse("admin:service_connection_change", args=[obj.id])
+        return format_html('<a href="{}" target="__blank__">{}</a>', url, obj.service_code)
+
+    id_link.short_description = "ID"
 
 
 @admin.register(Service)
@@ -26,6 +58,10 @@ class Service(admin.ModelAdmin):
     list_display = ("service_code", "is_active", "is_pass", "group", "start_at", "end_at")
     list_filter = ("end_at",)
     search_fields = ("service_code", "is_active", "service_type")
+    inlines = [
+        TermInlineServiceIPAdmin,
+        TermInlineServiceConnectionAdmin,
+    ]
 
 
 @admin.register(Connection)

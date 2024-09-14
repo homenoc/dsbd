@@ -1,0 +1,304 @@
+{% extends 'base2.html' %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">サービス新規申請</h2>
+          <br/>
+          <form method="post" class="h-adr">
+            {% csrf_token %}
+            <h4>1. 申請内容</h4>
+            <h5>{{ form.service_type.label }}</h5>
+            {{ form.service_type }}
+            {% if form.service_type.errors %}
+              <p class="link-danger">{{ form.service_type.errors | striptags }}</p>
+            {% endif %}
+            <div id="serviceTypeCommentField" style="display: none;">
+              <h5>{{ form.service_type_comment.label }}</h5>
+              {{ form.service_type_comment }}
+              {% if form.service_type_comment.errors %}
+                <p class="link-danger">{{ form.service_type_comment.errors | striptags }}</p>
+              {% endif %}
+            </div>
+            <br/>
+            <div id="asnField" style="display: none;">
+              <h5>{{ form.asn.label }}</h5>
+              {{ form.asn }}
+              {% if form.asn.errors %}
+                <p class="link-danger">{{ form.asn.errors | striptags }}</p>
+              {% endif %}
+              <br/>
+              <h5>1.3.広報する経路</h5>
+              <div class="container">
+                <div class="row align-items-start">
+                  <div class="alert alert-secondary" role="alert">
+                    複数のアドレスを広報する場合は、カンマ区切りで入力してください。<br/>
+                  </div>
+                  <div class="col">
+                    <div id="ipv4-fields">
+                      <h5>{{ form.ipv4_address.label }}</h5>
+                      {{ form.ipv4_address }}<br>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div id="ipv6-fields">
+                      <h4>{{ form.ipv6_address.label }}</h4>
+                      {{ form.ipv6_address }}<br>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br/>
+            </div>
+            <div id="assignIPField" style="display: none;">
+              <div class="alert alert-warning" role="alert">
+                本サービス種別の場合、当団体がアドレスのアサインを行うため、JPNIC情報を事前に登録する必要があります。<br/>
+                詳しい内容は、<b>「1.4. JPNIC情報フォーム」</b>をご覧ください<br/>
+              </div>
+              <div class="container">
+                <div class="row align-items-start">
+                  <div class="col">
+                    <h5>{{ form.assign_v4_subnet.label }}</h5>
+                    {{ form.assign_v4_subnet }}
+                    {% if form.assign_v4_subnet.errors %}
+                      <p class="link-danger">{{ form.assign_v4_subnet.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="col">
+                    <h5>{{ form.assign_v6_subnet.label }}</h5>
+                    {{ form.assign_v6_subnet }}
+                    {% if form.assign_v6_subnet.errors %}
+                      <p class="link-danger">{{ form.assign_v6_subnet.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <br/>
+              <h5>{{ form.ipv4_plan.label }}</h5>
+              <div class="alert alert-warning" role="alert">
+                「用途,割当直後のホスト数(25%以上),割当6ヶ月後のホスト数(50%以上),割当12ヶ月後(75%以上),その他」をcsv形式で入力してください。<br/>
+                 注意: ネットワークアドレスとブロードキャストアドレス分は必要ありません。(アドレス個数-2)<br/>
+                <code>
+                  --例--<br/>
+                  Webサーバ,1,2,2,なし<br/>
+                  DNSサーバ,1,2,2,なし<br/>
+                </code>
+              </div>
+              {{ form.ipv4_plan }}
+              {% if form.ipv4_plan.errors %}
+                <p class="link-danger">{{ form.ipv4_plan.errors | striptags }}</p>
+              {% endif %}
+              <br/>
+              <h5>1.4. JPNIC情報</h5>
+              <div class="alert alert-warning" role="alert">
+                このサービス種別の場合、当団体がアドレスのアサインを行うため、JPNIC情報を事前に登録する必要があります。<br/>
+                なお、JPNIC情報を登録後、更新ボタンを押してください。(もし、選択項目に反映されない場合はページをリロードしてください<br/>
+                <a class="btn btn-primary btn-sm"
+                   href="{% url 'jpnic:jpnic_index' group_id %}"
+                   target="_blank">JPNIC情報一覧と登録はこちらから</a>
+                <button type="submit" name="update_jpnic_users"
+                        class="btn btn-sm btn-secondary">更新
+                </button>
+              </div>
+              <div class="container">
+                <div class="row align-items-start">
+                  <div class="col">
+                    <h5>{{ form.ipv4_jpnic_admin.label }}</h5>
+                    {{ form.ipv4_jpnic_admin }}
+                    {% if form.ipv4_jpnic_admin.errors %}
+                      <p class="link-danger">{{ form.ipv4_jpnic_admin.errors | striptags }}</p>
+                    {% endif %}
+                    <br/>
+                    <h5>{{ form.ipv4_jpnic_tech1.label }}</h5>
+                    {{ form.ipv4_jpnic_tech1 }}
+                    {% if form.ipv4_jpnic_tech1.errors %}
+                      <p class="link-danger">{{ form.ipv4_jpnic_tech1.errors | striptags }}</p>
+                    {% endif %}
+                    <br/>
+                    <h5>{{ form.ipv4_jpnic_tech2.label }}</h5>
+                    {{ form.ipv4_jpnic_tech2 }}
+                    {% if form.ipv4_jpnic_tech2.errors %}
+                      <p class="link-danger">{{ form.ipv4_jpnic_tech2.errors | striptags }}</p>
+                    {% endif %}
+                    <br/>
+                    <h5>{{ form.ipv4_jpnic_tech3.label }}</h5>
+                    {{ form.ipv4_jpnic_tech3 }}
+                    {% if form.ipv4_jpnic_tech3.errors %}
+                      <p class="link-danger">{{ form.ipv4_jpnic_tech3.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="col">
+                    <h5>{{ form.ipv6_jpnic_admin.label }}</h5>
+                    {{ form.ipv6_jpnic_admin }}
+                    {% if form.ipv6_jpnic_admin.errors %}
+                      <p class="link-danger">{{ form.ipv6_jpnic_admin.errors | striptags }}</p>
+                    {% endif %}
+                    <br/>
+                    <h5>{{ form.ipv6_jpnic_tech1.label }}</h5>
+                    {{ form.ipv6_jpnic_tech1 }}
+                    {% if form.ipv6_jpnic_tech1.errors %}
+                      <p class="link-danger">{{ form.ipv6_jpnic_tech1.errors | striptags }}</p>
+                    {% endif %}
+                    <br/>
+                    <h5>{{ form.ipv6_jpnic_tech2.label }}</h5>
+                    {{ form.ipv6_jpnic_tech2 }}
+                    {% if form.ipv6_jpnic_tech2.errors %}
+                      <p class="link-danger">{{ form.ipv6_jpnic_tech2.errors | striptags }}</p>
+                    {% endif %}
+                    <br/>
+                    <h5>{{ form.ipv6_jpnic_tech3.label }}</h5>
+                    {{ form.ipv6_jpnic_tech3 }}
+                    {% if form.ipv6_jpnic_tech3.errors %}
+                      <p class="link-danger">{{ form.ipv6_jpnic_tech3.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <br/>
+            </div>
+            <br/>
+            <br/>
+            <h4>2. 利用開始・終了日</h4>
+            <p>(最短で1週間後から選択できます)</p>
+            <div class="container">
+              <div class="row align-items-start">
+                <div class="col">
+                  <h5>{{ form.start_date.label }}</h5>
+                  {{ form.start_date }}
+                  {% if form.start_date.errors %}
+                    <p class="link-danger">{{ form.start_date.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.end_date.label }}</h5>
+                  <div id="endDateField" style="display: none;">
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                      <p class="link-danger">{{ form.end_date.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="form-check">
+                    {{ form.no_end_date }}
+                    <label class="form-check-label">
+                      {{ form.no_end_date.label }}
+                    </label>
+                    {% if form.no_end_date.errors %}
+                      <p class="link-danger">{{ form.no_end_date.errors | striptags }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br/>
+            <br/>
+            <h4>3. 帯域など</h4>
+            <div class="container">
+              <div class="row align-items-end">
+                <div class="col">
+                  <h5>{{ form.ave_upstream.label }}</h5>
+                  {{ form.ave_upstream }}
+                  {% if form.ave_upstream.errors %}
+                    <p class="link-danger">{{ form.ave_upstream.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.max_upstream.label }}</h5>
+                  {{ form.max_upstream }}
+                  {% if form.max_upstream.errors %}
+                    <p class="link-danger">{{ form.max_upstream.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <br/>
+            <div class="container">
+              <div class="row align-items-end">
+                <div class="col">
+                  <h5>{{ form.ave_downstream.label }}</h5>
+                  {{ form.ave_downstream }}
+                  {% if form.ave_downstream.errors %}
+                    <p class="link-danger">{{ form.ave_downstream.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+                <div class="col">
+                  <h5>{{ form.max_downstream.label }}</h5>
+                  {{ form.max_downstream }}
+                  {% if form.max_downstream.errors %}
+                    <p class="link-danger">{{ form.max_downstream.errors | striptags }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <br/>
+            <h5>{{ form.max_bandwidth_as.label }}</h5>
+            {{ form.max_bandwidth_as }}
+            {% if form.max_bandwidth_as.errors %}
+              <p class="link-danger">{{ form.max_bandwidth_as.errors | striptags }}</p>
+            {% endif %}
+            <br/>
+            <br/>
+            <h4>{{ form.comment.label }}</h4>
+            {{ form.comment }}
+            {% if form.comment.errors %}
+              <p class="link-danger">{{ form.comment.errors | striptags }}</p>
+            {% endif %}
+            <br/>
+            <br/>
+            <button type="submit" class="btn btn-primary">登録</button>
+          </form>
+          {% if request.user.allow_group_add %}
+          {% else %}
+            <p>
+              <b>新規にグループを登録したい又は既存の登録グループを紐づけたい方は、チケットページよりお問い合わせください</b>
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script>
+    $(document).ready(function () {
+      checkServiceTypeForm();
+      checkNoEndDateForm();
+
+      // サービス種別フォーム変化時
+      $('#id_service_type').change(function () {
+        checkServiceTypeForm();
+      });
+      // 終了未定種別フォーム変化時
+      $('#id_no_end_date').change(function () {
+        checkNoEndDateForm();
+      });
+
+
+      // サービス種別からIP3B,ET00かどうかを判別する
+      function checkServiceTypeForm() {
+        const selectedValue = $('#id_service_type').val();
+        if (selectedValue !== 'IP3B') {
+          $('#assignIPField').show();
+        } else {
+          $('#assignIPField').hide();
+        }
+        if (selectedValue === 'ET00') {
+          $('#serviceTypeCommentField').show();
+        } else if (selectedValue === 'IP3B') {
+          $('#asnField').show();
+        } else {
+          $('#asnField').hide();
+        }
+      }
+
+      // 終了未定種別がFalseの場合に利用終了日のフォームを出す
+      function checkNoEndDateForm() {
+        if ($('#id_no_end_date').is(':checked')) {
+          $('#endDateField').hide();
+        } else {
+          $('#endDateField').show();
+        }
+      }
+    });
+  </script>
+{% endblock javascript %}

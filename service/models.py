@@ -15,32 +15,49 @@ class ServiceManager(models.Manager):
         )
         return notices
 
+    def get_new_number(self, group_id: int):
+        number = 1
+        for service in self.filter(group_id=group_id):
+            if service.service_number >= number:
+                number = service.service_number + 1
+        return number
+
+
+class ConnectionManager(models.Manager):
+    def get_new_number(self, service_id: int):
+        number = 1
+        for connection in self.filter(service_id=service_id):
+            if connection.connection_number >= number:
+                number = connection.connection_number + 1
+        return number
+
+
+SERVICE_L2 = "2000"
+SERVICE_L3_STATIC = "3S00"
+SERVICE_L3_BGP = "3B00"
+SERVICE_TRANSIT = "IP3B"
+SERVICE_COLO_L2 = "CL20"
+SERVICE_COLO_L3_STATIC = "CL3S"
+SERVICE_COLO_L3_BGP = "CL3B"
+SERVICE_ETC = "ET00"
+
+SERVICE_CHOICES = (
+    (SERVICE_L2, "L2"),
+    (SERVICE_L3_STATIC, "L3 Static"),
+    (SERVICE_L3_BGP, "L3 BGP"),
+    (SERVICE_TRANSIT, "トランジット提供"),
+    (SERVICE_COLO_L2, "コロケーションサービス(L2)"),
+    (SERVICE_COLO_L3_STATIC, "コロケーションサービス(L3 Static)"),
+    (SERVICE_COLO_L3_BGP, "コロケーションサービス(L3 BGP)"),
+    (SERVICE_ETC, "その他"),
+)
+
 
 class Service(models.Model):
     class Meta:
         ordering = ("id",)
         verbose_name = "Service"
         verbose_name_plural = "Services"
-
-    SERVICE_L2 = "2000"
-    SERVICE_L3_STATIC = "3S00"
-    SERVICE_L3_BGP = "3B00"
-    SERVICE_TRANSIT = "IP3B"
-    SERVICE_COLO_L2 = "CL20"
-    SERVICE_COLO_L3_STATIC = "CL3S"
-    SERVICE_COLO_L3_BGP = "CL3B"
-    SERVICE_ETC = "ET00"
-
-    SERVICE_CHOICES = (
-        (SERVICE_L2, "L2"),
-        (SERVICE_L3_STATIC, "L3 Static"),
-        (SERVICE_L3_BGP, "L3 BGP"),
-        (SERVICE_TRANSIT, "トランジット提供"),
-        (SERVICE_COLO_L2, "コロケーションサービス(L2)"),
-        (SERVICE_COLO_L3_STATIC, "コロケーションサービス(L3 Static)"),
-        (SERVICE_COLO_L3_BGP, "コロケーションサービス(L3 BGP)"),
-        (SERVICE_ETC, "その他"),
-    )
 
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
@@ -175,6 +192,8 @@ class Connection(models.Model):
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     user_comment = MediumTextField("ユーザコメント", default="", blank=True)
     admin_comment = MediumTextField("管理者コメント", default="", blank=True)
+
+    objects = ConnectionManager()
 
     @property
     def service_code(self):

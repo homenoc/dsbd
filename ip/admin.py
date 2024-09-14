@@ -5,12 +5,13 @@ from .models import IP, JPNICUser
 
 class TermInlineIPAdmin(admin.TabularInline):
     model = IP.jpnic_user.through
-    extra = 1
+    extra = 0
+    readonly_fields = ("created_at", "updated_at", "jpnic_user", "user_type")
 
 
 class TermInlineJPNICUserAdmin(admin.TabularInline):
     model = JPNICUser.ip.through
-    extra = 1
+    extra = 0
 
 
 @admin.register(IP)
@@ -25,7 +26,7 @@ class IP(admin.ModelAdmin):
                 )
             },
         ),
-        ("ip", {"fields": ("ip_address", "subnet", "start_at", "end_at", "plan", "use_case")}),
+        ("ip", {"fields": ("ip_address", "subnet", "start_at", "end_at", "ipv4_plan", "use_case")}),
         (
             "Important dates",
             {
@@ -36,9 +37,10 @@ class IP(admin.ModelAdmin):
             },
         ),
     )
-    list_display = ("id", "is_active", "service", "ip_address", "subnet", "start_at", "end_at")
+    list_display = ("id", "is_active", "is_pass", "service", "ip_address", "subnet", "start_at", "end_at")
     list_filter = (
         "is_active",
+        "is_pass",
         "end_at",
     )
     search_fields = ("ip_address",)
@@ -54,7 +56,7 @@ class JPNICUser(admin.ModelAdmin):
             {
                 "fields": (
                     "group",
-                    "is_active",
+                    "is_pass",
                 )
             },
         ),
@@ -91,8 +93,8 @@ class JPNICUser(admin.ModelAdmin):
             },
         ),
     )
-    list_display = ("id", "is_active", "group", "jpnic_handle", "name", "org")
-    list_filter = ("is_active", "group")
+    list_display = ("id", "is_pass", "group", "jpnic_handle", "name", "org")
+    list_filter = ("is_pass", "group")
     search_fields = ("name", "name_jp", "group", "org", "org_jp")
 
     inlines = (TermInlineJPNICUserAdmin,)

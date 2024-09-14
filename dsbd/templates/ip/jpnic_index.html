@@ -1,0 +1,71 @@
+{% extends 'base2.html' %}
+{% block style %}
+  <style>
+      .description-text {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+      }
+  </style>
+
+{% endblock style %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2>JPNIC</h2>
+          <a href="add" type="button"
+             class="btn btn-sm btn-secondary">JPNIC情報の追加</a>
+          <p><b>編集には申請が必要です</b></p>
+          {% for jpnic_user in jpnic_users %}
+            <div class="card mb-2">
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-body-secondary">
+                  <span
+                      class="badge text-bg-primary">{{ jpnic_user.handle_type }}</span>
+                  {% if jpnic_user.hidden %}
+                    <span class="badge text-bg-danger">HIDDEN</span>
+                  {% endif %}
+                  <span
+                      class="badge text-bg-secondary">IPv{{ jpnic_user.version }}</span>
+                </h6>
+                <h5 class="card-title">{{ jpnic_user.jpnic_handle }}: {{ jpnic_user.name_jp }}({{ jpnic_user.name }})</h5>
+                <code class="card-text description-text">
+                  Org: {{ jpnic_user.org_jp }}({{ jpnic_user.org }})<br/>
+                  E-Mail: {{ jpnic_user.email }}<br/>
+                  部署: {% if jpnic_user.dept_jp %}{{ jpnic_user.dept_jp }}(
+                  {{ jpnic_user.dept }}){% else %}---{% endif %}, 役職:
+                  {% if jpnic_user.title_jp %}{{ jpnic_user.title_jp }}(
+                    {{ jpnic_user.title }}){% else %}---{% endif %}<br/>
+                  郵便番号: {{ jpnic_user.postcode }}<br/>
+                  住所: {{ jpnic_user.address_jp }}({{ jpnic_user.address }})<br/>
+                  Tel: {{ jpnic_user.tel }}, Fax:
+                  {% if jpnic_user.fax %}{{ jpnic_user.fax }}{% else %}
+                    ---{% endif %}<br/>
+                  Country: {{ jpnic_user.country }}<br/>
+                </code>
+                <a href="{{ jpnic_user.id }}/edit" type="button"
+                   class="btn btn-sm btn-primary">
+                  編集
+                </a>
+              </div>
+              <div class="card-footer text-body-secondary">
+                {% if jpnic_user.is_pass %}
+                  <span class="badge text-bg-primary">審査OK/Active</span>
+                {% else %}
+                  <span class="badge text-bg-danger">審査中</span>
+                {% endif %}
+                <span
+                    class="badge text-bg-secondary">作成日: {{ jpnic_user.created_at }}</span>
+                <span
+                    class="badge text-bg-secondary">更新日: {{ jpnic_user.updated_at }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
