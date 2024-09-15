@@ -14,7 +14,7 @@ def user_model_pre_save(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def post_user(sender, instance, created, **kwargs):
+def user_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -22,38 +22,43 @@ def post_user(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=User)
-def delete_user(sender, instance, **kwargs):
+def user_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
+@receiver(pre_save, sender=Group)
+def group_model_pre_save(sender, instance, **kwargs):
+    try:
+        instance._pre_save_instance = Group.objects.get(pk=instance.pk)
+    except Group.DoesNotExist:
+        instance._pre_save_instance = instance
+    # 審査NG => 審査OKの場合にサービス追加とJPNIC追加を出来るようにする
+    if not instance._pre_save_instance.is_pass and instance.is_pass:
+        instance.allow_service_add = True
+        instance.allow_jpnic_add = True
+
+    # Statusが1以外の場合はサービス追加とJPNIC追加を禁止する
+    if instance.status != 1:
+        instance.allow_service_add = False
+        instance.allow_jpnic_add = False
+
+
 @receiver(post_save, sender=Group)
-def post_group(sender, instance, created, **kwargs):
+def group_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
 
     notify_update_db(model_name=sender.__name__, instance=instance)
-    # インスタンスに以前の状態があれば審査状態の変化を確認する
-    if hasattr(instance, "_pre_save_instance") and instance._pre_save_instance:
-        # 審査NG => 審査OKの場合にサービス追加とJPNIC追加を出来るようにする
-        if not instance._pre_save_instance.is_pass and instance.is_pass:
-            instance.allow_service_add = True
-            instance.allow_jpnic_add = True
-            instance.save(update_fields=["allow_service_add", "allow_jpnic_add"])
-    # Statusが1以外の場合はサービス追加とJPNIC追加を禁止する
-    if instance.status != 1:
-        instance.allow_service_add = False
-        instance.allow_jpnic_add = False
-        instance.save(update_fields=["allow_service_add", "allow_jpnic_add"])
 
 
 @receiver(pre_delete, sender=Group)
-def delete_group(sender, instance, **kwargs):
+def group_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
 @receiver(post_save, sender=UserGroup)
-def post_user_group(sender, instance, created, **kwargs):
+def user_group_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -61,5 +66,5 @@ def post_user_group(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=UserGroup)
-def delete_user_group(sender, instance, **kwargs):
+def user_group_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)

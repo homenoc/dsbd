@@ -6,7 +6,7 @@ from ip.models import IP, IPJPNICUser, JPNICUser
 
 
 @receiver(post_save, sender=JPNICUser)
-def post_jpnic_user(sender, instance, created, **kwargs):
+def jpnic_user_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -14,12 +14,12 @@ def post_jpnic_user(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=JPNICUser)
-def delete_jpnic_user(sender, instance, **kwargs):
+def jpnic_user_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
 @receiver(post_save, sender=IP)
-def post_ip(sender, instance, created, **kwargs):
+def ip_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -27,7 +27,7 @@ def post_ip(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=IP)
-def delete_ip(sender, instance, **kwargs):
+def ip_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)
 
 

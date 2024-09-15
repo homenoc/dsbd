@@ -6,7 +6,7 @@ from noc.models import NOC
 
 
 @receiver(post_save, sender=NOC)
-def post_noc(sender, instance, created, **kwargs):
+def noc_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -14,5 +14,5 @@ def post_noc(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=NOC)
-def delete_noc(sender, instance, **kwargs):
+def noc_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)

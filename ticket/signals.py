@@ -18,7 +18,7 @@ def ticket_model_pre_save(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Ticket)
-def post_ticket(sender, instance, created, **kwargs):
+def ticket_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -26,7 +26,7 @@ def post_ticket(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=Ticket)
-def delete_ticket(sender, instance, **kwargs):
+def ticket_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
@@ -39,7 +39,7 @@ def chat_model_pre_save(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Chat)
-def post_chat(sender, instance, created, **kwargs):
+def chat_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         subject = "[HomeNOC Dashboard System]新着のメッセージがあります"
@@ -59,5 +59,5 @@ def post_chat(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=Chat)
-def delete_chat(sender, instance, **kwargs):
+def chat_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)

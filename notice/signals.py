@@ -6,7 +6,7 @@ from notice.models import Notice
 
 
 @receiver(post_save, sender=Notice)
-def post_notice(sender, instance, created, **kwargs):
+def notice_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -14,5 +14,5 @@ def post_notice(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=Notice)
-def delete_notice(sender, instance, **kwargs):
+def notice_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)

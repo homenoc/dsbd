@@ -6,7 +6,7 @@ from service.models import Connection, Service
 
 
 @receiver(post_save, sender=Service)
-def post_service(sender, instance, created, **kwargs):
+def service_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -14,12 +14,12 @@ def post_service(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=Service)
-def delete_service(sender, instance, **kwargs):
+def service_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
 @receiver(post_save, sender=Connection)
-def post_connection(sender, instance, created, **kwargs):
+def connection_model_post_save(sender, instance, created, **kwargs):
     if created:
         notify_insert_db(model_name=sender.__name__, instance=instance)
         return
@@ -27,5 +27,5 @@ def post_connection(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete, sender=Connection)
-def delete_connection(sender, instance, **kwargs):
+def connection_model_pre_delete(sender, instance, **kwargs):
     notify_delete_db(model_name=sender.__name__, instance=instance)

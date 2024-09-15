@@ -80,7 +80,7 @@ class User(SimpleHistoryAdmin):
 @admin.register(Group)
 class Group(SimpleHistoryAdmin):
     fieldsets = (
-        (None, {"fields": ("name", "name_jp", "allow_service_add", "allow_jpnic_add", "is_pass", "comment")}),
+        (None, {"fields": ("name", "name_jp", "allow_service_add", "allow_jpnic_add", "status", "is_pass", "comment")}),
         ("Membership", {"fields": ("membership_type", "membership_expired_at")}),
         ("Question", {"fields": ("agree", "question")}),
         ("Stripe", {"fields": ("stripe_customer_id", "stripe_subscription_id")}),
@@ -133,7 +133,7 @@ class UserActivateToken(admin.ModelAdmin):
     )
     list_display = ("user", "token", "expired_at", "is_used")
     list_filter = ("is_used",)
-    search_fields = ("user", "token", "expired_at", "is_used")
+    search_fields = ("token", "expired_at", "is_used")
 
 
 @admin.register(TOTPDevice)
