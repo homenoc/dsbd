@@ -46,6 +46,7 @@ txaio = "==23.*"
 typing-extensions = "==4.*"
 urllib3 = "==2.*"
 "zope.interface" = "==7.*"
+django-simple-history = "*"
 
 [dev-packages]
 ruff = "*"
