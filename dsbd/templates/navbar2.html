@@ -215,6 +215,9 @@
       </li>
     </ul>
     <h6><span class="badge bg-secondary">Version: {% get_version %}</span></h6>
+    {% if is_admin_mode %}
+      <h6><span class="badge bg-primary">管理者モード</span></h6>
+    {% endif %}
     <hr>
     <div class="dropdown">
       <a href="#"
