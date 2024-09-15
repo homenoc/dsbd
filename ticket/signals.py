@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 
 from dsbd.notify import notify_delete_db, notify_insert_db, notify_update_db
 from ticket.models import Chat, Ticket
-from ticket.tool import get_user_lists
+from ticket.utils import get_user_lists
 
 
 @receiver(pre_save, sender=Ticket)

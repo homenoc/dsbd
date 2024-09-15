@@ -21,10 +21,17 @@ def notify_delete_db(model_name: str, instance):
 
 
 def notify_insert_db(model_name: str, instance):
+    field_details = []
+    for field in instance._meta.fields:
+        field_name = field.verbose_name
+        field_value = getattr(instance, field.name)
+        field_details.append(f"{field_name}: {field_value}")
+
     admin_url = get_admin_url(instance)
     admin_history_url = get_admin_history_url(instance)
 
-    message = f"新しいレコードが登録されました:\n{instance}"
+    detailed_info = "\n".join(field_details)
+    message = f"新しいレコードが登録されました:\n{detailed_info}"
     client = WebhookClient(settings.SLACK_WEBHOOK_LOG)
     client.send(
         attachments=[

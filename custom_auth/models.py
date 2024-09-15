@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
-from custom_auth.tool import random_string
+from custom_auth.utils import random_string
 from dsbd.models import MediumTextField
 
 
