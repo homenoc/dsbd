@@ -349,6 +349,19 @@
       }
     }
 
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function (match) {
+        const escape = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        };
+        return escape[match];
+      });
+    }
+
     function connect() {
       const wsScheme = (window.location.protocol === 'https:' ? 'wss' : 'ws');
       const hostname = window.location.host;
@@ -360,7 +373,7 @@
         console.log(data);
         let element = document.getElementById('chat_websocket');
 
-        let message = data.message.replace(/\n/, '<br>');
+        let message = escapeHTML(data.message).replace(/\n/g, '<br>');
         let html = '<li class="clearfix">';
         if (data.username === '{{ request.user.username }}' && data.is_admin) {
           html += '<div class="message-data text-end">';
