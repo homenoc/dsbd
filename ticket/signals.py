@@ -4,9 +4,9 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 
-from dsbd.notify import notify_db_save
+from dsbd.notify import notify_delete_db, notify_insert_db, notify_update_db
 from ticket.models import Chat, Ticket
-from ticket.tool import SignalTool, get_user_lists
+from ticket.tool import get_user_lists
 
 
 @receiver(pre_save, sender=Ticket)
@@ -20,17 +20,14 @@ def ticket_model_pre_save(sender, instance, **kwargs):
 @receiver(post_save, sender=Ticket)
 def post_ticket(sender, instance, created, **kwargs):
     if created:
-        text = SignalTool().get_create_ticket(True, instance)
-        notify_db_save(table_name="Ticket", type=0, data=text)
-    else:
-        text = SignalTool().get_update_ticket(instance._pre_save_instance, instance)
-        notify_db_save(table_name="Ticket", type=1, data=text)
+        notify_insert_db(model_name=sender.__name__, instance=instance)
+        return
+    notify_update_db(model_name=sender.__name__, instance=instance)
 
 
 @receiver(pre_delete, sender=Ticket)
 def delete_ticket(sender, instance, **kwargs):
-    text = SignalTool().get_create_ticket(False, instance)
-    notify_db_save(table_name="Ticket", type=2, data=text)
+    notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
 @receiver(pre_save, sender=Chat)
@@ -44,8 +41,7 @@ def chat_model_pre_save(sender, instance, **kwargs):
 @receiver(post_save, sender=Chat)
 def post_chat(sender, instance, created, **kwargs):
     if created:
-        text = SignalTool().get_create_chat(True, instance)
-        notify_db_save(table_name="Chat", type=0, data=text)
+        notify_insert_db(model_name=sender.__name__, instance=instance)
         subject = "[HomeNOC Dashboard System]新着のメッセージがあります"
         for user_list in get_user_lists(instance.ticket):
             message = render_to_string(
@@ -58,12 +54,10 @@ def post_chat(sender, instance, created, **kwargs):
                 },
             )
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user_list.email], fail_silently=False)
-    else:
-        text = SignalTool().get_update_chat(instance._pre_save_instance, instance)
-        notify_db_save(table_name="Chat", type=1, data=text)
+        return
+    notify_update_db(model_name=sender.__name__, instance=instance)
 
 
 @receiver(pre_delete, sender=Chat)
 def delete_chat(sender, instance, **kwargs):
-    text = SignalTool().get_create_chat(False, instance)
-    notify_db_save(table_name="Chat", type=2, data=text)
+    notify_delete_db(model_name=sender.__name__, instance=instance)
