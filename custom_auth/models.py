@@ -39,12 +39,11 @@ class GroupManager(models.Manager):
             **extra_fields,
         )
 
-    def update_group(self, group_id, postcode, address, address_en, email, phone, country):
+    def update_group(self, group_id, postcode, address, address_en, phone, country):
         group = Group.objects.get(id=group_id)
         group.postcode = postcode
         group.address = address
         group.address_en = address_en
-        group.email = email
         group.phone = phone
         group.country = country
         group.save()

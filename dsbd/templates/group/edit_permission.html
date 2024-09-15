@@ -20,19 +20,13 @@
               <div class="card-body">
                 <h5 class="card-title">{{ group.name }}</h5>
                 <br/>
-                <div class="container">
-                  <div>
-                    <a class="btn btn-primary btn-sm"
-                       href="{% url 'custom_auth_group:permission' group.id %}">権限設定</a>
-                  </div>
-                </div>
               </div>
               <div class="card-footer">
-                {% if group.is_active %}
+                {% if group.status == 1 %}
                   <span class="badge bg-primary">有効</span>
                 {% else %}
                   <span class="badge bg-danger">無効</span>{% endif %}
-                {% if administrator %}
+                {% if is_administrator %}
                   <span class="badge bg-success">管理者権限</span>{% endif %}
                 <span
                     class="badge bg-secondary">Service: {{ group.service_set.count }}</span>
@@ -40,7 +34,7 @@
             </div>
             <br/>
             <br/>
-            {% if permission %}
+            {% if permissions %}
               <table class="table table-striped">
                 <thead>
                 <tr>
@@ -53,37 +47,37 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for e in permission %}
+                {% for permission in permissions %}
                   <tr>
-                    <th scope="row">{{ e.id }}</th>
-                    <td>{{ e.created_at }}</td>
-                    <td>{{ e.user.id }}: {{ e.user.username }}</td>
-                    <td>{{ e.group.id }}: {{ e.group.name }}</td>
+                    <th scope="row">{{ permission.id }}</th>
+                    <td>{{ permission.created_at }}</td>
+                    <td>{{ permission.user.id }}: {{ permission.user.username }}</td>
+                    <td>{{ permission.group.id }}: {{ permission.group.name }}</td>
                     <td>
-                      {% if e.is_admin %}
+                      {% if permission.is_admin %}
                         <span class="badge bg-success">管理者権限</span>
                       {% else %}
                         <span class="badge bg-primary">ユーザ権限</span>
                       {% endif %}
-                      {% if e.enable_ldap %}
+                      {% if permission.enable_ldap %}
                         <span class="badge bg-success">LDAP有効</span>
-                      {% elif e.ldap_register %}
+                      {% elif permission.ldap_register %}
                         <span class="badge bg-danger">LDAP無効</span>
                       {% endif %}
                     </td>
                     <td>
-                      {% if administrator %}
+                      {% if is_administrator %}
                         <form method="post">
                           {% csrf_token %}
                           <input type="text"
-                                 value={{ e.id }} name="id"
+                                 value={{ permission.id }} name="id"
                                  hidden>
-                          {% if e.is_admin and e.user.id != request.user.id %}
+                          {% if permission.is_admin and permission.user.id != request.user.id %}
                             <button type="submit"
                                     class="btn btn-primary btn-sm"
                                     name="no_admin">ユーザ権限に変更
                             </button>
-                          {% elif e.is_admin %}
+                          {% elif permission.is_admin %}
                             ユーザ権限に変更出来ません
                           {% else %}
                             <button type="submit"
@@ -101,7 +95,7 @@
                 </tbody>
               </table>
             {% endif %}
-            {% if not administrator %}
+            {% if not is_administrator %}
               <p>管理者権限がないため、権限設定を変更出来ません。</p>
             {% endif %}
           {% else %}

@@ -139,50 +139,37 @@ class StudentEditForm(forms.Form):
             raise ValueError("ユーザとグループの紐づけに失敗しました")
 
 
-class GroupForm(forms.Form):
-    name = forms.CharField(label="グループ名", max_length=150, required=True)
-    postcode = forms.CharField(label="郵便番号", max_length=10, required=True)
-    address = forms.CharField(label="住所", max_length=250, required=True)
-    address_en = forms.CharField(label="住所(English)", max_length=250, required=True)
-    phone = forms.CharField(label="phone", max_length=30, required=True)
-    country = forms.CharField(label="居住国", max_length=30, initial="Japan", required=True)
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ("postcode", "address_jp", "address", "phone", "country")
+        labels = {
+            "postcode": "郵便番号",
+            "address_jp": "住所",
+            "address": "住所(English)",
+            "phone": "phone",
+            "country": "居住国",
+        }
 
-    def __init__(self, edit=False, disable=False, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        editable = kwargs.pop("editable", False)  # group_id を引数として受け取る
         super().__init__(*args, **kwargs)
-        if edit:
-            self.fields["name"].widget.attrs["readonly"] = True
-            if disable:
-                self.fields["postcode"].widget.attrs["disabled"] = True
-                self.fields["address"].widget.attrs["disabled"] = True
-                self.fields["address_en"].widget.attrs["disabled"] = True
-                self.fields["phone"].widget.attrs["disabled"] = True
-                self.fields["country"].widget.attrs["disabled"] = True
-        self.fields["name"].widget.attrs["class"] = "form-control"
+        if editable:
+            self.fields["postcode"].widget.attrs["disabled"] = True
+            self.fields["address_jp"].widget.attrs["disabled"] = True
+            self.fields["address"].widget.attrs["disabled"] = True
+            self.fields["phone"].widget.attrs["disabled"] = True
+            self.fields["country"].widget.attrs["disabled"] = True
         self.fields["postcode"].widget.attrs["class"] = "form-control p-postal-code"
-        self.fields["address"].widget.attrs["class"] = (
+        self.fields["address_jp"].widget.attrs["class"] = (
             "form-control p-region p-locality p-street-address p-extended-address"
         )
-        self.fields["address_en"].widget.attrs["class"] = "form-control"
+        self.fields["address"].widget.attrs["class"] = "form-control"
         self.fields["phone"].widget.attrs["class"] = "form-control"
         self.fields["country"].widget.attrs["class"] = "form-control p-country-name"
 
         for field in self.fields.values():
             field.widget.attrs["placeholder"] = field.label
-
-    def update_group(self, group_id):
-        try:
-            Group.objects.update_group(
-                group_id=group_id,
-                postcode=self.cleaned_data["postcode"],
-                name=self.cleaned_data["name"],
-                address=self.cleaned_data["address"],
-                address_en=self.cleaned_data["address_en"],
-                email=self.cleaned_data["email"],
-                phone=self.cleaned_data["phone"],
-                country=self.cleaned_data["country"],
-            )
-        except Exception:
-            raise ValueError("グループの更新に失敗しました")
 
 
 class TwoAuthForm(forms.Form):

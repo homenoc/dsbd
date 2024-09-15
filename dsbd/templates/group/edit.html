@@ -24,7 +24,7 @@
               {% csrf_token %}
               {{ form }}
               <br/>
-              {% if group.is_active and administrator %}
+              {% if group.status == 1 and is_administrator %}
                 <button type="submit" class="btn btn-primary">変更
                 </button>{% endif %}
             </form>

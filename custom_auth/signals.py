@@ -33,11 +33,13 @@ def post_group(sender, instance, created, **kwargs):
         return
 
     notify_update_db(model_name=sender.__name__, instance=instance)
-    # 審査NG => 審査OKの場合にサービス追加とJPNIC追加を出来るようにする
-    if not instance._pre_save_instance.is_pass and instance.is_pass:
-        instance.allow_service_add = True
-        instance.allow_jpnic_add = True
-        instance.save(update_fields=["allow_service_add", "allow_jpnic_add"])
+    # インスタンスに以前の状態があれば審査状態の変化を確認する
+    if hasattr(instance, "_pre_save_instance") and instance._pre_save_instance:
+        # 審査NG => 審査OKの場合にサービス追加とJPNIC追加を出来るようにする
+        if not instance._pre_save_instance.is_pass and instance.is_pass:
+            instance.allow_service_add = True
+            instance.allow_jpnic_add = True
+            instance.save(update_fields=["allow_service_add", "allow_jpnic_add"])
     # Statusが1以外の場合はサービス追加とJPNIC追加を禁止する
     if instance.status != 1:
         instance.allow_service_add = False

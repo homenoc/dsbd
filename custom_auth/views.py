@@ -8,6 +8,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from custom_auth.form import (
     EmailChangeForm,
@@ -180,71 +181,50 @@ def add_group(request):
 
 @login_required
 def edit_group(request, group_id):
-    error = None
-    administrator = False
-    try:
-        group = request.user.groups.get(id=group_id)
-        group_data = {
-            "name": group.name,
-            "postcode": group.postcode,
-            "address": group.address_jp,
-            "address_en": group.address,
-            "phone": group.phone,
-            "country": group.country,
-        }
-        administrator = group.usergroup_set.filter(user=request.user, is_admin=True).exists()
-        if request.method == "POST" and administrator and group.is_pass:
-            form = GroupForm(data=request.POST)
-            if form.is_valid():
-                try:
-                    form.update_group(group_id=group.id)
-                    return render(request, "done.html", {"text": "登録・変更が完了しました"})
-                except ValueError as err:
-                    error = err
-        else:
-            form = GroupForm(initial=group_data, edit=True, disable=not group.is_pass)
-    except Exception:
-        group = None
-        form = None
+    user_group = request.user.usergroup_set.filter(group_id=group_id, user=request.user).first()
+    if not user_group:
+        return render(request, "error.html", {"text": "このグループにアクセスする権限がありません"})
+    form = GroupForm(request.POST or None, instance=user_group.group, editable=not user_group.is_admin)
+    if request.method == "POST" and user_group.is_admin and user_group.group.is_pass:
+        if form.is_valid():
+            form.save()
+            return render(request, "done.html", {"text": "登録・変更が完了しました"})
 
-    context = {"form": form, "group": group, "administrator": administrator, "error": error}
+    context = {"form": form, "group": user_group.group, "is_administrator": user_group.is_admin}
     return render(request, "group/edit.html", context)
 
 
 @login_required
 def group_permission(request, group_id):
     error = None
-    administrator = False
-    permission_all = False
-    try:
-        group = request.user.groups.get(id=group_id)
-        permission_all = group.usergroup_set.all()
-        administrator = group.usergroup_set.filter(user=request.user, is_admin=True).exists()
-        if request.method == "POST" and administrator and group.is_active:
-            id = request.POST.get("id", 0)
-            is_exists = False
-            for permission_user in permission_all:
-                if permission_user.id == int(id):
-                    is_exists = True
-                    break
-            if not is_exists:
-                error = "変更権限がありません"
-            else:
-                try:
-                    user_group = UserGroup.objects.get(id=int(id))
-                    if "no_admin" in request.POST:
-                        user_group.is_admin = False
-                        user_group.save()
-                    elif "admin" in request.POST:
-                        user_group.is_admin = True
-                        user_group.save()
-                    return redirect("/group/permission/%d" % group_id)
-                except Exception:
-                    error = "アップデート処理でエラーが発生しました"
-    except Exception:
-        group = None
+    user_group = request.user.usergroup_set.filter(group_id=group_id, user=request.user).first()
+    if not user_group:
+        return render(request, "error.html", {"text": "このグループにアクセスする権限がありません"})
+    permissions = user_group.group.usergroup_set.all()
+    if request.method == "POST" and user_group.is_admin and user_group.group.is_pass:
+        permission_id = int(request.POST.get("id", 0))
+        is_exists = user_group.group.usergroup_set.filter(id=permission_id).exists()
+        if not is_exists:
+            error = "変更権限がありません"
+        else:
+            try:
+                user_group = UserGroup.objects.get(id=permission_id)
+                if "no_admin" in request.POST:
+                    user_group.is_admin = False
+                    user_group.save()
+                elif "admin" in request.POST:
+                    user_group.is_admin = True
+                    user_group.save()
+                return redirect(reverse("custom_auth_group:permission", args=[group_id]))
+            except Exception:
+                error = "アップデート処理でエラーが発生しました"
 
-    context = {"group": group, "permission": permission_all, "administrator": administrator, "error": error}
+    context = {
+        "group": user_group.group,
+        "permissions": permissions,
+        "is_administrator": user_group.is_admin,
+        "error": error,
+    }
     return render(request, "group/edit_permission.html", context)
 
 
