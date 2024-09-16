@@ -16,7 +16,7 @@ django-debug-toolbar==4.3.0
 django-qrcode==0.3
 django-widget-tweaks==1.5.0
 hyperlink==21.0.0
-idna==3.7
+idna==3.10
 incremental==22.10.0
 Markdown==3.6
 mysqlclient==2.2.4
