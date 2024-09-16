@@ -237,7 +237,6 @@ def group_payment(request, group_id: int):
                 return redirect(reverse("custom_auth_group:payment", args=[group_id]))
 
     context = {
-        "name": "会費のお支払い",
         "prices": prices,
         "group": user_group.group,
         "is_expired": is_expired,
