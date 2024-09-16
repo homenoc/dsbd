@@ -225,8 +225,7 @@ def group_payment(request, group_id: int):
                 price_id = request.POST.get("checkout", None)
                 if not price_id:
                     return render(request, "error.html", {"text": "price_idが不正です"})
-                session_url = payment.checkout_membership(
-                    customer_id=user_group.group.stripe_customer_id,
+                session_url = payment.checkout(
                     price_id=price_id,
                     group=user_group.group,
                     user=request.user,

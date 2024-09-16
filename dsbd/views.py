@@ -1,4 +1,3 @@
-import time
 from datetime import datetime
 
 import stripe
@@ -23,6 +22,7 @@ from django.views.decorators.http import require_POST
 from custom_auth.models import Group, TOTPDevice, User, UserActivateToken, UserEmailVerify
 from dsbd.form import ForgetForm, LoginForm, NewSetPasswordForm, OTPForm, SignUpForm
 from dsbd.notify import notice_payment
+from dsbd.payment import DONATE_TAG_TYPE, Payment
 from notice.models import Notice
 
 
@@ -43,7 +43,6 @@ def sign_in(request):
         elif auth_type == "otp":
             form = OTPForm()
             auth_type = request.POST.get("otp_id", "auth_otp_email")
-            print(request.session.get("user"))
             if auth_type == "auth_otp_email":
                 user = User.objects.get(id=int(request.session.get("user")))
                 UserEmailVerify.objects.create_token(user=user)
@@ -79,10 +78,7 @@ def sign_in(request):
     else:
         form = LoginForm()
         request.session.clear()
-    context = {
-        "type": auth_type,
-        "form": form,
-    }
+    context = {"type": auth_type, "form": form}
     if invalid_code:
         context["invalid_code"] = "認証コードが一致しません"
     return render(request, "sign_in.html", context)
@@ -102,9 +98,7 @@ def sign_up(request):
         if form.is_valid():
             form.create_user()
             return redirect("sign_up_done")
-    context = {
-        "form": form,
-    }
+    context = {"form": form}
 
     return render(request, "sign_up.html", context)
 
@@ -218,67 +212,31 @@ def menu(request):
 
 
 @login_required
-def payment(request):
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-
-    products = stripe.Product.search(
-        query="active:'true' AND metadata['id']:'corporate'",
-    )
-    prices = stripe.Price.search(
-        query="active:'true' AND product:'" + products.data[0].id + "'",
-    )
-    data = {"name": products.data[0].name, "prices": []}
-    index = 0
-    for price in prices:
-        tmp = [
-            {
-                "id": price.id,
-                "interval": price.recurring.interval,
-                "amount": price.unit_amount,
-                "description": price.nickname,
-            }
-        ]
-        if index == 0:
-            data["prices"] = tmp
-        else:
-            if price.recurring.interval == "year":
-                data["prices"] += tmp
-            elif price.recurring.interval == "month":
-                data["prices"] = tmp + data["prices"]
-        index += 1
-    # print(prices)
+def donate(request):
+    payment = Payment(is_membership=False)
+    donate_product_id = payment.get_product(stripe_type=DONATE_TAG_TYPE).id
+    prices = payment.get_prices(product_id=donate_product_id)
     if request.method == "POST":
-        id = request.POST.get("price_id", "")
-        is_exists = False
-        for price in data["prices"]:
-            if price["id"] == id:
-                is_exists = True
-                break
-        if is_exists and request.user.stripe_customer_id and not request.user.stripe_subscription_id:
-            session = stripe.checkout.Session.create(
-                mode="subscription",
-                line_items=[
-                    {
-                        "price": id,
-                        "quantity": 1,
-                    },
-                ],
-                customer=request.user.stripe_customer_id,
-                success_url=settings.DOMAIN_URL,
-                cancel_url=settings.DOMAIN_URL,
-                expires_at=int(time.time() + (60 * 30)),
-                subscription_data={
-                    "metadata": {
-                        "type": "user_membership",
-                        "user_id": request.user.id,
-                        "log": "[" + str(request.user.id) + "] " + request.user.username,
-                    }
-                },
-            )
-            return redirect(session.url, code=303)
+        payment.create_donate_customer(request.user)
+        match request.POST:
+            case {"billing_portal": _}:
+                session_url = payment.get_billing_portal(customer_id=request.user.stripe_donate_customer_id)
+                return redirect(session_url, code=303)
+            case {"checkout": _}:
+                price_id = request.POST.get("checkout", None)
+                is_subscription = request.POST.get("is_subscription", "True") == "True"
+                if not price_id:
+                    return render(request, "error.html", {"text": "price_idが不正です"})
+                session_url = payment.checkout(
+                    price_id=price_id,
+                    group=None,
+                    user=request.user,
+                    is_subscription=is_subscription,
+                )
+                return redirect(session_url, code=303)
 
-    context = {"data": data}
-    return render(request, "payment.html", context)
+    context = {"prices": prices}
+    return render(request, "payment/donate.html", context)
 
 
 @require_POST

@@ -102,14 +102,15 @@
           Services
         </a>
       </li>
-      {#            <li>#}
-      {#                <a href="#" class="nav-link text-white">#}
-      {#                    <svg class="bi me-2" width="16" height="16">#}
-      {#                        <use xlink:href="#people-circle"></use>#}
-      {#                    </svg>#}
-      {#                    Customers#}
-      {#                </a>#}
-      {#            </li>#}
+      <li>
+        {#TODO: href弄る#}
+        <a href="{% url 'donate' %}" class="nav-link text-white">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#wallet"></use>
+          </svg>
+          Donate
+        </a>
+      </li>
       <li class="nav-item">
         <a href="{% url 'ticket:index' %}" class="nav-link text-white"
            aria-current="page">

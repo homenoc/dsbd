@@ -35,6 +35,7 @@ urlpatterns = [
     path("group/", include("custom_auth.group_urls")),
     path("group/<int:group_id>/jpnic/", include("ip.jpnic_urls")),
     path("group/<int:group_id>/service/", include("service.group_urls")),
+    path("donate/", views.donate, name="donate"),
     path("services/", include("service.urls")),
     path("profile/", include("custom_auth.urls")),
     path("ticket/", include("ticket.urls")),
