@@ -3,7 +3,6 @@ from datetime import date, timedelta
 from django import forms
 from django.db import transaction
 
-from custom_auth.models import Group
 from ip.models import (
     IP,
     JPNIC_USER_TYPE_ADMIN,
@@ -350,11 +349,6 @@ class ServiceAddForm(forms.Form):
                                 jpnic_user=cleaned_data[f"ipv{ip.version}_jpnic_tech3"],
                                 user_type=JPNIC_USER_TYPE_TECH_3,
                             )
-
-                group = Group.objects.get(id=self.group_id)
-                group.allow_service_add = False
-                group.allow_jpnic_add = False
-                group.save()
         except Exception as e:
             # エラーログの出力や追加処理
             print(f"エラーが発生しました: {e}")

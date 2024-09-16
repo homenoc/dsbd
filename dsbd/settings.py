@@ -208,6 +208,9 @@ FEE_URL = "https://www.homenoc.ad.jp/about/membership/"
 STRIPE_PRIVATE_KEY = os.environ.get("STRIPE_PRIVATE_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET_KEY = os.environ.get("STRIPE_WEBHOOK_SECRET_KEY", "")
+STRIPE_MEMBERSHIP_TAG_NAME = os.environ.get("STRIPE_MEMBERSHIP_TAG_NAME", "membership")
+STRIPE_DONATE_MEMBERSHIP_TAG_NAME = os.environ.get("STRIPE_DONATE_MEMBERSHIP_TAG_NAME", "donate_membership")
+STRIPE_DONATE_TAG_NAME = os.environ.get("STRIPE_DONATE_TAG_NAME", "donate")
 
 # Slack
 SLACK_WEBHOOK_LOG = os.environ.get("SLACK_WEBHOOK_LOG", "")

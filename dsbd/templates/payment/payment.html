@@ -1,0 +1,114 @@
+{% extends 'base2.html' %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">{{ name }}</h2>
+          <br/>
+          <h5>会員種別: {{ group.get_membership_type_display }}</h5>
+          {% if group.membership_expired_at and is_expired %}
+            <h5>有効期限: <b>期限切れ</b>({{ group.membership_expired_at }})</h5>
+          {% elif not group.membership_expired_at and is_expired %}
+            <h5>有効期限: <b>期限切れ</b></h5>
+          {% else %}
+            <h5>有効期限: {{ group.membership_expired_at }}</h5>
+          {% endif %}
+          <p>情報更新のタイムラグにより、有効期限切れと表示される可能性があります。<br/>
+            （有効期限を即時更新したい場合は、<b>「Membership情報更新(有効期限の更新)」ボタン</b>を押してください）</p>
+          <br/>
+          {% if group.membership_type >= 50 %}
+            <h3>
+              <b>本グループは{{ group.get_membership_type_display }}のため、費用免除されています</b>
+            </h3>
+          {% elif not group.stripe_customer_id %}
+            <div class="alert alert-warning" role="alert">
+              test
+            </div>
+          {% elif group.stripe_customer_id and is_expired %}
+            <h3>
+              <b>期限切れです。支払い状況を確認してください</b>
+            </h3>
+            {% if is_expired %}
+              <div class="alert alert-warning" role="alert">
+                <p>
+                  <b>二重請求防止のため、まずは「支払い履歴・情報・プラン変更」ボタンより確認のほどお願いします</b>
+                </p>
+                <form method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary btn-sm"
+                          name="billing_portal">支払い履歴/情報/プラン変更
+                  </button>
+                  <p>
+                    支払い完了後、Membership情報更新ボタンを押してください(有効期限の更新を行うために必要となります)</p>
+                  <button type="submit" class="btn btn-primary btn-sm"
+                          name="update_membership">Membership情報更新(有効期限の更新)
+                  </button>
+                </form>
+              </div>
+            {% endif %}
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title">プラン</h3>
+                <br/>
+                <form method="post">
+                  {% csrf_token %}
+                  <div class="row  mb-3 text-center">
+                    {% for price in prices %}
+                      <div class="col">
+                        <div class="card mb-4 rounded-3 shadow-sm">
+                          <div class="card-header py-3">
+                            <h4 class="my-0 fw-normal">{{ price.recurring.interval }}</h4>
+                          </div>
+                          <div class="card-body">
+                            <h1 class="card-title pricing-card-title">{{ price.unit_amount }} {{ price.currency }}<small
+                                class="text-muted fw-light">/{{ price.recurring.interval }}</small>
+                            </h1>
+                            <button type="submit"
+                                    name="checkout"
+                                    value="{{ price.id }}"
+                                    class="w-100 btn btn-lg btn-outline-primary">
+                              会費支払い
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </form>
+              </div>
+            </div>
+          {% elif not is_expired %}
+            <h4><b>有効中</b></h4>
+            <p>解約する場合は、「支払い履歴・情報・プラン変更」より可能です。</p>
+          {% else %}
+            <div class="alert alert-warning" role="alert">
+              <p><b>何かしらのエラーが発生しました</b></p>
+            </div>
+          {% endif %}
+          {% if group.stripe_customer_id %}
+            <br/>
+            <form method="post">
+              {% csrf_token %}
+              <p><b>支払い履歴やプラン変更などはこちらから確認可能です</b></p>
+              <button type="submit" class="btn btn-primary btn-sm"
+                      name="billing_portal">支払い履歴・情報・プラン変更
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm"
+                      name="update_membership">Membership情報更新(有効期限の更新)
+              </button>
+            </form>
+            <br/>
+          {% endif %}
+          <p>
+            ご不明な場合などがありましたら、Supportチャットにてご連絡のほどお願いいたします。</p>
+          <br/>
+          <br/>
+          <a class="btn btn-primary"
+             href="{% url 'custom_auth_group:index' %}" role="button"
+             aria-expanded="false">ホームへ戻る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

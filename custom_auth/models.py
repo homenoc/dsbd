@@ -93,7 +93,6 @@ class Group(models.Model):  # noqa: F811
 
     # stripe
     stripe_customer_id = models.CharField("Stripe(CusID)", max_length=200, blank=True, null=True)
-    stripe_subscription_id = models.CharField("Stripe(SubID)", max_length=200, blank=True, null=True)
 
     # group personal info
     postcode = models.CharField("郵便番号", max_length=20, default="")
@@ -209,6 +208,10 @@ class User(AbstractBaseUser):
     is_staff = models.BooleanField("管理者ステータス", default=False)
     is_active = models.BooleanField("有効", default=False)
     allow_group_add = models.BooleanField("グループ追加許可", default=True)
+
+    # stripe
+    stripe_donate_customer_id = models.CharField("Stripe Donate(CusID)", max_length=200, blank=True, null=True)
+
     groups = models.ManyToManyField(
         "Group",
         blank=True,
