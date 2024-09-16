@@ -4,7 +4,7 @@
     <div class="row">
       <div class="container py-4 mb-auto">
         <div class="h-900 p-2 rounded-3">
-          <h2 class="card-title">Group</h2>
+          <h2 class="card-title"><b>グループ一覧</b></h2>
           <br/>
           {% if request.user.allow_group_add %}
             <p><b>下記のより、新規申請してください。</b></p>
@@ -42,11 +42,11 @@
                       <a class="btn btn-primary btn-sm"
                          href="{% url 'custom_auth_group:permission' group.data.id %}">権限設定</a>
                       <a class="btn btn-primary btn-sm"
-                         href="{% url 'custom_auth_group:payment' group.data.id %}">支払い情報</a>
+                         href="{% url 'custom_auth_group:payment' group.data.id %}">会費支払い情報</a>
                       <a class="btn btn-primary btn-sm"
-                         href="{{ group.data.id }}/service">サービス情報</a>
+                         href="{% url 'service:index' group.data.id %}">サービス情報</a>
                       <a class="btn btn-primary btn-sm"
-                         href="{{ group.data.id }}/jpnic">JPNIC情報</a>
+                         href="{% url 'jpnic:jpnic_index' group.data.id %}">JPNIC情報</a>
                       <br/>
                       <br/>
                       {% if e.administrator %}

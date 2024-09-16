@@ -121,7 +121,10 @@ def list_groups(request):
     groups = []
     for group in request.user.groups.all():
         groups.append(
-            {"data": group, "administrator": group.usergroup_set.filter(user=request.user, is_admin=True).exists()}
+            {
+                "data": group,
+                "administrator": group.usergroup_set.filter(user=request.user, is_admin=True).exists(),
+            }
         )
 
     context = {"groups": groups}
@@ -131,9 +134,14 @@ def list_groups(request):
 @login_required
 def list_group(request, group_id: int):
     group = request.user.groups.get(id=group_id)
-    data = [{"group": group, "administrator": group.usergroup_set.filter(user=request.user, is_admin=True).exists()}]
+    groups = [
+        {
+            "data": group,
+            "administrator": group.usergroup_set.filter(user=request.user, is_admin=True).exists(),
+        }
+    ]
 
-    context = {"data": data}
+    context = {"groups": groups}
     return render(request, "group/index.html", context)
 
 

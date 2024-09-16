@@ -4,10 +4,10 @@
     <div class="row">
       <div class="container py-4 mb-auto">
         <div class="h-900 p-2 rounded-3">
-          <h2 class="card-title">Donation System</h2>
+          <h2 class="card-title"><b>Donation System</b></h2>
           <br/>
           <h3><b>こちらは寄付システムです。</b></h3>
-          <p><b>会費の支払いシステムとは異なりますのでご注意ください。「グループ一覧」ボタンから「支払い情報」でご確認いただけます。</b></p>
+          <p><b>会費の支払いシステムとは異なりますのでご注意ください。「グループ一覧」ボタンから「会費支払い情報」でご確認いただけます。</b></p>
           <a href="{% url 'custom_auth_group:index' %}" type="button"
              class="btn btn-sm btn-primary">グループ一覧</a>
           <br/>
@@ -91,16 +91,13 @@
             <button type="submit" class="btn btn-primary btn-sm"
                     name="billing_portal">支払い履歴・情報・プラン変更
             </button>
+            <br/><br/>
             <p>履歴はサブスクリプション情報のみとなります。(stripeの仕様のため）</p>
           </form>
           <br/>
+          <br/>
           <p>
             ご不明な場合などがありましたら、Supportチャットにてご連絡のほどお願いいたします。</p>
-          <br/>
-          <br/>
-          <a class="btn btn-primary"
-             href="{% url 'custom_auth_group:index' %}" role="button"
-             aria-expanded="false">ホームへ戻る</a>
         </div>
       </div>
     </div>
