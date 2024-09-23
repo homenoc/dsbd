@@ -1,21 +1,21 @@
 # dsbd
-Home NOC Dashboard
+
+HomeNOC Dashboard
 
 [![Publish Docker image(dev)](https://github.com/homenoc/dsbd/actions/workflows/build-dev.yaml/badge.svg)](https://github.com/homenoc/dsbd/actions/workflows/build-dev.yaml)
 [![Publish Docker image(prod)](https://github.com/homenoc/dsbd/actions/workflows/build-prod.yaml/badge.svg)](https://github.com/homenoc/dsbd/actions/workflows/build-prod.yaml)
-### develop environment
+
+### develop environment install
 
 ```
-mkdir venv
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+pre-commit install # pre-commitを入れる必要あり
+pipenv install --dev
 ```
 
 ### run server
 
 ```
-python3 manage.py runserver --settings=dsbd.settings
+pipenv run python3 manage.py runserver --settings=dsbd.settings
 ```
 
 ## make migration

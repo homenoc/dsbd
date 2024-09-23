@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from dsbd.models import MediumTextField
 
@@ -9,9 +10,7 @@ class NoticeManager(models.Manager):
     def get_notice(self):
         now = timezone.now()
         notices = self.filter(
-            Q(start_at__lte=now),
-            Q(is_active=True),
-            Q(end_at__gt=timezone.now()) | Q(end_at__isnull=True)
+            Q(start_at__lte=now), Q(is_active=True), Q(end_at__gt=timezone.now()) | Q(end_at__isnull=True)
         )
         return notices
 
@@ -38,6 +37,7 @@ class Notice(models.Model):
     is_important = models.BooleanField("重要", default=False)
     is_fail = models.BooleanField("障害", default=False)
     is_info = models.BooleanField("情報", default=False)
+    history = HistoricalRecords()
 
     objects = NoticeManager()
 

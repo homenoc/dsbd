@@ -1,4 +1,4 @@
-FROM python:3.11.4 AS app
+FROM python:3.12 AS app
 
 RUN pip install --upgrade pip && pip install pipenv
 RUN apt-get update && \
@@ -17,7 +17,7 @@ RUN pip install gunicorn daphne
 ENV PYTHONPATH=/opt/app/
 ADD Pipfile /opt/app/Pipfile
 ADD Pipfile.lock /opt/app/Pipfile.lock
-RUN pipenv install --system
+RUN pipenv sync --system
 
 ADD manage.py /opt/app/
 ADD dsbd/ /opt/app/dsbd/

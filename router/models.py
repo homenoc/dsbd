@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from dsbd.models import MediumTextField
 from noc.models import NOC
@@ -17,6 +18,7 @@ class TunnelRouter(models.Model):
     noc = models.ForeignKey(NOC, on_delete=models.CASCADE)
     hostname = models.CharField("ホスト名", unique=True, max_length=255)
     comment = MediumTextField("コメント", default="", blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return "%d: %s" % (self.id, self.hostname)
@@ -31,9 +33,11 @@ class TunnelIP(models.Model):
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     is_active = models.BooleanField("有効", default=True)
+    name = models.CharField("名前", max_length=255, default="")
     tunnel_router = models.ForeignKey(TunnelRouter, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField("IPアドレス", unique=True)
     comment = MediumTextField("コメント", default="", blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
-        return "%d: (%s)%s" % (self.id, self.tunnel_router.hostname,self.ip_address)
+        return "%d: %s[%s]%s" % (self.id, self.name, self.tunnel_router.hostname, self.ip_address)

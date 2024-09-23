@@ -1,44 +1,46 @@
 {% extends 'base2.html' %}
 {% block style %}
-    <style>
-        .nav-scroller .nav {
-            display: flex;
-            flex-wrap: nowrap;
-            padding-bottom: 1rem;
-            margin-top: -1px;
-            overflow-x: auto;
-            text-align: center;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-        }
-    </style>
+  <style>
+      .nav-scroller .nav {
+          display: flex;
+          flex-wrap: nowrap;
+          padding-bottom: 1rem;
+          margin-top: -1px;
+          overflow-x: auto;
+          text-align: center;
+          white-space: nowrap;
+          -webkit-overflow-scrolling: touch;
+      }
+  </style>
 
 {% endblock style %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="container py-4 mb-auto">
-                <div class="h-900 p-2 rounded-3">
-                    <h2>Feedback</h2>
-                    <div class="p-2 mb-4 bg-body-tertiary rounded-3 text-bg">
-                        <h3 class=" fw-bold">本ダッシュボードのバグなどのお問い合わせはこちらから</h3>
-                        <p class="fs-5">
-                            FeedbackはGitHubのIssueで管理しておりますので、下記ボタンより登録のほどお願いします。</p>
-                        <p class="fs-5">また、修正にはかなり時間がかかりますがご了承ください</p>
-                        <button class="btn btn-primary"
-                                onclick="window.open('https://github.com/homenoc/dsbd','_blank')"
-                                type="button">
-                            GitHubはこちら
-                        </button>
-                        <button class="btn btn-primary"
-                                onclick="window.open('https://github.com/homenoc/dsbd/issues/new','_blank')"
-                                type="button">
-                            Issue登録はこちらから
-                        </button>
-                    </div>
-                </div>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2>Feedback</h2>
+          <div class="p-2 mb-4 bg-body-tertiary rounded-3 text-bg">
+            <h3 class=" fw-bold">
+              本ダッシュボードのバグなどのお問い合わせはこちらから</h3>
+            <p class="fs-5">
+              FeedbackはGitHubのIssueで管理しておりますので、下記ボタンより登録のほどお願いします。</p>
+            <p class="fs-5">
+              また、修正にはかなり時間がかかりますがご了承ください</p>
+            <button class="btn btn-primary"
+                    onclick="window.open('https://github.com/homenoc/dsbd','_blank')"
+                    type="button">
+              GitHubはこちら
+            </button>
+            <button class="btn btn-primary"
+                    onclick="window.open('https://github.com/homenoc/dsbd/issues/new','_blank')"
+                    type="button">
+              Issue登録はこちらから
+            </button>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 {% endblock content %}

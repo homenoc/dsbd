@@ -1,196 +1,247 @@
 {% extends 'base2.html' %}
 {% block style %}
-    <style>
-        .description-text {
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-    </style>
+  <style>
+      .description-text {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+      }
+  </style>
 
 {% endblock style %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-8">
-                <div class="container py-4 mb-auto">
-                    <div class="h-900 p-2 rounded-3">
-                        <h2>お知らせ</h2>
-                        <div class="card text-bg-warning mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">Warning card title</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the
-                                    bulk of the card's content.</p>
-                            </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-8">
+        <div class="container py-4 mb-auto">
+          <div class="h-900 p-2 rounded-3">
+            <h2><b>お知らせ</b></h2>
+            {% if not request.user.groups %}
+              <div class="card text-bg-light mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">グループの新規申請手続き</h5>
+                  <p class="card-text">グループの新規申請手続きを行ってください</p>
+                  <a href="{% url 'custom_auth_group:add' %}"
+                     class="btn btn-sm btn-primary">申請はこちらから</a>
+                </div>
+              </div>
+            {% endif %}
+            {% if is_new_group_request %}
+              <div class="card text-bg-warning mb-3">
+                <div class="card-body">
+                  <h5 class="card-title"><b>グループの申請処理中</b></h5>
+                  <p class="card-text">現在、グループの申請処理中です。<br/>この作業には時間が掛かる可能性があります。
+                  </p>
+                </div>
+              </div>
+            {% endif %}
+            {% if not active_services and not is_not_pass_services %}
+              <div class="card text-bg-light mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">サービスの新規申請手続き</h5>
+                  <p class="card-text">
+                    サービスの新規申請手続きを行ってください<br/>
+                    グループページからサービス情報ページの「サービス登録」ボタンから申請可能です。
+                  </p>
+                  <a href="{% url 'custom_auth_group:index' %}" class="btn btn-sm btn-primary">申請はこちらから</a>
+                </div>
+              </div>
+            {% endif %}
+            {% if is_not_pass_services %}
+              <div class="card text-bg-warning mb-3">
+                <div class="card-body">
+                  <h5 class="card-title"><b>サービスの申請処理中</b></h5>
+                  <p class="card-text">現在、グループの申請処理中です。<br/>この作業には時間が掛かる可能性があります。
+                  </p>
+                </div>
+              </div>
+            {% endif %}
+            {% for active_service in active_services %}
+              {% if active_service.allow_connection_add %}
+                <div class="card text-bg-light mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">接続情報の新規申請手続き</h5>
+                    <p class="card-text">
+                      接続情報の新規申請手続きを行ってください<br/>
+                    </p>
+                    <a href="{% url 'service:connection_add' active_service.group.id active_service.id %}" class="btn btn-sm btn-primary">申請はこちらから</a>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+            {% for notice in notices %}
+              <div class="card mb-2">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-2 text-body-secondary">
+                     <span class="badge bg-secondary">{{ notice.start_at }} ~
+                       {% if notice.end_at != None %}{{ notice.end_at }}{% else %}
+                         無期限{% endif %}
+                     </span>
+                    {% if notice.is_info %}
+                      <span class="badge text-bg-primary">情報</span>
+                    {% endif %}
+                    {% if notice.is_important %}
+                      <span class="badge text-bg-warning">重要</span>
+                    {% endif %}
+                    {% if notice.is_fail %}
+                      <span class="badge text-bg-danger">障害</span>
+                    {% endif %}
+                  </h6>
+                  <h5 class="card-title">{{ notice.title }}</h5>
+                  <p class="card-text description-text">{{ notice.body | linebreaksbr }}</p>
+                  <button type="button" class="btn btn-sm btn-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#detail">
+                    詳しい内容はこちら
+                  </button>
+                  <div class="modal fade" id="detail" tabindex="-1"
+                       aria-labelledby="detailLabel"
+                       aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5"
+                              id="detailLabel">{{ notice.title }}</h1>
+                          <button type="button" class="btn-close"
+                                  data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        {% for notice in notices %}
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-body-secondary">
-                                        <span class="badge bg-secondary">{{ notice.start_at }}
-                                            {% if notice.end_at != None %}
-                                                <span class="badge bg-secondary">公開終了日: {{ notice.end_at }}</span>{% endif %}
-                                          </span>
-                                        {% if notice.is_info %}
-                                            <span class="badge text-bg-primary">情報</span>
-                                        {% endif %}
-                                        {% if notice.is_important %}
-                                            <span class="badge text-bg-warning">重要</span>
-                                        {% endif %}
-                                        {% if notice.is_fail %}
-                                            <span class="badge text-bg-danger">障害</span>
-                                        {% endif %}
-                                    </h6>
-                                    <h5 class="card-title">{{ notice.title }}</h5>
-                                    <p class="card-text description-text">{{ notice.body | linebreaksbr }}</p>
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#detail">
-                                        詳しい内容はこちら
-                                    </button>
-                                    <div class="modal fade" id="detail" tabindex="-1"
-                                         aria-labelledby="detailLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-scrollable">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5"
-                                                        id="detailLabel">{{ notice.title }}</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    {{ notice.body | linebreaksbr }}
-                                                    <hr>
-                                                    <span class="badge bg-secondary">{{ notice.start_at }}
-                                                        {% if notice.end_at != None %}
-                                                            <span class="badge bg-secondary">公開終了日: {{ notice.end_at }}</span>{% endif %}
+                        <div class="modal-body">
+                          {{ notice.body | linebreaksbr }}
+                          <hr>
+                          <span class="badge bg-secondary">{{ notice.start_at }}
+                            {% if notice.end_at != None %}
+                              <span
+                                  class="badge bg-secondary">公開終了日: {{ notice.end_at }}</span>{% endif %}
                                                     </span>
-                                                    {% if notice.is_info %}
-                                                        <span class="badge text-bg-primary">情報</span>
-                                                    {% endif %}
-                                                    {% if notice.is_important %}
-                                                        <span class="badge text-bg-warning">重要</span>
-                                                    {% endif %}
-                                                    {% if notice.is_fail %}
-                                                        <span class="badge text-bg-danger">障害</span>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close
-                                                    </button>
-                                                    {% if request.user.is_staff %}
-                                                        <a href="/admin/notice/notice/{{ notice.id }}/change"
-                                                           class="btn btn-primary">編集</a>
-                                                        <a href="/admin/notice/notice/{{ notice.id }}/delete"
-                                                           class="btn btn-danger">削除</a>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <nav aria-label="...">
-                        <ul class="pagination">
-                            {% if notices.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link"
-                                       href="?{% url_replace request notice_page=notices.previous_page_number %}">前へ</a>
-                                </li>
-                            {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">前へ</span>
-                                </li>
-                            {% endif %}
-                            {% if notices.paginator.num_pages > 10 %}
-                                {% if notices.number < 6 %}
-                                    {#    先頭 9 ページの表示      #}
-                                    {% for pg in notices.paginator.page_range %}
-                                        {% if forloop.counter0 < 9 %}
-                                            {% if notices.number == pg %}
-                                                <li class="page-item active">
-                                                    {% else %}
-                                                <li class="page-item">
-                                            {% endif %}
-                                        <a class="page-link"
-                                           href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
-                                        </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% elif notices.number < notices.paginator.num_pages|add:-4 %}
-                                    {#    手前 4 ページ | 現在のページ | 続き 4 ページ      #}
-                                    {% for pg in notices.paginator.page_range %}
-                                        {% if notices.number|add:-5 < pg and pg < notices.number|add:5 %}
-                                            {% if notices.number == pg %}
-                                                <li class="page-item active">
-                                                    {% else %}
-                                                <li class="page-item">
-                                            {% endif %}
-                                        <a class="page-link"
-                                           href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
-                                        </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    {#   最後 9 ページの表示   #}
-                                    {% for pg in notices.paginator.page_range %}
-                                        {% if forloop.counter0 > notices.paginator.num_pages|add:-10 %}
-                                            {% if notices.number == pg %}
-                                                <li class="page-item active">
-                                                    {% else %}
-                                                <li class="page-item">
-                                            {% endif %}
-                                        <a class="page-link"
-                                           href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
-                                        </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            {% else %}
-                                {% for pg in notices.paginator.page_range %}
-                                    {% if notices.number == pg %}
-                                        <li class="page-item active">
-                                            {% else %}
-                                        <li class="page-item">
-                                    {% endif %}
-                                <a class="page-link" href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
-                                </li>
-                                {% endfor %}
-                            {% endif %}
-                            {% if notices.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link"
-                                       href="?{% url_replace request notice_page=notices.next_page_number %}">次へ</a>
-                                </li>
-                            {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">次へ</span>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="container py-4 mb-auto">
-                    <div class="h-900 p-2 rounded-3">
-                        <h2>Information</h2>
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">会員情報</h5>
-                                <p class="card-text">This card has supporting text below as a natural lead-in to
-                                    additional
-                                    content.</p>
-                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small>
-                                </p>
-                            </div>
+                          {% if notice.is_info %}
+                            <span class="badge text-bg-primary">情報</span>
+                          {% endif %}
+                          {% if notice.is_important %}
+                            <span class="badge text-bg-warning">重要</span>
+                          {% endif %}
+                          {% if notice.is_fail %}
+                            <span class="badge text-bg-danger">障害</span>
+                          {% endif %}
                         </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-secondary"
+                                  data-bs-dismiss="modal">
+                            Close
+                          </button>
+                          {% if request.user.is_staff and is_admin_mode%}
+                            <a href="/admin/notice/notice/{{ notice.id }}/change"
+                               class="btn btn-primary">編集</a>
+                            <a href="/admin/notice/notice/{{ notice.id }}/delete"
+                               class="btn btn-danger">削除</a>
+                          {% endif %}
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div>
+              </div>
+            {% endfor %}
+          </div>
+          <nav aria-label="...">
+            <ul class="pagination">
+              {% if notices.has_previous %}
+                <li class="page-item">
+                  <a class="page-link"
+                     href="?{% url_replace request notice_page=notices.previous_page_number %}">前へ</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link">前へ</span>
+                </li>
+              {% endif %}
+              {% if notices.paginator.num_pages > 10 %}
+                {% if notices.number < 6 %}
+                  {#    先頭 9 ページの表示      #}
+                  {% for pg in notices.paginator.page_range %}
+                    {% if forloop.counter0 < 9 %}
+                      {% if notices.number == pg %}
+                        <li class="page-item active">
+                          {% else %}
+                        <li class="page-item">
+                      {% endif %}
+                    <a class="page-link"
+                       href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
+                    </li>
+                    {% endif %}
+                  {% endfor %}
+                {% elif notices.number < notices.paginator.num_pages|add:-4 %}
+                  {#    手前 4 ページ | 現在のページ | 続き 4 ページ      #}
+                  {% for pg in notices.paginator.page_range %}
+                    {% if notices.number|add:-5 < pg and pg < notices.number|add:5 %}
+                      {% if notices.number == pg %}
+                        <li class="page-item active">
+                          {% else %}
+                        <li class="page-item">
+                      {% endif %}
+                    <a class="page-link"
+                       href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
+                    </li>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  {#   最後 9 ページの表示   #}
+                  {% for pg in notices.paginator.page_range %}
+                    {% if forloop.counter0 > notices.paginator.num_pages|add:-10 %}
+                      {% if notices.number == pg %}
+                        <li class="page-item active">
+                          {% else %}
+                        <li class="page-item">
+                      {% endif %}
+                    <a class="page-link"
+                       href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
+                    </li>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% else %}
+                {% for pg in notices.paginator.page_range %}
+                  {% if notices.number == pg %}
+                    <li class="page-item active">
+                      {% else %}
+                    <li class="page-item">
+                  {% endif %}
+                <a class="page-link"
+                   href="?{% url_replace request notice_page=pg %}">{{ pg }}</a>
+                </li>
+                {% endfor %}
+              {% endif %}
+              {% if notices.has_next %}
+                <li class="page-item">
+                  <a class="page-link"
+                     href="?{% url_replace request notice_page=notices.next_page_number %}">次へ</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link">次へ</span>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
         </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="container py-4 mb-auto">
+          <div class="h-900 p-2 rounded-3">
+            <h2>Information</h2>
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">会員情報</h5>
+{#                <p class="card-text">{{ group.get_membership_type_display }}#}
+                <p class="card-text"><small class="text-body-secondary">Last
+                  updated 3 mins ago</small>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 {% endblock content %}

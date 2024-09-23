@@ -5,20 +5,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('custom_auth', '0003_rename_add_service_group_allow_service_add_and_more'),
+        ("custom_auth", "0003_rename_add_service_group_allow_service_add_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='group',
-            name='users',
-            field=models.ManyToManyField(blank=True, related_name='group_users_set', through='custom_auth.UserGroup', to=settings.AUTH_USER_MODEL),
+            model_name="group",
+            name="users",
+            field=models.ManyToManyField(
+                blank=True, related_name="group_users_set", through="custom_auth.UserGroup", to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='groups',
-            field=models.ManyToManyField(blank=True, related_name='user_set', through='custom_auth.UserGroup', to='custom_auth.group'),
+            model_name="user",
+            name="groups",
+            field=models.ManyToManyField(
+                blank=True, related_name="user_set", through="custom_auth.UserGroup", to="custom_auth.group"
+            ),
         ),
     ]

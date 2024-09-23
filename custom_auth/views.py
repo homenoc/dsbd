@@ -1,17 +1,22 @@
 import base64
-import time
 from io import BytesIO
 
 import pyotp
 import qrcode
-import stripe
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
-from custom_auth.form import TwoAuthForm, GroupForm, MyPasswordChangeForm, EmailChangeForm, ProfileEditForm, \
-    GroupAddForm
+from custom_auth.form import (
+    EmailChangeForm,
+    GroupAddForm,
+    GroupForm,
+    MyPasswordChangeForm,
+    ProfileEditForm,
+    TwoAuthForm,
+)
 from custom_auth.models import TOTPDevice, UserGroup
-from django.conf import settings
+from dsbd.payment import MEMBERSHIP_TAG_TYPE, Payment, check_expired
 
 
 @login_required
@@ -23,22 +28,22 @@ def index(request):
 @login_required
 def password_change(request):
     form = MyPasswordChangeForm(user=request.user, data=request.POST or None)
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             form.save()
-            return render(request, "done.html", {'text': "パスワードの変更を行いました"})
-    context = {'form': form}
+            return render(request, "done.html", {"text": "パスワードの変更を行いました"})
+    context = {"form": form}
     return render(request, "user/change_password.html", context)
 
 
 @login_required
 def change_email(request):
     form = EmailChangeForm(data=request.POST or None)
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             form.save(user=request.user)
-            return render(request, "done.html", {'text': "メールアドレスの変更を行いました"})
-    return render(request, "user/change_email.html", {'form': form})
+            return render(request, "done.html", {"text": "メールアドレスの変更を行いました"})
+    return render(request, "user/change_email.html", {"form": form})
 
 
 @login_required
@@ -49,14 +54,14 @@ def edit_profile(request):
         "username_jp": request.user.username_jp,
         "display_name": request.user.display_name,
     }
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             form.save(user=request.user)
-            return render(request, "done.html", {'text': "プロフィールの変更を行いました"})
+            return render(request, "done.html", {"text": "プロフィールの変更を行いました"})
     else:
         form = ProfileEditForm(initial=userdata)
 
-    return render(request, "user/edit_profile.html", {'form': form})
+    return render(request, "user/edit_profile.html", {"form": form})
 
 
 @login_required
@@ -66,21 +71,19 @@ def add_two_auth(request):
     secret = TOTPDevice.objects.generate_secret()
     form = TwoAuthForm()
     buffer = BytesIO()
-    qrcode.make(secret.get('url')).save(buffer)
+    qrcode.make(secret.get("url")).save(buffer)
     qr = base64.b64encode(buffer.getvalue()).decode().replace("'", "")
-    if request.method == 'POST':
-        id = request.POST.get('id', 0)
-        if id == 'submit' and initial_check:
+    if request.method == "POST":
+        id = request.POST.get("id", 0)
+        if id == "submit" and initial_check:
             form = TwoAuthForm(request.POST)
             otp_secret = request.POST.get("secret")
             if form.is_valid():
-                code = form.cleaned_data['code']
+                code = form.cleaned_data["code"]
                 verify_code = pyotp.TOTP(otp_secret).verify(code)
                 if verify_code:
                     TOTPDevice.objects.create_secret(
-                        user=request.user,
-                        title=form.cleaned_data['title'],
-                        otp_secret=otp_secret
+                        user=request.user, title=form.cleaned_data["title"], otp_secret=otp_secret
                     )
                     return redirect("custom_auth:list_two_auth")
                 else:
@@ -91,12 +94,12 @@ def add_two_auth(request):
             error = "request error"
 
     context = {
-        'initial_check': initial_check,
-        'secret': secret.get('secret'),
-        'url': secret.get('url'),
-        'qr': qr,
-        'form': form,
-        'error': error
+        "initial_check": initial_check,
+        "secret": secret.get("secret"),
+        "url": secret.get("url"),
+        "qr": qr,
+        "form": form,
+        "error": error,
     }
 
     return render(request, "user/two_auth/add.html", context)
@@ -104,57 +107,41 @@ def add_two_auth(request):
 
 @login_required
 def list_two_auth(request):
-    if request.method == 'POST':
-        id = request.POST.get('id', 0)
-        device_id = int(request.POST.get('device_id', 0))
-        if id == 'delete':
+    if request.method == "POST":
+        id = request.POST.get("id", 0)
+        device_id = int(request.POST.get("device_id", 0))
+        if id == "delete":
             TOTPDevice.objects.remove(id=device_id, user=request.user)
-    context = {'devices': TOTPDevice.objects.list(user=request.user)}
+    context = {"devices": TOTPDevice.objects.list(user=request.user)}
     return render(request, "user/two_auth/list.html", context)
 
 
 @login_required
 def list_groups(request):
-    data = []
+    groups = []
     for group in request.user.groups.all():
-        data.append({
-            "group": group,
-            "administrator": group.usergroup_set.filter(user=request.user, is_admin=True).exists()
-        })
+        groups.append(
+            {
+                "data": group,
+                "administrator": group.usergroup_set.filter(user=request.user, is_admin=True).exists(),
+            }
+        )
 
-    if request.method == "POST":
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        id = request.POST.get("id", "")
-        group_id = request.POST.get("group_id", 0)
-        group = request.user.groups.get(id=group_id)
-        administrator = group.usergroup_set.filter(user=request.user, is_admin=True).exists()
-        if administrator and id == "create_stripe_customer":
-            name = "[GROUP] %d: %s" % (int(group_id), group.name,)
-            if not group.stripe_customer_id:
-                cus = stripe.Customer.create(
-                    name=name,
-                    description="doornoc_service",  # TODO: change description
-                    metadata={
-                        'id': "doornoc_service",  # TODO: change description
-                        'user_id': request.user.id,
-                        'group_id': group_id
-                    }
-                )
-                group.stripe_customer_id = cus.id
-                group.save()
-                redirect_url = "/group/%d/payment" % (int(group_id),)
-                return redirect(redirect_url)
-        elif administrator and id == "getting_portal":
-            if group.stripe_customer_id:
-                session = stripe.billing_portal.Session.create(
-                    customer=group.stripe_customer_id,
-                    return_url=settings.DOMAIN_URL + "/group"
-                )
-                return redirect(session.url, code=303)
+    context = {"groups": groups}
+    return render(request, "group/index.html", context)
 
-    context = {
-        "data": data
-    }
+
+@login_required
+def list_group(request, group_id: int):
+    group = request.user.groups.get(id=group_id)
+    groups = [
+        {
+            "data": group,
+            "administrator": group.usergroup_set.filter(user=request.user, is_admin=True).exists(),
+        }
+    ]
+
+    context = {"groups": groups}
     return render(request, "group/index.html", context)
 
 
@@ -164,182 +151,101 @@ def add_group(request):
     form = GroupAddForm(data=request.POST or None)
     if not request.user.allow_group_add:
         error = "グループの新規登録が申請不可能です"
-    elif request.method == 'POST':
+    elif request.method == "POST":
         if form.is_valid():
             try:
                 form.create_group(user_id=request.user.id)
-                return render(request, "done.html", {'text': "登録・変更が完了しました"})
+                return render(request, "done.html", {"text": "登録・変更が完了しました"})
             except ValueError as err:
                 error = err
-    context = {
-        "form": form,
-        "error": error
-    }
+    context = {"form": form, "error": error}
     return render(request, "group/add.html", context)
 
 
 @login_required
-def edit_group(request, group_id):
-    error = None
-    administrator = False
-    try:
-        group = request.user.groups.get(id=group_id)
-        group_data = {
-            "name": group.name,
-            "postcode": group.postcode,
-            "address": group.address_jp,
-            "address_en": group.address,
-            "phone": group.phone,
-            "country": group.country,
-        }
-        administrator = group.usergroup_set.filter(user=request.user, is_admin=True).exists()
-        if request.method == 'POST' and administrator and group.is_pass:
-            form = GroupForm(data=request.POST)
-            if form.is_valid():
-                try:
-                    form.update_group(group_id=group.id)
-                    return render(request, "done.html", {'text': "登録・変更が完了しました"})
-                except ValueError as err:
-                    error = err
-        else:
-            form = GroupForm(initial=group_data, edit=True, disable=not group.is_pass)
-    except:
-        group = None
-        form = None
+def edit_group(request, group_id: int):
+    user_group = request.user.usergroup_set.filter(group_id=group_id, user=request.user).first()
+    if not user_group:
+        return render(request, "error.html", {"text": "このグループにアクセスする権限がありません"})
+    form = GroupForm(request.POST or None, instance=user_group.group, editable=not user_group.is_admin)
+    if request.method == "POST" and user_group.is_admin and user_group.group.is_pass:
+        if form.is_valid():
+            form.save()
+            return render(request, "done.html", {"text": "登録・変更が完了しました"})
 
-    context = {
-        "form": form,
-        "group": group,
-        "administrator": administrator,
-        "error": error
-    }
+    context = {"form": form, "group": user_group.group, "is_administrator": user_group.is_admin}
     return render(request, "group/edit.html", context)
 
 
 @login_required
-def group_permission(request, group_id):
+def group_permission(request, group_id: int):
     error = None
-    administrator = False
-    permission_all = False
-    try:
-        group = request.user.groups.get(id=group_id)
-        permission_all = group.usergroup_set.all()
-        administrator = group.usergroup_set.filter(user=request.user, is_admin=True).exists()
-        if request.method == 'POST' and administrator and group.is_active:
-            id = request.POST.get('id', 0)
-            is_exists = False
-            for permission_user in permission_all:
-                if permission_user.id == int(id):
-                    is_exists = True
-                    break
-            if not is_exists:
-                error = "変更権限がありません"
-            else:
-                try:
-                    user_group = UserGroup.objects.get(id=int(id))
-                    if "no_admin" in request.POST:
-                        user_group.is_admin = False
-                        user_group.save()
-                    elif "admin" in request.POST:
-                        user_group.is_admin = True
-                        user_group.save()
-                    return redirect('/group/permission/%d' % group_id)
-                except:
-                    error = "アップデート処理でエラーが発生しました"
-    except:
-        group = None
+    user_group = request.user.usergroup_set.filter(group_id=group_id, user=request.user).first()
+    if not user_group:
+        return render(request, "error.html", {"text": "このグループにアクセスする権限がありません"})
+    permissions = user_group.group.usergroup_set.all()
+    if request.method == "POST" and user_group.is_admin and user_group.group.is_pass:
+        permission_id = int(request.POST.get("id", 0))
+        is_exists = user_group.group.usergroup_set.filter(id=permission_id).exists()
+        if not is_exists:
+            error = "変更権限がありません"
+        else:
+            try:
+                user_group = UserGroup.objects.get(id=permission_id)
+                if "no_admin" in request.POST:
+                    user_group.is_admin = False
+                    user_group.save()
+                elif "admin" in request.POST:
+                    user_group.is_admin = True
+                    user_group.save()
+                return redirect(reverse("custom_auth_group:permission", args=[group_id]))
+            except Exception:
+                error = "アップデート処理でエラーが発生しました"
 
     context = {
-        "group": group,
-        "permission": permission_all,
-        "administrator": administrator,
-        "error": error
+        "group": user_group.group,
+        "permissions": permissions,
+        "is_administrator": user_group.is_admin,
+        "error": error,
     }
     return render(request, "group/edit_permission.html", context)
 
 
 @login_required
-def group_payment(request, group_id):
-    error = None
-    administrator = False
-    permission_all = False
-    data = []
-    try:
-        group = request.user.groups.get(id=group_id)
-        permission_all = group.usergroup_set.all()
-        administrator = group.usergroup_set.filter(user=request.user, is_admin=True).exists()
+def group_payment(request, group_id: int):
+    user_group = request.user.usergroup_set.filter(group_id=group_id, user=request.user, is_admin=True).first()
+    if not user_group:
+        return render(request, "error.html", {"text": "このグループにアクセスする権限がありません"})
 
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        products = stripe.Product.search(
-            query="active:'true' AND metadata['id']:'doornoc_service'",
-        )
-        if administrator:
-            for product in products:
-                prices = stripe.Price.search(
-                    query="active:'true' AND product:'%s'" % (product.id,),
+    payment = Payment()
+    product_id = payment.get_product(stripe_type=MEMBERSHIP_TAG_TYPE).id
+    prices = payment.get_prices(product_id=product_id)
+    is_expired = check_expired(expired_at=user_group.group.membership_expired_at)
+    if request.method == "POST":
+        match request.POST:
+            case {"billing_portal": _}:
+                session_url = payment.get_billing_portal(customer_id=user_group.group.stripe_customer_id)
+                return redirect(session_url, code=303)
+            case {"create_customer": _}:
+                if payment.create_customer(group_id=group_id, user_id=request.user.id):
+                    return redirect(reverse("custom_auth_group:payment", args=[group_id]))
+            case {"checkout": _}:
+                price_id = request.POST.get("checkout", None)
+                if not price_id:
+                    return render(request, "error.html", {"text": "price_idが不正です"})
+                session_url = payment.checkout(
+                    price_id=price_id,
+                    group=user_group.group,
+                    user=request.user,
                 )
-                tmp_prices = []
-                idx_prices = 0
-                for price in prices:
-                    tmp_price = [{
-                        "id": price.id,
-                        "interval": price.recurring.interval,
-                        "amount": price.unit_amount,
-                        "description": price.nickname
-                    }]
-                    if idx_prices == 0:
-                        tmp_prices = tmp_price
-                    else:
-                        if price.recurring.interval == "year":
-                            tmp_prices += tmp_price
-                        elif price.recurring.interval == "month":
-                            tmp_prices = tmp_price + tmp_prices
-                    idx_prices += 1
-                data.append({
-                    "name": product.name,
-                    "prices": tmp_prices,
-                    "number": int(product.metadata.tag)
-                })
-            data.sort(key=lambda x: x['number'])
-    except:
-        group = None
-    if administrator and request.method == "POST":
-        id = request.POST.get("price_id", "")
-        is_exists = False
-        for one_data in data:
-            for price in one_data["prices"]:
-                if price["id"] == id:
-                    is_exists = True
-                    break
-        url = settings.DOMAIN_URL + "/group"
-        if is_exists and group.stripe_customer_id and not group.stripe_subscription_id:
-            session = stripe.checkout.Session.create(
-                mode="subscription",
-                line_items=[
-                    {
-                        "price": id,
-                        "quantity": 1,
-                    },
-                ],
-                customer=group.stripe_customer_id,
-                success_url=url,
-                cancel_url=url,
-                expires_at=int(time.time() + (60 * 30)),
-                subscription_data={
-                    "metadata": {
-                        "type": "doornoc_membership",
-                        "group_id": group_id,
-                        "log": "[" + str(group.id) + "] " + group.name,
-                    }
-                }
-            )
-            return redirect(session.url, code=303)
+                return redirect(session_url, code=303)
+            case {"update_membership": _}:
+                payment.update_membership_expired(group=user_group.group)
+                return redirect(reverse("custom_auth_group:payment", args=[group_id]))
 
     context = {
-        "data": data,
-        "group": group,
-        "permission": permission_all,
-        "administrator": administrator,
-        "error": error
+        "prices": prices,
+        "group": user_group.group,
+        "is_expired": is_expired,
     }
-    return render(request, "group/payment.html", context)
+    return render(request, "payment/payment.html", context)

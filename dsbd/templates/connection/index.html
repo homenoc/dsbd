@@ -1,0 +1,337 @@
+{% extends 'base2.html' %}
+{% block style %}
+  <style>
+      table {
+          border-collapse: collapse;
+          margin: 0 auto;
+          width: 80%;
+      }
+
+      td,
+      th {
+          border: 1px solid #ccc;
+          padding: 10px;
+          text-align: center;
+      }
+
+      th {
+          background: #e2e8ef;
+          white-space: pre-wrap;
+      }
+
+      tr:first-child th {
+          border-top: 5px solid #005ab3;
+      }
+
+      tr:first-child td {
+          border-top: 5px solid #ccc;
+      }
+
+      p {
+          white-space: pre-wrap;
+      / / color: #000000;
+      }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">Service</h2>
+          {% if group_id %}
+            <a href="/group/{{ group_id }}/service/add" type="button"
+               class="btn btn-sm btn-primary">サービス登録
+            </a>
+          {% endif %}
+          <br/>
+          <br/>
+          {% if services %}
+            {% for service in services %}
+              <div class="card">
+                <div class="card-body">
+                  {% if not service.is_pass %}
+                    <div class="alert alert-warning" role="alert">
+                      <h4 class="alert-heading">審査未完了</h4>
+                      <p>審査が完了していません。しばらくお待ちください。</p>
+                    </div>
+                  {% endif %}
+                  {% if service.is_pass and service.allow_connection_add %}
+                    <div class="alert alert-warning" role="alert">
+                      <h4 class="alert-heading">接続情報申請</h4>
+                      <p>接続情報を申請してください。</p>
+                      <a href="/group/{{ service.group.id }}/service/{{ service.id }}/connection/add" type="button"
+                         class="btn btn-sm btn-primary">接続情報の申請</a>
+                    </div>
+                  {% endif %}
+                  <div class="container">
+                    <table>
+                      <thead>
+                      <tr>
+                        <th colspan="2">サービス情報</th>
+                      </tr>
+                      <tr>
+                        <th>サービスコード</th>
+                        <td>{{ service.service_code }}</td>
+                      </tr>
+                      <tr>
+                        <th>サービス種別</th>
+                        <td>{{ service.get_service_type_display }}</td>
+                      </tr>
+                      <tr>
+                        <th>利用料金</th>
+                        <td>FREE</td>
+                      </tr>
+                      <tr>
+                        <th>利用サービス期間</th>
+                        <td>{{ service.start_at|default_if_none:"--" }}
+                          ~ {{ service.end_at|default_if_none:"未定" }}</td>
+                      </tr>
+                      </thead>
+                    </table>
+                    <br/>
+                    {% if service.is_pass %}
+                      <div class="card">
+                        <div class="card-header">
+                          <b>IPアドレス情報</b>
+                        </div>
+                        <div class="card-body">
+                          <table>
+                            <thead>
+                            <tr>
+                              <th colspan="3">
+                                アドレス情報
+                              </th>
+                            </tr>
+                            <tr>
+                              <th>IPアドレス</th>
+                              <th>アドレス割当元</th>
+                            </tr>
+
+                            {% for ip in service.IPService.all %}
+                              <tr>
+                                <td>{{ ip.ip_address }}/{{ ip.subnet }}</td>
+                                <td>{{ ip.get_owner_display }}</td>
+                              </tr>
+                            {% endfor %}
+                            </thead>
+                          </table>
+                        </div>
+                      </div>
+                    {% endif %}
+                    <br/>
+                    {% for connection in service.ConnectionService.all %}
+                      <div class="card">
+                        <div class="card-header">
+                          <b>[Connection] {{ connection.service_code }}</b>
+                        </div>
+                        <div class="card-body">
+                          <table>
+                            <thead>
+                            <tr>
+                              <th colspan="3">接続情報
+                              </th>
+                            </tr>
+                            <tr>
+                              <th>サービス(接続)コード
+                              </th>
+                              <td colspan="2">{{ connection.service_code }}</td>
+                            </tr>
+                            <tr>
+                              <th>開通状況</th>
+                              <td colspan="2">
+                                {% if connection.is_pass %}
+                                  <span class="badge bg-success">開通済み</span>
+                                {% else %}
+                                  <span class="badge bg-danger">未開通</span>{% endif %}
+                              </td>
+                            </tr>
+                            <tr>
+                              <th>接続方式</th>
+                              <td colspan="2">{{ connection.get_connection_type_display }}</td>
+                            </tr>
+                            <tr>
+                              <th>接続NOC</th>
+                              <td colspan="2">{{ connection.tunnel_ip.tunnel_router.noc.name |default_if_none:"---" }}</td>
+                            </tr>
+                            <tr>
+                              <th>
+                                トンネル終端アドレス（貴団体側）
+                              </th>
+                              <td colspan="2">{{ connection.term_ip|default_if_none:"---" }}</td>
+                            </tr>
+                            <tr>
+                              <th>
+                                トンネル終端アドレス（HomeNOC側）
+                              </th>
+                              <td colspan="2">{{ connection.tunnel_ip.ip_address|default_if_none:"---" }}</td>
+                            </tr>
+                            <tr>
+                              <th>利用接続期間</th>
+                              <td colspan="2">{{ connection.start_at|default_if_none:"--" }}
+                                ~ {{ connection.end_at|default_if_none:"未定" }}</td>
+                            </tr>
+                            <tr>
+                              <th colspan="3">
+                                当団体との間の境界アドレス
+                              </th>
+                            </tr>
+                            <tr>
+                              <th></th>
+                              <th>IPv4アドレス</th>
+                              <th>IPv6アドレス</th>
+                            </tr>
+                            <tr>
+                              <th>HomeNOC側</th>
+                              <td>{{ connection.link_v4_our|default_if_none:"---" }}</td>
+                              <td>{{ connection.link_v6_our|default_if_none:"---" }}</td>
+                            </tr>
+                            <tr>
+                              <th>貴団体側</th>
+                              <td>{{ connection.link_v4_your |default_if_none:"---" }}</td>
+                              <td>{{ connection.link_v6_your |default_if_none:"---" }}</td>
+                            </tr>
+                            <tr>
+                              <th>広報経路</th>
+                              <td>
+                                <span
+                                    class="badge text-bg-secondary"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="
+                                        {% if not connection.ipv4_route %}{{ connection.ipv4_route_comment }}{% else %}{{ connection.ipv4_route }}{% endif %}">{{ connection.ipv4_route }}</span>
+                              </td>
+                              <td>
+                                <span
+                                    class="badge text-bg-secondary"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{% if not connection.ipv6_route %}
+                                      {{ connection.ipv6_route_comment }}{% else %}{{ connection.ipv6_route }}
+                                                                  {% endif %}">{{ connection.ipv6_route }}</span>
+                              </td>
+                            </tr>
+                            </thead>
+                          </table>
+                          <br/>
+                          本ページは電気通信事業法
+                          第26条2（書面の交付義務）に基づく書面となります。
+                          <br/>
+                          なお、郵送での書面交付をご希望頂いた方は、お送りします書面が正式書面となり本画面の表示は参考情報となります。
+                          <br/>
+                        </div>
+                      </div>
+                      <br/>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="card-footer">
+                  {% if service.is_pass %}
+                    <span class="badge bg-success">審査OK</span>
+                  {% else %}
+                    <span class="badge bg-danger">未審査</span>{% endif %}
+                  {% if service.administrator %}
+                    <span class="badge bg-success">管理者権限</span>{% endif %}
+                  <span
+                      class="badge bg-secondary">Group: {{ service.group.id }}({{ service.group.name }})</span>
+                </div>
+              </div>
+              <br/>
+            {% endfor %}
+            <nav aria-label="...">
+              <ul class="pagination">
+                {% if services.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link"
+                       href="?{% url_replace request page=services.previous_page_number %}">前へ</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link">前へ</span>
+                  </li>
+                {% endif %}
+                {% if services.paginator.num_pages > 10 %}
+                  {% if services.number < 6 %}
+                    {#    先頭 9 ページの表示      #}
+                    {% for pg in services.paginator.page_range %}
+                      {% if forloop.counter0 < 9 %}
+                        {% if services.number == pg %}
+                          <li class="page-item active">
+                            {% else %}
+                          <li class="page-item">
+                        {% endif %}
+                      <a class="page-link"
+                         href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                      </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% elif services.number < services.paginator.num_pages|add:-4 %}
+                    {#    手前 4 ページ | 現在のページ | 続き 4 ページ      #}
+                    {% for pg in services.paginator.page_range %}
+                      {% if services.number|add:-5 < pg and pg < services.number|add:5 %}
+                        {% if services.number == pg %}
+                          <li class="page-item active">
+                            {% else %}
+                          <li class="page-item">
+                        {% endif %}
+                      <a class="page-link"
+                         href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                      </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    {#   最後 9 ページの表示   #}
+                    {% for pg in services.paginator.page_range %}
+                      {% if forloop.counter0 > services.paginator.num_pages|add:-10 %}
+                        {% if services.number == pg %}
+                          <li class="page-item active">
+                            {% else %}
+                          <li class="page-item">
+                        {% endif %}
+                      <a class="page-link"
+                         href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                      </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% else %}
+                  {% for pg in services.paginator.page_range %}
+                    {% if services.number == pg %}
+                      <li class="page-item active">
+                        {% else %}
+                      <li class="page-item">
+                    {% endif %}
+                  <a class="page-link"
+                     href="?{% url_replace request page=pg %}">{{ pg }}</a>
+                  </li>
+                  {% endfor %}
+                {% endif %}
+                {% if services.has_next %}
+                  <li class="page-item">
+                    <a class="page-link"
+                       href="?{% url_replace request page=services.next_page_number %}">次へ</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link">次へ</span>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          {% else %}
+            <p>サービスがありません</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascript %}
+
+  <script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+  </script>
+{% endblock %}

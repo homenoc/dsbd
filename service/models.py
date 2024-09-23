@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from custom_auth.models import Group
 from dsbd.models import MediumTextField
@@ -11,11 +12,46 @@ class ServiceManager(models.Manager):
     def get_notice(self):
         now = timezone.now()
         notices = self.filter(
-            Q(start_at__lte=now),
-            Q(is_active=True),
-            Q(end_at__gt=timezone.now()) | Q(end_at__isnull=True)
+            Q(start_at__lte=now), Q(is_active=True), Q(end_at__gt=timezone.now()) | Q(end_at__isnull=True)
         )
         return notices
+
+    def get_new_number(self, group_id: int):
+        number = 1
+        for service in self.filter(group_id=group_id):
+            if service.service_number >= number:
+                number = service.service_number + 1
+        return number
+
+
+class ConnectionManager(models.Manager):
+    def get_new_number(self, service_id: int):
+        number = 1
+        for connection in self.filter(service_id=service_id):
+            if connection.connection_number >= number:
+                number = connection.connection_number + 1
+        return number
+
+
+SERVICE_L2 = "2000"
+SERVICE_L3_STATIC = "3S00"
+SERVICE_L3_BGP = "3B00"
+SERVICE_TRANSIT = "IP3B"
+SERVICE_COLO_L2 = "CL20"
+SERVICE_COLO_L3_STATIC = "CL3S"
+SERVICE_COLO_L3_BGP = "CL3B"
+SERVICE_ETC = "ET00"
+
+SERVICE_CHOICES = (
+    (SERVICE_L2, "L2"),
+    (SERVICE_L3_STATIC, "L3 Static"),
+    (SERVICE_L3_BGP, "L3 BGP"),
+    (SERVICE_TRANSIT, "トランジット提供"),
+    (SERVICE_COLO_L2, "コロケーションサービス(L2)"),
+    (SERVICE_COLO_L3_STATIC, "コロケーションサービス(L3 Static)"),
+    (SERVICE_COLO_L3_BGP, "コロケーションサービス(L3 BGP)"),
+    (SERVICE_ETC, "その他"),
+)
 
 
 class Service(models.Model):
@@ -24,30 +60,12 @@ class Service(models.Model):
         verbose_name = "Service"
         verbose_name_plural = "Services"
 
-    SERVICE_L2 = "2000"
-    SERVICE_L3_STATIC = "3S00"
-    SERVICE_L3_BGP = "3B00"
-    SERVICE_TRANSIT = "IP3B"
-    SERVICE_COLO_L2 = "CL20"
-    SERVICE_COLO_L3_STATIC = "CL3S"
-    SERVICE_COLO_L3_BGP = "CL3B"
-    SERVICE_ETC = "ET00"
-
-    SERVICE_CHOICES = (
-        (SERVICE_L2, "L2"),
-        (SERVICE_L3_STATIC, "L3 Static"),
-        (SERVICE_L3_BGP, "L3 BGP"),
-        (SERVICE_TRANSIT, "トランジット提供"),
-        (SERVICE_COLO_L2, "コロケーションサービス(L2)"),
-        (SERVICE_COLO_L3_STATIC, "コロケーションサービス(L3 Static)"),
-        (SERVICE_COLO_L3_BGP, "コロケーションサービス(L3 BGP)"),
-        (SERVICE_ETC, "その他"),
-    )
-
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, related_name="ServiceGroup", null=True, blank=True)
-    service_type = models.CharField("サービスタイプ", choices=SERVICE_CHOICES, default=SERVICE_COLO_L3_BGP, max_length=255)
+    service_type = models.CharField(
+        "サービスタイプ", choices=SERVICE_CHOICES, default=SERVICE_COLO_L3_BGP, max_length=255
+    )
     service_number = models.IntegerField("サービス番号", default=1)
     service_comment = models.CharField("サービス情報コメント", default="", blank=True, max_length=255)
     is_active = models.BooleanField("有効", default=True)
@@ -63,15 +81,24 @@ class Service(models.Model):
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     user_comment = MediumTextField("ユーザコメント", default="", blank=True)
     admin_comment = MediumTextField("管理者コメント", default="", blank=True)
+    history = HistoricalRecords()
 
     objects = ServiceManager()
 
     @property
     def service_code(self):
-        return "%s-%s%s" % (self.group.id, self.service_type, str(self.service_number).zfill(3),)
+        return "%s-%s%s" % (
+            self.group.id,
+            self.service_type,
+            str(self.service_number).zfill(3),
+        )
 
     def __str__(self):
-        return "%s-%s%s" % (self.group.id, self.service_type, str(self.service_number).zfill(3),)
+        return "%s-%s%s" % (
+            self.group.id,
+            self.service_type,
+            str(self.service_number).zfill(3),
+        )
 
 
 CONNECTION_EIP = "EIP"
@@ -134,14 +161,22 @@ class Connection(models.Model):
 
     created_at = models.DateTimeField("作成日", default=timezone.now)
     updated_at = models.DateTimeField("更新日", default=timezone.now)
-    service = models.ForeignKey(Service, on_delete=models.SET_NULL, related_name="ConnectionService", null=True, blank=True)
-    connection_type = models.CharField("接続タイプ", default=CONNECTION_EIP, choices=CONNECTION_TYPE_CHOICES, max_length=255)
+    service = models.ForeignKey(
+        Service, on_delete=models.SET_NULL, related_name="ConnectionService", null=True, blank=True
+    )
+    connection_type = models.CharField(
+        "接続タイプ", default=CONNECTION_EIP, choices=CONNECTION_TYPE_CHOICES, max_length=255
+    )
     connection_number = models.IntegerField("接続番号", default=1)
     connection_comment = models.CharField("接続情報コメント", default="", blank=True, max_length=255)
     is_active = models.BooleanField("有効", default=True)
     is_open = models.BooleanField("開通", default=False)
-    tunnel_ip = models.ForeignKey(TunnelIP, on_delete=models.CASCADE, related_name="ConnectionTunnelIP", max_length=255, null=True, blank=True)
-    hope_location = models.CharField("接続希望場所", default=HOPE_LOCATION_ANYWHERE, choices=HOPE_LOCATION_CHOICES, max_length=255)
+    tunnel_ip = models.ForeignKey(
+        TunnelIP, on_delete=models.CASCADE, related_name="ConnectionTunnelIP", max_length=255, null=True, blank=True
+    )
+    hope_location = models.CharField(
+        "接続希望場所", default=HOPE_LOCATION_ANYWHERE, choices=HOPE_LOCATION_CHOICES, max_length=255
+    )
     term_location = models.CharField("接続終端場所", default="", blank=True, max_length=255)
     ntt_type = models.CharField("NTT接続タイプ", default=NTT_TYPE1, choices=NTT_CHOICES, max_length=255)
     ntt_comment = models.CharField("NTT接続コメント", default="", blank=True, max_length=255)
@@ -159,6 +194,9 @@ class Connection(models.Model):
     end_at = models.DateTimeField("解約日", null=True, blank=True)
     user_comment = MediumTextField("ユーザコメント", default="", blank=True)
     admin_comment = MediumTextField("管理者コメント", default="", blank=True)
+    history = HistoricalRecords()
+
+    objects = ConnectionManager()
 
     @property
     def service_code(self):

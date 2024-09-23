@@ -1,41 +1,43 @@
 {% extends 'base2.html' %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="container py-4 mb-auto">
-                <div class="h-900 p-2 rounded-3">
-                    <h2 class="card-title">Group情報閲覧・修正</h2>
-                    <br/>
-                    {% if error %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                        <br/>
-                    {% endif %}
-                    {% if group %}
-                        <div class="card">
-                            <div class="card-header">
-                                ID: {{ group.id }} 作成日: {{ group.created_at }}
-                            </div>
-                        </div>
-                        <br/>
-                        <br/>
-                        <form method="post" class="h-adr">
-                            {% csrf_token %}
-                            {{ form }}
-                            <br/>
-                            {% if group.is_active and administrator %}
-                                <button type="submit" class="btn btn-primary">変更</button>{% endif %}
-                        </form>
-                    {% else %}
-                        <p><b>本グループIDは閲覧できません</b></p>
-                    {% endif %}
-                    <br/>
-                    <br/>
-                    <a class="btn btn-primary" href="{% url 'custom_auth_group:index' %}" role="button"
-                       aria-expanded="false">グループ一覧に戻る</a>
-                </div>
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">Group情報閲覧・修正</h2>
+          <br/>
+          {% if error %}
+            <div class="alert alert-danger" role="alert">
+              {{ error }}
             </div>
+            <br/>
+          {% endif %}
+          {% if group %}
+            <div class="card">
+              <div class="card-header">
+                ID: {{ group.id }} 作成日: {{ group.created_at }}
+              </div>
+            </div>
+            <br/>
+            <br/>
+            <form method="post" class="h-adr">
+              {% csrf_token %}
+              {{ form }}
+              <br/>
+              {% if group.status == 1 and is_administrator %}
+                <button type="submit" class="btn btn-primary">変更
+                </button>{% endif %}
+            </form>
+          {% else %}
+            <p><b>本グループIDは閲覧できません</b></p>
+          {% endif %}
+          <br/>
+          <br/>
+          <a class="btn btn-primary"
+             href="{% url 'custom_auth_group:index' %}" role="button"
+             aria-expanded="false">グループ一覧に戻る</a>
         </div>
+      </div>
     </div>
+  </div>
 {% endblock content %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from dsbd.models import MediumTextField
 
@@ -17,6 +18,7 @@ class NOC(models.Model):
     location = models.CharField("場所", default="", max_length=255, blank=True)
     bandwidth = models.IntegerField("帯域幅", default=1000)
     comment = MediumTextField("コメント", default="", blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return "%d: %s" % (self.id, self.name)

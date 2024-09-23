@@ -2,51 +2,54 @@
 
 import django.db.models.deletion
 import django.utils.timezone
-import dsbd.models
 from django.db import migrations, models
+
+import dsbd.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('noc', '0001_initial'),
+        ("noc", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TunnelRouter',
+            name="TunnelRouter",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='作成日')),
-                ('updated_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='更新日')),
-                ('is_active', models.BooleanField(default=True, verbose_name='有効')),
-                ('hostname', models.CharField(max_length=255, unique=True, verbose_name='ホスト名')),
-                ('comment', dsbd.models.MediumTextField(blank=True, default='', verbose_name='コメント')),
-                ('noc', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='noc.noc')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now, verbose_name="作成日")),
+                ("updated_at", models.DateTimeField(default=django.utils.timezone.now, verbose_name="更新日")),
+                ("is_active", models.BooleanField(default=True, verbose_name="有効")),
+                ("hostname", models.CharField(max_length=255, unique=True, verbose_name="ホスト名")),
+                ("comment", dsbd.models.MediumTextField(blank=True, default="", verbose_name="コメント")),
+                ("noc", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="noc.noc")),
             ],
             options={
-                'verbose_name': 'Tunnel Router',
-                'verbose_name_plural': 'Tunnel Routers',
-                'ordering': ('id',),
+                "verbose_name": "Tunnel Router",
+                "verbose_name_plural": "Tunnel Routers",
+                "ordering": ("id",),
             },
         ),
         migrations.CreateModel(
-            name='TunnelIP',
+            name="TunnelIP",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='作成日')),
-                ('updated_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='更新日')),
-                ('is_active', models.BooleanField(default=True, verbose_name='有効')),
-                ('ip_address', models.GenericIPAddressField(unique=True, verbose_name='IPアドレス')),
-                ('comment', dsbd.models.MediumTextField(blank=True, default='', verbose_name='コメント')),
-                ('tunnel_router', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='router.tunnelrouter')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now, verbose_name="作成日")),
+                ("updated_at", models.DateTimeField(default=django.utils.timezone.now, verbose_name="更新日")),
+                ("is_active", models.BooleanField(default=True, verbose_name="有効")),
+                ("ip_address", models.GenericIPAddressField(unique=True, verbose_name="IPアドレス")),
+                ("comment", dsbd.models.MediumTextField(blank=True, default="", verbose_name="コメント")),
+                (
+                    "tunnel_router",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="router.tunnelrouter"),
+                ),
             ],
             options={
-                'verbose_name': 'Tunnel IP',
-                'verbose_name_plural': 'Tunnel IPs',
-                'ordering': ('id',),
+                "verbose_name": "Tunnel IP",
+                "verbose_name_plural": "Tunnel IPs",
+                "ordering": ("id",),
             },
         ),
     ]

@@ -5,9 +5,19 @@ on:
     paths:
     - '.github/**'
     - 'files/**'
+    - 'custom_admin/**'
+    - 'custom_auth/**'
     - 'dsbd/**'
+    - 'ip/**'
+    - 'noc/**'
+    - 'notice/**'
+    - 'router/**'
+    - 'service/**'
+    - 'ticket/**'
+    - 'manage.py'
     - 'Dockerfile'
-    - 'requirements.txt'
+    - 'Pipfile'
+    - 'Pipfile.lock'
 
 jobs:
   push_to_registry:

@@ -2,59 +2,60 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block style %}
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
+  <style>
+      html,
+      body {
+          height: 100%;
+      }
 
-        body {
-            display: flex;
-            align-items: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
-            background-color: #f5f5f5;
-        }
+      body {
+          display: flex;
+          align-items: center;
+          padding-top: 40px;
+          padding-bottom: 40px;
+          background-color: #f5f5f5;
+      }
 
-        .form-signup {
-            padding-top: 100px;
-            width: 100%;
-            max-width: 400px;
-            margin: auto;
-        }
+      .form-signup {
+          padding-top: 100px;
+          width: 100%;
+          max-width: 400px;
+          margin: auto;
+      }
 
-        .form-signup .form-floating:focus-within {
-            z-index: 2;
-        }
+      .form-signup .form-floating:focus-within {
+          z-index: 2;
+      }
 
-        .logo {
-            text-align: center;
-        }
+      .logo {
+          text-align: center;
+      }
 
-        .has-error .help-block {
-            color: red;
-        }
-    </style>
+      .has-error .help-block {
+          color: red;
+      }
+  </style>
 {% endblock %}
 {% block content %}
-    <main class="form-signup">
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
-            <div class="logo">
-                <img class="mb-4" src="{% static 'icon/icon.png' %}" alt="" width="72" height="72">
-                <h1 class="h3 mb-3 fw-normal">Sign up</h1>
-            </div>
-            {% if form.error %}
-                <div class="alert alert-danger" role="alert">
-                    {{ form.error }}
-                </div>
-            {% endif %}
-            {{ form.as_p }}
-            <button class="w-100 btn btn-lg btn-primary" type="submit">
-                {% if key and not key_error %}Sign up{% else %}Submit{% endif %}
-            </button>
-        </form>
-    </main>
+  <main class="form-signup">
+    <form method="post" class="needs-validation" novalidate>
+      {% csrf_token %}
+      <div class="logo">
+        <img class="mb-4" src="{% static 'icon/icon.png' %}" alt="" width="72"
+             height="72">
+        <h1 class="h3 mb-3 fw-normal">Sign up</h1>
+      </div>
+      {% if form.error %}
+        <div class="alert alert-danger" role="alert">
+          {{ form.error }}
+        </div>
+      {% endif %}
+      {{ form.as_p }}
+      <button class="w-100 btn btn-lg btn-primary" type="submit">
+        {% if key and not key_error %}Sign up{% else %}Submit{% endif %}
+      </button>
+    </form>
+  </main>
 {% endblock content %}
 
 {% block javascript %}

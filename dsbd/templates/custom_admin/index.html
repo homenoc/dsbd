@@ -1,28 +1,33 @@
 {% extends 'base2.html' %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="container py-4 mb-auto">
-                <div class="h-900 p-2 rounded-3">
-                    <h2 class="card-title">カスタム管理ページ</h2>
-                    <br/>
-                    <a class="btn btn-primary" href="{% url 'admin:index' %}" role="button"
-                       aria-expanded="false">管理ページ(DB)</a>
-                    <a class="btn btn-primary" href="/admin/custom_auth/user" role="button"
-                       aria-expanded="false">ユーザ一覧</a>
-                    <a class="btn btn-primary" href="/admin/custom_auth/group" role="button"
-                       aria-expanded="false">グループ一覧</a>
-                    <a class="btn btn-primary" href="/admin/notice/notice" role="button"
-                       aria-expanded="false">通知(お知らせ)一覧</a>
-                    <a class="btn btn-primary" href="{% url 'custom_admin:ticket_list' %}" role="button"
-                       aria-expanded="false">チケット一覧</a>
-                    <br/>
-                    <br/>
-                    <a class="btn btn-primary" href="/admin/service/service" role="button"
-                       aria-expanded="false">サービス一覧</a>
-                    <br/>
-                </div>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2 class="card-title">カスタム管理ページ</h2>
+          <br/>
+          <a class="btn btn-primary" href="{% url 'admin:index' %}"
+             role="button"
+             aria-expanded="false">管理ページ(DB)</a>
+          <a class="btn btn-primary" href="/admin/custom_auth/user"
+             role="button"
+             aria-expanded="false">ユーザ一覧</a>
+          <a class="btn btn-primary" href="/admin/custom_auth/group"
+             role="button"
+             aria-expanded="false">グループ一覧</a>
+          <a class="btn btn-primary" href="/admin/notice/notice" role="button"
+             aria-expanded="false">通知(お知らせ)一覧</a>
+          <a class="btn btn-primary"
+             href="{% url 'custom_admin:ticket_list' %}" role="button"
+             aria-expanded="false">チケット一覧</a>
+          <br/>
+          <br/>
+          <a class="btn btn-primary" href="/admin/service/service"
+             role="button"
+             aria-expanded="false">サービス一覧</a>
+          <br/>
         </div>
+      </div>
     </div>
+  </div>
 {% endblock content %}

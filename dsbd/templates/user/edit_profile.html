@@ -1,32 +1,36 @@
 {% extends 'base2.html' %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="container py-4 mb-auto">
-                <div class="h-900 p-2 rounded-3">
-                    <h2>プロフィールの閲覧・変更</h2>
-                    <div class="row justify-content-md-center">
-                        <div class="col-8">
-                            <form action="" method="POST">
-                                {{ form.non_field_errors }}
-                                {% for field in form %}
-                                    <div class="form-group">
-                                        <label class="col-6" for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
-                                        {{ field }}
-                                        {{ field.errors }}
-                                    </div>
-                                {% endfor %}
-                                {% csrf_token %}
-                                <br/>
-                                <button type="submit" class="btn btn-primary btn-block">送信</button>
-                            </form>
-                        <br/>
-                        <br/>
-                        <a href="{% url 'custom_auth:index' %}" class="btn btn-primary">プロフィールに戻る</a>
-                        </div>
-                    </div>
-                </div>
+  <div class="container">
+    <div class="row">
+      <div class="container py-4 mb-auto">
+        <div class="h-900 p-2 rounded-3">
+          <h2>プロフィールの閲覧・変更</h2>
+          <div class="row justify-content-md-center">
+            <div class="col-8">
+              <form action="" method="POST">
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                  <div class="form-group">
+                    <label class="col-6"
+                           for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                  </div>
+                {% endfor %}
+                {% csrf_token %}
+                <br/>
+                <button type="submit" class="btn btn-primary btn-block">
+                  送信
+                </button>
+              </form>
+              <br/>
+              <br/>
+              <a href="{% url 'custom_auth:index' %}"
+                 class="btn btn-primary">プロフィールに戻る</a>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 {% endblock content %}

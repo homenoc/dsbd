@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 
-from custom_auth.models import User
-from dsbd.notify import notify_db_save
+from custom_auth.models import Group, User, UserGroup
+from dsbd.notify import notify_delete_db, notify_insert_db, notify_update_db
 
 
 @receiver(pre_save, sender=User)
@@ -14,55 +14,57 @@ def user_model_pre_save(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def post_user(sender, instance, created, **kwargs):
+def user_model_post_save(sender, instance, created, **kwargs):
     if created:
-        text = get_create_user(True, instance)
-        notify_db_save(table_name="User", type=0, data=text)
-    else:
-        text = get_update_user(instance._pre_save_instance, instance)
-        notify_db_save(table_name="User", type=1, data=text)
+        notify_insert_db(model_name=sender.__name__, instance=instance)
+        return
+    notify_insert_db(model_name=sender.__name__, instance=instance)
 
 
 @receiver(pre_delete, sender=User)
-def delete_user(sender, instance, **kwargs):
-    text = get_create_user(False, instance)
-    notify_db_save(table_name="User", type=2, data=text)
+def user_model_pre_delete(sender, instance, **kwargs):
+    notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
-def get_create_user(short, instance):
-    text = '--%d[%s]--\n' % (instance.id, instance.username,)
-    return text if not short else text + '有効: %r\nE-Mail: %s\n' % (
-        instance.is_active, instance.email)
+@receiver(pre_save, sender=Group)
+def group_model_pre_save(sender, instance, **kwargs):
+    try:
+        instance._pre_save_instance = Group.objects.get(pk=instance.pk)
+    except Group.DoesNotExist:
+        instance._pre_save_instance = instance
+    # 審査NG => 審査OKの場合にサービス追加とJPNIC追加を出来るようにする
+    if not instance._pre_save_instance.is_pass and instance.is_pass:
+        instance.allow_service_add = True
+        instance.allow_jpnic_add = True
+
+    # Statusが1以外の場合はサービス追加とJPNIC追加を禁止する
+    if instance.status != 1:
+        instance.allow_service_add = False
+        instance.allow_jpnic_add = False
 
 
-def get_update_user(before, after):
-    text = '%s----更新状況----\n' % (get_create_user(True, before),)
-    if before.username != after.username:
-        text += 'username: %s => %s\n' % (before.username, after.username)
-    if before.username_jp != after.username_jp:
-        text += 'username(jp): %s => %s\n' % (before.username, after.username)
-    if before.email != after.email:
-        text += 'E-Mail: %s => %s\n' % (before.email, after.email)
-    if before.is_active != after.is_active:
-        text += '有効: %r => %r\n' % (before.is_active, after.is_active)
-    text += '------------\n'
-    return text
+@receiver(post_save, sender=Group)
+def group_model_post_save(sender, instance, created, **kwargs):
+    if created:
+        notify_insert_db(model_name=sender.__name__, instance=instance)
+        return
+
+    notify_update_db(model_name=sender.__name__, instance=instance)
 
 
-def get_create_signup_key(short, instance):
-    text = '--%d[%s]--\n' % (instance.id, instance.key,)
-    return text if not short else text + '利用済み: %r\n有効期限: %s\n' % (instance.is_used, instance.expired_at)
+@receiver(pre_delete, sender=Group)
+def group_model_pre_delete(sender, instance, **kwargs):
+    notify_delete_db(model_name=sender.__name__, instance=instance)
 
 
-def get_update_signup_key(before, after):
-    text = '%s----更新状況----\n' % (get_create_signup_key(True, before),)
-    if before.key != after.key:
-        text += 'key: %s => %s\n' % (before.key, after.key)
-    if before.is_used != after.is_used:
-        text += '使用済み: %r => %r\n' % (before.is_used, after.is_used)
-    if before.expired_at != after.expired_at:
-        text += '有効期限: %s => %s\n' % (before.expired_at, after.expired_at)
-    if before.comment != after.comment:
-        text += 'comment: %r => %r\n' % (before.comment, after.comment)
-    text += '------------\n'
-    return text
+@receiver(post_save, sender=UserGroup)
+def user_group_model_post_save(sender, instance, created, **kwargs):
+    if created:
+        notify_insert_db(model_name=sender.__name__, instance=instance)
+        return
+    notify_insert_db(model_name=sender.__name__, instance=instance)
+
+
+@receiver(pre_delete, sender=UserGroup)
+def user_group_model_pre_delete(sender, instance, **kwargs):
+    notify_delete_db(model_name=sender.__name__, instance=instance)
